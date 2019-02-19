@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ifindex version="1.0" xmlns="http://babel.ifarchive.org/protocol/iFiction/">
+    <story>
+        <identification>
+            <ifid>29C8FC80-0DAA-43FC-BD01-D71A52767980</ifid>
+            <format>glulx</format>
+        </identification>
+        <bibliographic>
+            <title>El Baron</title>
+            <author>V. Gijsbers</author>
+            <language>ES</language>
+            <headline>Una historia interactiva</headline>
+            <genre>fiction</genre>
+            <forgiveness>tough</forgiveness>
+            <description></description>
+        </bibliographic>
+        <contacts>
+            <authoremail>jfm.lisaso@gmail.com</authoremail>
+            <url>https://jomali.itch.io/</url>
+        </contacts>
+        <release>
+            <version>1</version>
+            <releasedate>2019/02/05</releasedate>
+        </release>
+        <colophon>
+            <generator>Babble</generator>
+            <originated>2019/02/05</originated>
+        </colophon>
+    </story>
+</ifindex>
