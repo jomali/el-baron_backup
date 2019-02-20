@@ -79,6 +79,7 @@ Array _hyperlinks_temp_array buffer LEN_HUGEHUGESTR;
 !!	<>	spanish_nominative_pronoun()
 !!	<>	website_hyperlink()
 !!	<>	write_configuration_file()
+!!	<>	write_garglk_configuration_file()
 !!------------------------------------------------------------------------------
 Object	Utils "(Utilities)"
  with	!!----------------------------------------------------------------------
@@ -1081,7 +1082,7 @@ Object	Utils "(Utilities)"
 					print temp_code, " # Estilo de texto de ",
 					(string) temp_txt, " [0-7]^";
 				}
-				!! Cierra el archivo y termina la operaci�n:
+				!! Cierra el archivo y termina la operación:
 				glk($002F, gg_mainwin); ! glk_set_window
 				glk($0044, str, 0); ! glk_stream_close
 				return true;
@@ -1092,6 +1093,128 @@ Object	Utils "(Utilities)"
 			#Endif; ! TARGET_
 
 			return false;
+		],
+		!!----------------------------------------------------------------------
+		!! Escribe un fichero 'garglk.ini' con los parámetros de configuración
+		!! de la obra.
+		!!
+		!!	@returns {integer} 2 si ya existe un fichero 'garglk.ini' (no se
+		!!		reescribe); 1 si el fichero se escribe con éxito; 0 si se
+ 		!!		produce algún problema de escritura
+		!!	@version 1.0
+		!!----------------------------------------------------------------------
+		write_garglk_configuration_file [
+			file_name file_ref str ch;
+			!! FIXME - comprobar que el intérprete soporte la lectura/escritura
+			#Ifdef TARGET_GLULX;
+			file_name = "garglk.ini";
+			!!	glk_fileref_create_by_name(
+			!!		fileusage_Data + fileusage_BinaryMode,
+			!!		ChangeAnyToCString(file_name), 0);
+			file_ref = glk($0061, $00+$000, ChangeAnyToCString(file_name), 0);
+			if (file_ref ~= 0) {
+				!!	glk_stream_open_file(fileref, filemode_Read, 0);
+				str = glk($0042, file_ref, $02, 0);
+				ch = glk($0090, str); ! glk_get_char_stream
+				!! Cierra el archivo:
+				glk($0044, str, 0); ! glk_stream_close
+				if (ch ~= null) {
+					!! Si ya existe un fichero con contenidos, retorna:
+					glk($0063, file_ref); ! glk_fileref_destroy
+					return 2;
+				}
+				!!	glk_stream_open_file(fileref, filemode_Write, 0);
+				str = glk($0042, file_ref, $01, 0);
+				glk($0063, file_ref); ! glk_fileref_destroy
+				glk($0047, str); ! glk_stream_set_current
+				!! Escritura en fichero de los parámetros de configuración:
+				print "#===============================================================================^";
+				print "# Fonts, sizes and spaces^";
+				print "#-------------------------------------------------------------------------------^";
+				print "^";
+				print "#monofont	Liberation Mono^";
+				print "monosize	16.0^";
+				print "^";
+				print "#propfont	Roboto^";
+				print "propsize	20.0^";
+				print "^";
+				print "cols			65^";
+				print "rows			20^";
+				print "^";
+				print "wmarginx	0				# space around the window frame^";
+				print "wmarginy	0^";
+				print "wpaddingx	0				# space between windows^";
+				print "wpaddingy	0^";
+				print "wborderx	0				# border line width between windows^";
+				print "wbordery	0^";
+				print "tmarginx	0				# internal margin of text windwos^";
+				print "tmarginy	0^";
+				print "^";
+				print "leading	32.0			# Also known as linespacing^";
+				print "baseline	20.0			# Offset from top of line to baseline^";
+				print "^";
+				print "#===============================================================================^";
+				print "# Scroll^";
+				print "#-------------------------------------------------------------------------------^";
+				print "^";
+				print "scrollwidth	0				# set to 8 to make a nice scrollbar^";
+				print "scrollbg	202020^";
+				print "scrollfg	E06666^";
+				print "^";
+				print "#===============================================================================^";
+				print "# Colors and style definitions^";
+				print "#-------------------------------------------------------------------------------^";
+				print "^";
+				print "gamma		1				# this only affects text rendering^";
+				print "caretshape	2				# 0=smalldot 1=fatdot 2=thinline 3=fatline 4=block^";
+				print "linkstyle	0				# 1=show hyperlinks 0=hide hyperlinks^";
+				print "^";
+				print "moreprompt	...^";
+				print "morealign	1				# 0=left 1=center 2=right^";
+				print "morefont	monor^";
+				print "^";
+				print "windowcolor	202020			# overall window background color^";
+				print "bordercolor	202020			# border line color^";
+				print "caretcolor	E06666			# input caret color^";
+				print "linkcolor	F3F3F3			# hyperlink color^";
+				print "morecolor	E06666			# more prompt color^";
+				print "^";
+				print "# Colors for text buffer windows^";
+				print "tcolor	0	F3F3F3	202020	# Normal^";
+				print "tcolor	1	F3F3F3	202020	# Emphasized^";
+				print "tcolor	2	F3F3F3	202020	# Preformatted^";
+				print "tcolor	3	F3F3F3	202020	# Header^";
+				print "tcolor	4	F3F3F3	202020	# Subheader^";
+				print "tcolor	5	F3F3F3	202020	# Alert^";
+				print "tcolor	6	F3F3F3	202020	# Note^";
+				print "tcolor	7	F3F3F3	202020	# BlockQuote^";
+				print "tcolor	8	F3F3F3	202020	# Input^";
+				print "tcolor	9	F3F3F3	202020	# User1^";
+				print "tcolor	10	F3F3F3	202020	# User2^";
+				print "^";
+				print "# Colors for text grid windows^";
+				print "gcolor	0	202020	606060	# Normal^";
+				print "gcolor	1	202020	606060	# Emphasized^";
+				print "gcolor	2	202020	606060	# Preformatted^";
+				print "gcolor	3	202020	606060	# Header^";
+				print "gcolor	4	202020	606060	# Subheader^";
+				print "gcolor	5	202020	606060	# Alert^";
+				print "gcolor	6	202020	606060	# Note^";
+				print "gcolor	7	202020	606060	# BlockQuote^";
+				print "gcolor	8	202020	606060	# Input^";
+				print "gcolor	9	202020	606060	# User1^";
+				print "gcolor	10	202020	606060	# User2^";
+				!! Cierra el archivo y termina la operación:
+				glk($002F, gg_mainwin); ! glk_set_window
+				glk($0044, str, 0); ! glk_stream_close
+				return 1;
+			}
+			#Ifnot; ! TARGET_ZCODE;
+			!! (Por evitar alertas del compilador)
+			file_name = file_ref + str;
+			#Endif; ! TARGET_
+
+			return 0;
 		],
  private
 		!!----------------------------------------------------------------------

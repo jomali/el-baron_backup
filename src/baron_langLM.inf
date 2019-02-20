@@ -487,6 +487,14 @@ Object	LibraryMessages
 				transcripción.";
 		}
 
+	Smell: !! XXX
+		print "No hueles nada extraño";
+		if (lm_o ~= 0) {
+			print " en ";
+			Utils.spanish_nominative_pronoun(lm_o);
+		}
+		".";
+
 	Verify:
 		!!	1:	Éxito.
 		!!	2:	Error en la verificación.

@@ -837,6 +837,19 @@ Include "vorple-screen-effects.h";
 
 	!! Inicializaciones de la obra ---------------------------------------------
 
+	!! Comprueba ficheros de configuración:
+	#Ifdef TARGET_GLULX;
+	#Ifdef VERSION_DESKTOP;
+	if (Utils.write_garglk_configuration_file() == 1) {
+		print "Se acaba de escribir correctamente el fichero de
+		configuración ", (stressed) "~garglk.ini~", " en tu equipo. Es
+		necesario volver a iniciar la aplicación.";
+		new_line;
+		quit;
+	}
+	#Endif; ! VERSION_DESKTOP;
+	#Endif; ! TARGET_GLULX;
+
 	!! Establece la configuración de hipervínculos:
 	#Ifdef TARGET_GLULX;
 	#Ifdef VERSION_DESKTOP;

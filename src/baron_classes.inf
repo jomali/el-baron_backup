@@ -746,59 +746,148 @@ Class	Thing
 !! Representa un objeto decorado dentro del modelo de mundo. Se le aplica la
 !! propiedad 'scenery' definida por la librería Inform.
 !!
+!!	@dependency arrays.h
 !!	@dependency SpanishLM.h
-!!	@version 1.0
+!!	@version 2.0
 !!------------------------------------------------------------------------------
 Class	Atrezzo
  class	Thing
- with	before [;
+ with	before [
+			previous_style;
+			Attack,
+			Blow,
+			Close,
 			DefaultAction,
+			Disrobe,
+			Enter,
 			Examine,
-			Search:
+			Listen,
+			Lock,
+			Open,
+			Search,
+			SwitchOn,
+			SwitchOff,
+			Unlock,
+			Wear:
 				return false;
-			default:
+			Climb:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(temp_array);
+				print " no ", (es) self, " algo a lo que puedas trepar.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Cut:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(temp_array);
+				print " no ", (es) self, " algo que puedas cortar.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Dig:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(temp_array);
+				print " no ", (es) self, " algo en lo que puedas cavar.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Drink:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(temp_array);
+				print " no ", (es) self, " algo que puedas beber.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Drop:
 				switch (Utils.get_grammatical_inflection()) {
-					FIRST_PERSON_PRESENT:
-						if (IsPluralNoun(player))
-							print "No creemos que necesitemos preocuparnos";
-						else print "No creo que necesite preocuparme";
-					SECOND_PERSON_PRESENT:
-						print "No es necesario que ";
-						if (IsPluralNoun(player)) print "os preocupéis";
-						else print "te preocupes";
+					FIRST_PERSON_PRESENT,
+					SECOND_PERSON_PRESENT,
 					THIRD_PERSON_PRESENT:
-						print "No es necesario que ";
-						if (IsPluralNoun(player)) print "se preocupen";
-						else print "se preocupe";
-					FIRST_PERSON_PAST:
-						if (IsPluralNoun(player))
-							print "No creíamos que necesitásemos preocuparnos";
-						else print "No creía que necesitase preocuparme";
-					SECOND_PERSON_PAST:
-						print "No era necesario que ";
-						if (IsPluralNoun(player)) print "os preocupaseis";
-						else print "te preocupases";
+						PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+						PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+						PrintCharacterArray(temp_array);
+						" está", (n) self, " ya ahí.";
+					FIRST_PERSON_PAST,
+					SECOND_PERSON_PAST,
 					THIRD_PERSON_PAST:
-						print "No era necesario que ";
-						if (IsPluralNoun(player)) print "se preocupasen";
-						else print "se preocupase";
-					FIRST_PERSON_FUTURE:
-						print "Es difícil que";
-						if (IsPluralNoun(player))
-							print "vayamos a necesitar preocuparnos";
-						else print "vaya a necesitar preocuparme";
-					SECOND_PERSON_FUTURE:
-						print "No será necesario que ";
-						if (IsPluralNoun(player)) print "os preocupéis";
-						else print "te preocupes";
+						PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+						PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+						PrintCharacterArray(temp_array);
+						" estaba", (n) self, " ya allí.";
+					FIRST_PERSON_FUTURE,
+					SECOND_PERSON_FUTURE,
 					THIRD_PERSON_FUTURE:
-						print "No será necesario que ";
-						if (IsPluralNoun(player)) print "se preocupen";
-						else print "se preocupe";
+						PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+						PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+						PrintCharacterArray(temp_array);
+						" estará", (n) self, " ya allí.";
 				}
-				print " por ";
+			Eat,
+			Taste:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(temp_array);
+				print " no ", (es) self, " algo que puedas comer.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Jump,
+			JumpOver:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(temp_array);
+				print " no ", (es) self, " algo sobre lo que puedas saltar.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Pull,
+			Push,
+			PushDir,
+			Take,
+			Turn,
+			Wave:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(temp_array);
+				print " no ", (es) self, " algo que puedas manipular así.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			default:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "No es necesario que te preocupes por ";
 				Utils.spanish_nominative_pronoun(self);
-				".";
+				print ".";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
 		],
  has	scenery;
 
