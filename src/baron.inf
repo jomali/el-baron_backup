@@ -132,14 +132,16 @@ Constant USE_SPANISH_LM;
 Constant CONFIG_FILE_NAME "baron.params";
 
 !! Estilos de texto por defecto para las palabras destacadas:
-Constant DEFAULT_HIGHLIGHT_ST_1 TEXT_STYLE_NOTE;
-Constant DEFAULT_HIGHLIGHT_ST_2 TEXT_STYLE_REVERSED;
-Constant DEFAULT_HIGHLIGHT_ST_3 TEXT_STYLE_IMPORTANT;
+Constant DEFAULT_HIGHLIGHT_ST_1 TEXT_STYLE_UPRIGHT;
+Constant DEFAULT_HIGHLIGHT_ST_2 TEXT_STYLE_NOTE;
+Constant DEFAULT_HIGHLIGHT_ST_3 TEXT_STYLE_REVERSED;
+Constant DEFAULT_HIGHLIGHT_ST_4 TEXT_STYLE_IMPORTANT;
 
 !! Estado por defecto de los hipervínculos:
 Constant DEFAULT_HYPERLINKS_STATUS_1 0;
 Constant DEFAULT_HYPERLINKS_STATUS_2 0;
 Constant DEFAULT_HYPERLINKS_STATUS_3 0;
+Constant DEFAULT_HYPERLINKS_STATUS_4 0;
 
 !! Referencias a los recursos multimedia en Máquina-Z:
 #Ifdef TARGET_ZCODE;
@@ -860,21 +862,27 @@ Include "vorple-screen-effects.h";
 		print (string) Story;
 		Utils.set_text_style(previous_style);
 		print " simplemente haciendo ~clic~ con el ratón sobre las palabras ";
-		Utils.extended_print("destacadas", 0, 6);
+		PRT__("destacadas", 0, 2);
 		print " que vayas encontrando. ¿Quieres activar esta funcionalidad?";
 		new_line;
 		new_line;
 		print "(SÍ / NO) > ";
 		if (YesOrNo()) {
-			!! TODO - Activar hipervínculos
+			Utils.set_hyperlinks_status(1, true);
+			Utils.set_hyperlinks_status(2, true);
+			Utils.set_hyperlinks_status(3, true);
+			!! TODO - Establecer estilos adecuados
 			print (parser) "Hipervínculos activados.";
 		} else {
-			!! TODO - Desactivar hipervínculos
+			Utils.set_hyperlinks_status(1, false);
+			Utils.set_hyperlinks_status(2, false);
+			Utils.set_hyperlinks_status(3, false);
+			!! TODO - Establecer estilos adecuados
 			print (parser) "Hipervínculos desactivados.";
 		}
 		new_line;
 		new_line;
-		print "Puedes cambiar esta configuración en cualquier momento
+		print "Puedes cambiar la configuración anterior en cualquier momento
 		tecleando la instrucción ~HIPERVÍNCULOS~.";
 		new_line;
 		new_line;
@@ -1112,7 +1120,7 @@ VerboIrregular "establecer opciones de configuración" with imperativo
 				TEXT_STYLE_REVERSED:	temp = "invertido";
 				TEXT_STYLE_USER1:		temp = "color de fondo";
 			}
-			Utils.extended_print(temp, 0, highlight);
+			PRT__(temp, 0, highlight);
 			print ".";
 			new_line;
 		}
@@ -1253,14 +1261,18 @@ Verb 'no.verb'
 
 [ DefaultActionSub;
 	!! Por evitar redundancias, cuando la instrucción por defecto lanza
-	!! ##Examine no se muestra aclaración de la entrada.
+	!! ##Examine sobre objetos generales, o ##Enter sobre objetos que
+	!! representan salidas, no se imprime la aclaración de la entrada.
 	!! 		previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 	!! 		print (string) TEXT_STYLE_PARSER_PREFIX;
-	!! 		print "examina ", (name) noun;
+	!! 		print "examina / ve";
+	!! 		PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+	!! 		PrintCharacterArray(temp_array);
 	!! 		print (string) TEXT_STYLE_PARSER_SUFIX;
 	!! 		Utils.set_text_style(previous_style);
 	!! 		new_line;
-	<<Examine noun>>;
+	if (noun ofclass AdjacentRoom) <<Enter noun>>;
+	else <<Examine noun>>;
 ];
 
 !!------------------------------------------------------------------------------

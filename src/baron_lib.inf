@@ -612,13 +612,13 @@ CompassDirection d_obj "abajo" compass
 ];
 
 !!------------------------------------------------------------------------------
-!! Rutina para imprimir el nombre corto de un objeto. Además, crea un
-!! hipervínculo relacionado con el objeto y, si el objeto tiene el atributo
-!! 'remarkable' utiliza un estilo resaltado para imprimir el nombre.
+!! Rutina para imprimir el nombre corto de un objeto (Print Short Name). En
+!! conjunto con la rutina 'PRT__()' (Print Rich Text) puede crear además un
+!! hipervínculo asociado al objeto y utilizar un estilo de texto personalizado.
 !!
 !!	@returns {boolean} Verdadero
 !!	@override parserm.h
-!!	@version 2.0
+!!	@version 3.0
 !!------------------------------------------------------------------------------
 [ PSN__ obj;
 	if (obj == 0) { print (string) NOTHING__TX; rtrue; }
@@ -627,7 +627,93 @@ CompassDirection d_obj "abajo" compass
 		String:		print "<string ~", (string) obj, "~>"; rtrue;
 		nothing:	print "<illegal object number ", obj, ">"; rtrue;
 	}
-	return Utils.extended_print(obj, 0, -1);
+	if (obj == player) { print (string) YOURSELF__TX; rtrue; }
+	#Ifdef LanguagePrintShortName;
+	if (LanguagePrintShortName(obj)) rtrue;
+	#Endif; ! LanguagePrintShortName;
+	!! Se relega a la rutina 'short_name_indef()' del objeto las tareas de
+	!! creación del hipervínculo y de selección de estilo:
+	if (indef_mode && obj.&short_name_indef ~= 0
+		&& PrintOrRun(obj, short_name_indef, 1) ~= 0) {
+		return true;
+	}
+	!! Se relega a la rutina 'short_name()' del objeto las tareas de
+	!! creación del hipervínculo y de selección de estilo:
+	if (obj.&short_name ~= 0 && PrintOrRun(obj, short_name, 1) ~= 0) {
+		return true;
+	}
+	!! 'PRT__()' se encarga de imprimir el nombre del objeto, crear el
+	!! hipervínculo (si es oportuno) y seleccionar el estilo de texto adecuado:
+	PRT__(obj);
+	return true;
+];
+
+!!------------------------------------------------------------------------------
+!! Rutina para imprimir texto "rico" o formateado (Print Rich Text). Imprime
+!! una cadena de caracteres o el nombre de un objeto asociándole además un
+!! hipervínculo y seleccionando un estilo de texto adecuado.
+!!
+!!	@param {string|Object} rtxt - Cadena de caracteres u objeto a imprimir
+!!	@param {string} [alternative=0] - Permite especificar un texto alternativo
+!!		a imprimir en lugar de 'rtxt'. La rutina sigue utilizando 'rtxt', no
+!!		obstante, para determinar automáticamente el estilo de texto destacado
+!!		—cuando el parámetro 'style' es 0— y para asociar a él el hipervínculo
+!!	@param {integer} [type=0] - Código numérico forzando un tipo de objeto,
+!!		independientemente de la definición de 'rtxt'
+!!	@returns {boolean} Verdadero
+!!	@dependency baron_utils.inf
+!!	@dependency hyperlinks.h
+!!	@dependency textStyles.h
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+[ PRT__ rtxt alternative object_type
+	style_code previous_style hyperlinks_status;
+	!! Establece el tipo de objeto:
+	if (object_type == 0 && metaclass(rtxt) == Object) {
+		if (rtxt ofclass ChoiceSetItem) {
+			object_type = 4;
+		} else if (rtxt ofclass CompassDirection or AdjacentRoom) {
+			object_type = 3;
+		} else if (rtxt ofclass Item or Character) {
+			object_type = 2;
+		} else {
+			object_type = 1;
+		}
+	} else if (object_type == 0) {
+		object_type = 1;
+	}
+
+	!! Establece el estilo de texto destacado:
+	style_code = Utils.get_highlight_style(object_type);
+	previous_style = Utils.set_text_style(style_code);
+
+	!! Determina estado de los hipervínculos y crea uno si están activados:
+	hyperlinks_status = Utils.get_hyperlinks_status(object_type);
+	if (metaclass(alternative) == String) rtxt = alternative;
+	#Ifdef USE_HYPERLINKS;
+	if (hyperlinks_status) {
+		Hyperlink(rtxt);
+	} else {
+		if (metaclass(rtxt) == String) print (string) rtxt;
+		else print (object) rtxt;
+	}
+	#Ifnot;
+	#Ifdef USE_VORPLE;
+	if (hyperlinks_status) {
+		Utils.create_vorple_hyperlink(rtxt);
+	} else {
+		if (metaclass(rtxt) == String) print (string) rtxt;
+		else print (object) rtxt;
+	}
+	#Ifnot;
+	if (metaclass(rtxt) == String) print (string) rtxt;
+	else print (object) rtxt;
+	#Endif; ! USE_VORPLE;
+	#Endif; ! USE_HYPERLINKS;
+
+	!! Reestablece el estilo utilizado anteriormente y retorna:
+	Utils.set_text_style(previous_style);
+	return true;
 ];
 
 !!------------------------------------------------------------------------------

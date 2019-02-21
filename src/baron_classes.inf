@@ -79,112 +79,6 @@
 
 
 !!------------------------------------------------------------------------------
-!! Thing:AdjacentRoom
-!!------------------------------------------------------------------------------
-!! Representa un objeto dentro del modelo de mundo hacia el que el PC se puede
-!! desplazar.
-!!
-!!	@dependency arrays.h
-!!	@dependency textStyles.h
-!!	@version 2.0
-!!------------------------------------------------------------------------------
-Class	AdjacentRoom
- has	open scenery,
- with	description [;
-			return L__M(##Look, 7, self);
-		],
-		before [
-			previous_style obj;
-			DefaultAction:
-				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
-				print (string) TEXT_STYLE_PARSER_PREFIX;
-				print "ve ", (al_) self;
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(temp_array);
-				print (string) TEXT_STYLE_PARSER_SUFIX;
-				Utils.set_text_style(previous_style);
-				new_line;
-				<<Enter self>>;
-			Enter,
-			Go:
-				if (self.adjacent_room ~= 0) {
-					if (metaclass(self.adjacent_room) == Routine) {
-						obj = self.adjacent_room();
-					}
-					if (metaclass(self.adjacent_room) == Object) {
-						obj = self.adjacent_room;
-					}
-					PlayerTo(obj);
-				} else {
-					switch (Utils.get_grammatical_inflection()) {
-						FIRST_PERSON_PRESENT:
-							if (IsPluralNoun(player)) print "No podemos";
-							else print "No puedo";
-							print " llegar hasta ", (the) self, " desde aquí.";
-						SECOND_PERSON_PRESENT:
-							if (IsPluralNoun(player)) print "No podéis";
-							else print "No puedes";
-							print " llegar hasta ", (the) self, " desde aquí.";
-						THIRD_PERSON_PRESENT:
-							if (IsPluralNoun(player)) print "No pueden";
-							else print "No puede";
-							print " llegar hasta ", (the) self, " desde aquí.";
-						FIRST_PERSON_PAST:
-							if (IsPluralNoun(player)) print "No podíamos";
-							else print "No podía";
-							print " llegar hasta ", (the) self, " desde allí.";
-						SECOND_PERSON_PAST:
-							if (IsPluralNoun(player)) print "No podíais";
-							else print "No podías";
-							print " llegar hasta ", (the) self, " desde allí.";
-						THIRD_PERSON_PAST:
-							if (IsPluralNoun(player)) print "No podían";
-							else print "No podía";
-							print " llegar hasta ", (the) self, " desde allí.";
-						FIRST_PERSON_FUTURE:
-							if (IsPluralNoun(player)) print "No podremos";
-							else print "No podré";
-							print " llegar hasta ", (the) self, " desde allí.";
-						SECOND_PERSON_FUTURE:
-							if (IsPluralNoun(player)) print "No podréis";
-							else print "No podrás";
-							print " llegar hasta ", (the) self, " desde allí.";
-						THIRD_PERSON_FUTURE:
-							if (IsPluralNoun(player)) print "No podrán";
-							else print "No podrá";
-							print " llegar hasta ", (the) self, " desde allí.";
-					}
-					new_line;
-				}
-				return true;
-			Pull,
-			Push,
-			PushDir,
-			Take,
-			Touch,
-			Turn:
-				switch (Utils.get_grammatical_inflection()) {
-					FIRST_PERSON_PRESENT,
-					SECOND_PERSON_PRESENT,
-					THIRD_PERSON_PRESENT:
-						print "No tiene sentido hacer algo así.";
-					FIRST_PERSON_PAST,
-					SECOND_PERSON_PAST,
-					THIRD_PERSON_PAST:
-						print "No tenía sentido hacer algo así.";
-					FIRST_PERSON_FUTURE,
-					SECOND_PERSON_FUTURE,
-					THIRD_PERSON_FUTURE:
-						print "No tendrá sentido hacer algo así.";
-				}
-				new_line;
-				return true;
-
-		],
-		adjacent_room 0,
-;
-
-!!------------------------------------------------------------------------------
 !! Receptacle
 !!------------------------------------------------------------------------------
 !! 'Receptacle' define contenedores o soportes con límites de capacidad (en
@@ -344,7 +238,7 @@ Class	Receptacle
 !!------------------------------------------------------------------------------
 !! Representa un objeto localidad dentro del modelo de mundo.
 !!
-!!	@version 1.0
+!!	@version 1.1
 !!------------------------------------------------------------------------------
 Class	Room
  with	description [;
@@ -358,11 +252,6 @@ Class	Room
 		long_description "EN CONSTRUCCIÓN.",
 		!! Por defecto, la descripción corta es la misma descripción larga:
 		short_description [; return self.long_description(); ],
-		!! Permite que se inhiba el listado automático de objetos al imprimir
-		!! la descripción de la localidad. (XXX Para ello se debe modificar el
-		!! comportamiento de la acción ##Look en el archivo de mensajes de la
-		!! librería):
-		inhibit_object_list false,
 		!! Código de estado. Ideado como reemplazo a la propiedad 'general',
 		!! por añadir mayor versatilidad al utilizar enteros en lugar de un
 		!! valor booleano:
@@ -890,6 +779,80 @@ Class	Atrezzo
 				return true;
 		],
  has	scenery;
+
+!!------------------------------------------------------------------------------
+!! Thing:Atrezzo:AdjacentRoom
+!!------------------------------------------------------------------------------
+!! Representa un objeto dentro del modelo de mundo hacia el que el PC se puede
+!! desplazar.
+!!
+!!	@dependency arrays.h
+!!	@dependency textStyles.h
+!!	@version 2.0
+!!------------------------------------------------------------------------------
+Class	AdjacentRoom
+ class	Atrezzo
+ has	open,
+ with	description [;
+			return L__M(##Look, 7, self);
+		],
+		before [
+			obj;
+			Enter,
+			Go:
+				if (self.adjacent_room ~= 0) {
+					if (metaclass(self.adjacent_room) == Routine) {
+						obj = self.adjacent_room();
+					}
+					if (metaclass(self.adjacent_room) == Object) {
+						obj = self.adjacent_room;
+					}
+					PlayerTo(obj);
+				} else {
+					switch (Utils.get_grammatical_inflection()) {
+						FIRST_PERSON_PRESENT:
+							if (IsPluralNoun(player)) print "No podemos";
+							else print "No puedo";
+							print " llegar hasta ", (the) self, " desde aquí.";
+						SECOND_PERSON_PRESENT:
+							if (IsPluralNoun(player)) print "No podéis";
+							else print "No puedes";
+							print " llegar hasta ", (the) self, " desde aquí.";
+						THIRD_PERSON_PRESENT:
+							if (IsPluralNoun(player)) print "No pueden";
+							else print "No puede";
+							print " llegar hasta ", (the) self, " desde aquí.";
+						FIRST_PERSON_PAST:
+							if (IsPluralNoun(player)) print "No podíamos";
+							else print "No podía";
+							print " llegar hasta ", (the) self, " desde allí.";
+						SECOND_PERSON_PAST:
+							if (IsPluralNoun(player)) print "No podíais";
+							else print "No podías";
+							print " llegar hasta ", (the) self, " desde allí.";
+						THIRD_PERSON_PAST:
+							if (IsPluralNoun(player)) print "No podían";
+							else print "No podía";
+							print " llegar hasta ", (the) self, " desde allí.";
+						FIRST_PERSON_FUTURE:
+							if (IsPluralNoun(player)) print "No podremos";
+							else print "No podré";
+							print " llegar hasta ", (the) self, " desde allí.";
+						SECOND_PERSON_FUTURE:
+							if (IsPluralNoun(player)) print "No podréis";
+							else print "No podrás";
+							print " llegar hasta ", (the) self, " desde allí.";
+						THIRD_PERSON_FUTURE:
+							if (IsPluralNoun(player)) print "No podrán";
+							else print "No podrá";
+							print " llegar hasta ", (the) self, " desde allí.";
+					}
+					new_line;
+				}
+				return true;
+		],
+		adjacent_room 0,
+;
 
 !!------------------------------------------------------------------------------
 !! Thing:Character
