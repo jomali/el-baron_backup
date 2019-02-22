@@ -37,7 +37,7 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2004, Victor Gijsbers
-!!	Copyright (c) 2018, J. Francisco Martín
+!!	Copyright (c) 2019, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -53,6 +53,7 @@
 !!	<>	Thing:Atrezzo
 !!	<>	Thing:Character
 !!	<>	Thing:HeavyItem
+!!	<>	Thing:Immaterial
 !!	<>	Thing:Item
 !!	<>	Thing:Item:Clothes
 !!
@@ -641,6 +642,7 @@ Class	Thing
 !!------------------------------------------------------------------------------
 Class	Atrezzo
  class	Thing
+ has	scenery,
  with	before [
 			previous_style;
 			Attack,
@@ -778,7 +780,7 @@ Class	Atrezzo
 				new_line;
 				return true;
 		],
- has	scenery;
+;
 
 !!------------------------------------------------------------------------------
 !! Thing:Atrezzo:AdjacentRoom
@@ -897,6 +899,7 @@ Class	Character
 !!------------------------------------------------------------------------------
 Class	HeavyItem
  class	Thing
+ has	static,
  with	before [;
 			Pull,
 			Push,
@@ -919,7 +922,23 @@ Class	HeavyItem
 				} " demasiado pesad", (o) self, " para andar moviéndol",
 				(o) self, ".";
 		],
- has	static;
+;
+
+!!------------------------------------------------------------------------------
+!! Thing:Immaterial
+!!------------------------------------------------------------------------------
+!! Representa un objeto inmaterial (olores, ruidos, sensaciones) con el que no
+!! se puede interactuar de ningún modo por defecto.
+!!
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+Class	Immaterial
+ class	Thing
+ has	scenery,
+ with	before [;
+			"", (parser) "Eso no es necesario para continuar la historia.";
+		],
+;
 
 !!------------------------------------------------------------------------------
 !! Thing:Item

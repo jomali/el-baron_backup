@@ -479,13 +479,14 @@ Object	Utils "(Utilities)"
 		!!	@param {integer} object_type - Código numérico del tipo de objeto
 		!!		para el que se pretende conocer el estilo de texto resaltado
 		!!	@returns {integer} Código numérico del estilo de texto resaltado
-		!!		para los objetos de tipo 'object_type'. 0 por defecto
-		!!	@version 1.0
+		!!		para los objetos de tipo 'object_type'. -1 por defecto
+		!!	@version 1.1
 		!!----------------------------------------------------------------------
 		get_highlight_style [ object_type
 			result;
-			result = 0; ! (por defecto)
-			if ((object_type-1) < (self.#highlight_styles)/WORDSIZE) {
+			result = -1; ! (por defecto)
+			if (((object_type-1) >= 0)
+				&& ((object_type-1) < (self.#highlight_styles)/WORDSIZE)) {
 				result = self.&highlight_styles-->(object_type-1);
 			}
 			return result;
@@ -498,12 +499,13 @@ Object	Utils "(Utilities)"
 		!!		para el que se pretende conocer el estado de los hipervínculos
 		!!	@returns {boolean} Verdadero si los hipervínculos para los objetos
 		!!		de tipo 'object_type' están activados. Falso en caso contrario
-		!!	@version 1.0
+		!!	@version 1.1
 		!!----------------------------------------------------------------------
 		get_hyperlinks_status [ object_type
 			result;
 			result = false; ! (por defecto)
-			if ((object_type-1) < (self.#hyperlinks_status)/WORDSIZE) {
+			if (((object_type-1) >= 0)
+				&& ((object_type-1) < (self.#hyperlinks_status)/WORDSIZE)) {
 				result = self.&hyperlinks_status-->(object_type-1);
 			}
 			return result;
@@ -854,15 +856,23 @@ Object	Utils "(Utilities)"
 		!!		texto resaltado que se asigna al tipo de objeto 'object_type'
 		!!	@returns {integer} Código numérico del estilo de texto resaltado
 		!!		que se había estado utilizando previamente para los objetos del
-		!!		tipo 'object_type'
-		!!	@version 2.0
+		!!		tipo 'object_type'. -1 si 'object_type' no es un código válido
+		!!	@version 3.1
 		!!----------------------------------------------------------------------
 		set_highlight_style [ object_type text_style
 			default_text_style result status;
-			!! Determina el estado del tipo de objeto:
+			!! Inicializaciones del método:
 			switch (object_type) {
-				1:	default_text_style = DEFAULT_HIGHLIGHT_ST_1;
-				2:	default_text_style = DEFAULT_HIGHLIGHT_ST_2;
+				1:
+					default_text_style = DEFAULT_HIGHLIGHT_ST_1;
+				2:
+					default_text_style = DEFAULT_HIGHLIGHT_ST_2;
+				3:
+					default_text_style = DEFAULT_HIGHLIGHT_ST_3;
+				4:
+					default_text_style = DEFAULT_HIGHLIGHT_ST_4;
+				default:
+					return -1;
 			}
 			result = self.get_highlight_style(object_type);
 			status = self.get_hyperlinks_status(object_type);
