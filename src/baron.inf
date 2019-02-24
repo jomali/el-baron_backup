@@ -3,6 +3,7 @@
 !% -S
 !% -s
 !% +language_name=Spanish
+!% $MAX_PROP_TABLE_SIZE=100000
 !% $MAX_STATIC_DATA=25000
 !% $MAX_VERBSPACE=4800
 
@@ -91,6 +92,8 @@ Constant Story
 
 Constant Headline
 "Una historia interactiva. Escrita por Victor Gijsbers y publicada bajo la Licencia Pública General de GNU en su versión 3 (o cualquier versión posterior). La presente edición ha sido desarrollada por J. Francisco Martín.";
+
+Constant Scene 1;
 
 Constant Checking 0;
 Release 0;
@@ -484,8 +487,8 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 !!		'Initialise()') se hace la invocación 'InitGlkWindow(0)'. Aquí se
 !!		pueden efectuar cualesquiera inicializaciones de ventanas Glk (se debe
 !!		tener en cuenta, no obstante, que las ventanas de texto principal y de
-!!		estado pueden estar ya inicializadas ---por ejemplo si el usuario acaba
-!!		de utilizar la instrucción RESTART---). Este es un buen momento para
+!!		estado pueden estar ya inicializadas —por ejemplo si el usuario acaba
+!!		de utilizar la instrucción RESTART—). Este es un buen momento para
 !!		establecer 'gg_statuswin_size' a un valor distinto de 1. Retornar 0
 !!		para proceder con el resto de inicializaciones de ventanas por defecto
 !!		de la librería, o 1 si ya se han inicializado todas las ventanas
@@ -675,7 +678,7 @@ Include "vorple-screen-effects.h";
 !!------------------------------------------------------------------------------
 !!	<>	BeforeParsing()
 !!	<>	BeforeSettingTextStyle()
-!!	<>	GamePreRoutine()
+!!	<>	GamePostRoutine()
 !!	<>	Initialise()
 !!	<>	InScope()
 !!	<>	MyVorplePrompt()
@@ -894,18 +897,24 @@ Include "vorple-screen-effects.h";
 	#Endif; ! VERSION_DESKTOP;
 	#Endif; ! TARGET_GLULX;
 
-
 	!! Narrador en pasado y tercera persona
 	Utils.set_grammatical_inflection(SECOND_PERSON_PRESENT);
+
 	!! Establece el estilo del inventario:
 	!! inventory_style = ENGLISH_BIT + RECURSE_BIT + FULLINV_BIT;
+
 	!! Establece el PC (player character)
 	ChangePlayer(Baron);
 
 	!! Establece la localidad inicial del relato:
-	location = GrutaVestibulo;
+	switch (Scene) {
+		default:
+			location = GrutaVestibulo;
+	}
+
 	!! Lookmode largo:
 	lookmode = 2;
+
 	!! Se evita la impresión inicial del banner
 	return 2;
 ];
@@ -1421,6 +1430,17 @@ Verb	'conversa' 'platica'
 	" interesad", (o) noun, " en hablar ", (contigo) player, ".";
 ];
 
+!! FIXME
+[ CrossSub; ];
+[ DoofSub; ];
+[ InviteSub; ];
+[ KnuffelSub; ];
+[ FuckSub; ];
+[ HuilSub; ];
+[ KnockSub; ];
+[ PlaySub; ];
+[ SpreekSub; ];
+
 
 !!==============================================================================
 !!
@@ -1429,5 +1449,12 @@ Verb	'conversa' 'platica'
 !!------------------------------------------------------------------------------
 
 Include ">baron_classes.inf";
-Include ">baron_scene-one.inf";
 Include ">baron_utils.inf";
+
+Include ">baron_scene-one.inf";
+Include ">baron_scene-two.inf";
+Include ">baron_scene-three.inf";
+Include ">baron_scene-four.inf";
+Include ">baron_scene-five.inf";
+Include ">baron_scene-six.inf";
+Include ">baron_scene-seven.inf";

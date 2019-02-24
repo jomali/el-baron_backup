@@ -974,14 +974,16 @@ Object	Utils "(Utilities)"
 		!!		pronombre con la primera letra en mayúscula
 		!!	@returns {boolean} Falso si el objeto pasado como parámetro no es
 		!!		un objeto. Verdadero en caso contrario
-		!!	@version 2.0
+		!!	@version 2.1
 		!!----------------------------------------------------------------------
 		spanish_nominative_pronoun [ obj capitalized;
 			if (metaclass(obj) == Object) {
 				switch (GetGNAOfObject(obj)) {
 					0, 6:
-						if (capitalized) print "Él";
-						else print "él";
+						!! if (capitalized) print "Él";
+						!! else print "él";
+						if (capitalized) print "Ello";
+						else print "ello";
 					1, 7:
 						if (capitalized) print "Ella";
 						else print "ella";

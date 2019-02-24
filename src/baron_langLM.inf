@@ -126,6 +126,20 @@ Object	LibraryMessages
 
 !!	FullScore: ! TODO - Mensaje del parser
 
+	ListMiscellany:
+		!! Los siguientes mensajes se muestran como aclaraciones cuando se está
+		!! listando el inventario del usuario, o los objetos que hay en una
+		!! localidad. Junto a cada mensaje se comenta qué condiciones deben
+		!! darse en ese objeto para que se muestre ese mensaje aclaratorio.
+		switch (lm_n) {
+			8:	!! El objeto tiene 'light' y 'worn'
+				print " (alumbrando y puest", (o) lm_o;
+				return true;
+			10:	!! El objeto no tiene 'light' pero sí 'worn'
+				print " (puest", (o) lm_o;
+				return true;
+		}
+
 	LMode1:
 		!! La acción LMode1 se genera ante el comando BREVE. La librería
 		!! imprime la constante Story y a continuación este mensaje.
@@ -354,6 +368,7 @@ Object	LibraryMessages
 		!! El prompt aparece justo antes de pedir una nueva línea al usuario.
 		!! Puede definirse para que sea una frase, o se genere una frase
 		!! aleatoria en cada turno, por ejemplo.
+		Tutorial.hints();
 		#Ifdef USE_VORPLE;
 		if (VorpleAppendToLM(##Prompt, lm_n)) return true;
 		#Endif; ! USE_VORPLE;

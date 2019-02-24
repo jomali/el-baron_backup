@@ -1,0 +1,853 @@
+
+
+!!==============================================================================
+!!
+!!	EL BARÓN
+!!	Escena tercera
+!!
+!!==============================================================================
+!!
+!!	Archivo:		baron_scene-three.xinf
+!!	Autor(es):		Victor Gijsbers
+!!					J. Francisco Martín <jfm.lisaso@gmail.com>
+!!	Idioma:			ES (Español)
+!!	Sistema:		Inform-INFSP 6
+!!	Plataforma:		Máquina-Z/Glulx
+!!	Versión:		0.0
+!!	Fecha:			2019/02/XX
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	Este archivo forma parte de la ficción interactiva EL BARÓN.
+!!
+!!	EL BARÓN es software libre: usted puede redistribuirlo y/o
+!!	modificarlo bajo los términos de la Licencia Pública General
+!!	GNU publicada por la Fundación para el Software Libre, ya
+!!	sea la versión 3 de la Licencia, o (a su elección) cualquier
+!!	versión posterior.
+!!
+!!	EL BARÓN se distribuye con la esperanza de que sea útil,
+!!	pero SIN GARANTÍA ALGUNA; ni siquiera la garantía implícita
+!!	MERCANTIL o de APTITUD PARA UN PROPÓSITO DETERMINADO.
+!!	Consulte los detalles de la Licencia Pública General GNU
+!!	para más información.
+!!
+!!	Debería haber recibido una copia de la Licencia Pública
+!!	General GNU junto a EL BARÓN. En caso contrario, consulte
+!!	<http://www.gnu.org/licenses/>.
+!!
+!!	Copyright (c) 2004, Victor Gijsbers
+!!	Copyright (c) 2019, J. Francisco Martín
+!!
+!!------------------------------------------------------------------------------
+
+Object bosdeur
+  with found_in tuin,
+       door_dir e_to,
+       door_to bos_1,
+       react_before [;
+         Climb, Go, GoIn, Enter: if (noun == self || noun == e_obj || noun == bos_1) {
+	     !! if(TuinNaarBos() == true) return true;
+	   };
+
+       ],
+   has door scenery open;
+
+
+Object bos_1 "Walking through the forest"
+  with
+       description "You make your way through the dim and gloomy forest, hardly able to recognise the snow-covered path in this darkness. Howls penetrate the midnight air: wolves, nearby. Game is scarce in these harsh winter months, so the wolves are hungry, bold, and they can be a danger even to men. West goes back to the village, while the baron's castle lies farther east.",
+       e_to bos_2,
+       w_to "You want to go back to the village? It is a tempting prospect--tempting, but cowardly, and unworthy of your heroic self. No. Maartje must be freed.",
+       u_to "Climbing these large pines is hard even in the best of light and when they are not wet and slippery with snow. Right now, it is utterly impossible.",
+       d_to "You don't have time for such tomfoolery.",
+       cant_go "It's hard enough to follow the path; if you set off across the woods, you will get lost for sure.",
+       before [;
+         Listen: <<Examine bos_1_wolven>>;
+       ],
+   has light;
+
+   Object bomen "trees"
+    class Atrezzo,
+     with name 'tree' 'trees' 'coniferous' 'pine' 'pines' 'forest' 'wood' 'branch' 'branches' 'woods' 'giants' 'foliage',
+          found_in bos_1 bos_2 bos_3,
+          description "The giants of the forest tower high above you, their branches heavy under a load of snow. As you walk on, you occasionally glimpse the moon through the trees.",
+          before [;
+	    Climb, Enter, GoIn, Go:
+	      if (wolvin.status ~= 99) {
+	         "Climbing these large pines is hard even in the best of light and when they are not wet and slippery with snow. Right now, it is utterly impossible.";
+	      } else {
+	         "You are no squirrel!";
+	      }
+	  ],
+      has pluralname;
+
+   Object bos_1_wolven "wolves" bos_1
+    class Atrezzo,
+     with name 'wolves' 'pack' 'howls' 'howl' 'howling',
+          description "They are close. But it might not be you they hunt.",
+	  before [;
+	    Listen: <<Examine self>>;
+	    Attack: "Yes--we define ourselves through action. But the wolves are still too far away, hidden between the trees, invisible to your merely human eyes. You will be ready when and if they come for you.";
+	  ],
+      has pluralname animate;
+
+   Object bos_pad "path"
+    class Atrezzo,
+     with name 'path' 'road' 'snow',
+          found_in bos_1 bos_2 bos_3,
+          description "You slowly make your way along the path. It is hardly visible beneath the powdery layer of snow.",
+	  before [;
+	    Cross: "You cannot cross something you are standing on.";
+	  ],
+      has ;
+
+Object bos_2 "Walking through the forest"
+  with firsttime 0,
+       description [;
+            if (wolvin.status ~= 99) {
+	       print "The path here is narrow and winding, and you have to move forward with care and attention, lest you wander into the forest and lose your way completely. Bleak puddles lie on the snow wherever the moon manages to penetrate the foliage. Going eastwards will bring you to the baron's castle; in the opposite direction, your footprints lead back to the safety of the village.^";
+	    } else {
+	       print "The path here is narrow and winding, but you have no problem finding your way. Bleak puddles lie on the snow wherever the moon manages to penetrate the foliage. Going eastwards will bring you to the stone house of the hunter; in the opposite direction, the tracks of your prey lead to the noisy place where the humans live.^";
+	    }
+	    if(self.firsttime == 0) {
+	       StartDaemon(wolvin);
+	     };
+	    self.firsttime = 1;
+	    return true;
+         ],
+       e_to bos_3,
+       w_to bos_1,
+       d_to "You don't have time for such tomfoolery.",
+       u_to [;
+            if(action == ##go && noun == u_obj) {
+               if (wolvin.status ~= 99) {
+                 "Climbing these large pines is hard even in the best of light and when they are not wet and slippery with snow. Right now, it is utterly impossible.";
+		}
+	       if (wolvin.status == 99){
+	          "You are no squirrel!";
+		}
+	     }
+       ],
+       cant_go [; if (wolvin.status ~= 99) {"It's hard enough to follow the path; if you set off across the woods, you will get lost for sure.";}
+	          else "No. The house of stone lies due east.";
+	       ],
+       before [;
+         Go:
+	  if(noun == w_obj) {
+	    if(wolvin.status < 5) {
+	      print "Are you sure you want to flee from the she-wolf?^";
+	      if(YesOrNo()) {
+	        print "^You turn around and make a hasty escape, back to the village. Everywhere between the trees you see the slavering fangs and the red glowing eyes of the fiends of the forest as they pursue you, never more than a step behind you, never more than a heartbeat away from ripping you to pieces.^^
+		Suddenly, halfway back, shame overwhelms you. If you cannot even face a wolf, how will you ever be able to rescue Maartje from the clutch of the evil baron? Breathing heavily, you lean against a tree for a moment. No fiends pursue you--only the howling of wolves, no closer than when you first entered the woods.^^
+                Giving up is not an option. You must go back.^";
+		PlayerTo(bos_1);
+		StopDaemon(wolvin);
+		wolvin.status = 11;
+		remove wolvin; remove jongewolf;
+		return true;
+	      } else {
+	        "^It was only a momentary weakness, which you quickly overcome. You will not retreat. You will not back down. You will not be stopped.";
+	      };
+	    };
+	    if(wolvin.status == 99) {
+	      "The stone man-house lies at the other end of the man-path. That is where you must go.";
+	    };
+	  };
+
+	  if(noun == e_obj) {
+	    if(wolvin.status < 5) {
+	      print "Are you sure you want to try to walk past the ferocious she-wolf?^";
+	      if(YesOrNo()) {
+	        print "^Step by step you inch forward, keeping as close to the trees as possible. The wolf growls dangerously, her fangs bared and her eyes fixed on your throat.^^~Show no fear!~, you counsel yourself. ~Be brave! Those despicable creatures only attack those weaker than themselves.~";
+
+		Utils.press_any_key();
+
+		print "Your face a mask of dominance and control, you walk past the she-wolf. For a moment you wonder whether the sound of your heart--a madman locked in a kettle drum--will not give you away, but no, the she-wolf makes no move towards you. And thus you walk away, backwards at first, keeping her in sight, and then, when she is lost in the darkness, normally forward, but calmly and slowly, so as to give no grounds for pursuit.^^She watches you until you have vanished from sight. A small wolf--her child--joins her on the path, a plaintive whine in its throat. No food, mother? No, little one, no food. For she dares not pursue you.^";
+
+		PlayerTo(bos_3);
+		StopDaemon(wolvin);
+		wolvin.status = 12;
+		remove wolvin; remove jongewolf;
+		return true;
+	      } else {
+	        "^You stand still, too afraid to move.";
+	      };
+	    };
+	  };
+       ],
+   has light;
+
+
+   Object wolvin bos_2
+     with short_name [;
+            if(self has animate) {print "she-wolf"; return;}
+	    print "dead she-wolf"; return;
+          ],
+          description [;
+              if (self.status <5)
+	          "A large wolf, exceptionally so, but winter has clearly taken its toll on her: she is lean and scrawny, and her fur is dirty and dull.";
+
+              if (self.status > 4 && self.status ~= 99)
+	          "The she-wolf lies dead in the snow. You see agony in her frozen features, and despair, but also the shameful joy of that peace that is found by dropping all responsibility.";
+
+	      if (self.status == 99)
+	          "You fill strong, with the warm blood of the human flowing through your veins.";
+	       ],
+          name 'she-wolf' 'wolf' 'mother',
+          status 0,
+	  offered 0,
+	  daemon [;
+	    if(self.status == 0)
+	            print "^Suddenly, a dark shape jumps growling from the trees and onto the path, blocking your way. A she-wolf. She stares at you with fierce eyes that mirror the moon.^"; give self ~scenery;
+	    if(self.status == 1) {
+	            print "^The she-wolf reveals two rows of sharp teeth and takes a few small steps towards you. From the woods a young wolf skulks towards her. He is no bigger than a cat, and very lean.^";
+		    move jongewolf to bos_2;
+		    };
+	    if(self.status == 2)
+	            print "^Another two steps, and the she-wolf is within jumping distance of your throat. She growls--you hear ferocity tempered by fear.^";
+	    if(self.status == 3)
+	            print "^For one more moment, the she-wolf hesitates. Then the hungry young wolf whines piteously, and his mother finds courage. She readies herself for the leap.^";
+	    if(self.status == 4) {
+	            print "^Awe-struck and afraid, you only stand and stare. As a spring suddenly released, the she-wolf jumps forward, knocking you to the ground. Before you can so much as cry out she is on top of you, her sharp teeth searching for your throat, finding it, sinking into it, and with a quickly rising sense of horror you feel how your windpipe is torn to pieces, how warm, sweet blood flows over your tongue and out of your mouth, how you gasp for breath like a fish out of water, how the teeth of the starved young wolf tear open your belly, how it feasts on your steaming entrails while its mother laps up the blood coming from your mouth and throat, and how, finally, everything turns black...";
+
+		    Utils.press_any_key();
+
+		    !! BecomeWolf();
+
+		    };
+	    if(self.status < 4) {self.status++;}
+	  ],
+	  before [;
+	    Attack:
+	       if (self.status < 5 && parent(axe) == player)
+	         {
+		   print "You grip the axe so tightly that your knuckles turn white. The wolf growls in warning, but you hear panic in her voice. She won't be able to withstand you. No. You smile a hard, cold smile and take a step forwards. Will you kill to protect Maartje? You most assuredly will.^^The she-wolf takes half a step backwards, but you press on. She knows that she must fight, that there is no way back, and thus she leaps at you--but before her teeth can find your throat the axe smashes her ribcage. With a soft whine she falls to the ground.^";
+
+		   StopDaemon(wolvin);
+
+		   if(self.status == 1) {
+		     print "^Between the trees, very near, a heart-rending cry penetrates the night. A young wolf, lean with hunger, stares at his mother's corpse.^";
+		     move jongewolf to bos_2;
+		   }
+
+		   if(self.status > 1) {
+		     print "^The young wolf emits a heart-rending cry, then jumps away between the trees. From a safe distance it stands staring at his mother's corpse, whining pitifully.^";
+		    }
+
+		   wolvin.status = 5; give wolvin ~scenery; give wolvin ~animate;
+		   return true;
+
+		};
+
+	       if (self.status < 5 && parent(axe) ~= player)
+	         {
+		   print "With clenched fists, you carefully take a step towards the she-wolf. The wolf growls in warning, but with an undertone of panic. You take a step forwards. She takes half a step backwards; every hair in her neck stands upwards. You take another step forwards, and another one, and she leaps at you--but before her teeth can sink into your throat your fist connects with the side of her head, temporarily averting her attack. You fall over backwards, her weight on top of you, but with a nimble roll you succeed in freeing yourself. Again she tries to reach your throat, but your hands have already found hers and with your greater weight you pin her to the ground. You squeeze, and squeeze, and hit her head against the ground, while she desperately attempts to get loose. Her saliva streams across your hands; her blood starts colouring the snow; her movements become weaker by the moment. The struggle lasts for minutes, but finally she lies still, dead. Fatigued and with your heart pounding, you arise.^";
+
+		   StopDaemon(wolvin);
+
+		   if(self.status == 1) {
+		     print "^Between the trees, very near, a heart-rending cry penetrates the night. A small, young wolf stares from a safe distance at his mother's corpse.^";
+		     move jongewolf to bos_2;
+		   }
+
+		   if(self.status > 1) {
+		     print "^The young wolf emits a heart-rending cry, then runs away from you to hide between the trees. There it stands, staring at its mother's corpse and whining pitifully.^";
+		    }
+
+                   wolvin.status = 6; give wolvin ~scenery; give wolvin ~animate;
+		   return true;
+		 };
+
+	     Touch:
+	         if (self.status < 5) {
+		    print "You swallow nervously, but then reach out to the wolf, speaking soft and reassuring words.^^
+		    ~Don't worry, wolf. Come here. Yes. Don't worry. We can be friends, can't we? Sweet wolf.~^^
+		    The she-wolf approaches, hesitant at first but quickly persuaded of your good intentions. She smells your hand, then licks it. You lower yourself to your knees, vulnerable, and softly stroke the wolf's head. She licks your face. Then, laughing, you put your arms around her neck in a joyful embrace.^^";
+
+		    !! wolf_touch.select(99);
+
+		    if (self.status == 9) {
+		       print "Her muscles relax; she growls no more. For several long minutes the two of you sit in that position: you embracing her, she resting her head on your shoulder, secure in each other's affection and trust.";
+		       if (parent(jongewolf) == bos_2) print " Shyly, the young wolf too snuggles up to you, and you scratch him behind his ears.";
+		       print "^^You would love to stay here, to bask in the innocence and the purity of this love, untainted by sins and deception--but you cannot. Maartje is waiting for you. Thus, with a heavy heart, you let go of the she-wolf, and rise.^^
+		       ~I am sorry, but I have to go now. My daughter has been captured by an evil man, so I must rescue her.~^^
+		       The ";
+		       if (parent(jongewolf) == bos_2){
+		          print "two wolves nuzzle up to you once more, expressing--you are certain--their hope that you will find your lost cub. Then they calmly walk back into the forest, off to find other prey.^";
+		        }else{
+			  print "wolf nuzzles up to you once more, expressing--you are certain--her hope that you will find your lost cub. Then she calmly walks back into the forest, where a lean young wolf joins here. Together, they take off to find other prey.^";
+		       };
+
+		       StopDaemon(wolvin);
+
+		       remove wolvin; remove jongewolf;
+		     };
+
+		    if (self.status == 10) {
+		       if (parent(jongewolf) == bos_2){
+		          print "When he sees what you have done, the young wolf emits a heart-rending cry. Ferocious hatred burns in his eyes, hatred for you, for the betrayer. A mad wish for revenge fights against his fear, and, for one moment, seems to be victorious as the cub prepares for a leap--but then reason returns and he slinks away to the safety of the woods. His howls of deep sorrow resound through the night.^";
+		        }else{
+			  print "You suddenly hear a heart-rending cry. Between the trees stands a small young wolf, lean and dirty looking at his mother's corpse. Ferocious hatred burns in his eyes, hatred for you, for the betrayer. A mad wish for revenge fights against his fear, and, for one moment, seems to be victorious as the cub prepares for a leap--but then reason returns and he slinks away to the safety of the woods. His howls of deep sorrow resound through the night.^";
+		       };
+
+		       StopDaemon(wolvin);
+
+		       remove jongewolf;
+
+		     };
+
+		    return true;
+		 };
+
+	      JumpOver:
+	         if(self.status < 5) {
+
+		    print "This plan is madness; but then again, so is the whole undertaking. You take a run up until you are only a few steps away from the she-wolf--who recoils from your sudden approach--and then you jump forward, jump upward, expecting any moment to feel her sharp teeth tear into you from beneath...";
+
+		    Utils.press_any_key();
+
+		    print "...but no. You land on her far side, face-first in the snow, but immediately recover your footing and start running. Behind you angry howls resound through the dark forest, and you hear the sound of soft paws running, but you don't look back--your entire being is focussed on what is in front of you, on how you can get there as quickly as possible.";
+
+		    Utils.press_any_key();
+
+		    print "How long do you sustain your sprint? Minutes? Hours? You have no idea--but when you turn around, exhausted and breathing heavily, the wolf is nowhere to be seen. You are safe, for now.^";
+
+		    PlayerTo(bos_3);
+		    StopDaemon(wolvin);
+		    wolvin.status = 13;
+		    remove wolvin; remove jongewolf;
+		    return true;
+
+		 }
+
+	      Spreek:
+	          if (self.status < 5) {
+		    !! wolf_spraak.select(1);
+		    return true;
+		  }
+	  ],
+	  orders [;
+               Eat: if(self.status < 5) {
+	              print "You undo the top buttons of your coat and lay yourself down in the snow. A moment of contemplation; a moment to realise what you are doing. Then you offer your bare throat to the she-wolf.^^
+                      Suspicious, perhaps fearing a trap, she slowly walks towards you; but her hunger is greater than her fear. Sharp teeth sink into your throat and you feel, calmly and as if from a distance, how your windpipe is torn to pieces, how warm, sweet blood flows over your tongue and out og your mouth, how life and light quickly ebb away and everything turns black.";
+
+		      Utils.press_any_key();
+
+		      !! BecomeWolf();
+		      !! self.offered = 1;
+
+		      return true;
+	            };
+
+	       Unlock, Lock, SwitchOn, SwitchOff, Open, Close, Disrobe, Wear, Wave, ThrowAt, Tie, Fill, Swing, Rub, Squeeze:
+	                	    if(self.status == 99){
+	                              "That is impossible without hands.";
+	    	                    };
+	       Take:                if(self.status == 99){
+	                              "You prefer having your mouth free. You might need it.";
+	    	                    };
+	  ],
+	  react_before [;
+	       Drop, Give, ThrowAt:
+	        if (wolvin.status < 5 && second ~= jongewolf) {
+		  if (noun == dagboek && parent(dagboek) == player) {
+
+		      remove dagboek;
+		      remove wolvin;
+		      remove jongewolf;
+
+		      print "You take Maartje's diary and throw it to the wolf, hoping to distract her. It lands on the ground, open, the black pages upwards. Immediately and with terrifying savagery, the she-wolf jumps on the diary and starts tearing out the pages. ";
+
+		      if(wolvin.status == 1) {
+		         print "From the brushwood a young and very lean wolf regards its mother's frenzy.^^When she has torn all the pages from the diary, she collects them in her mouth and walks back into the woods. Her eyes do not leave you for a moment. The, when she reached her young, the two of them bound away with astounding speed.^";
+		       } else {
+		         print "The young wolf joins his mother and gathers the pages she has torn out. In a few seconds their work is done: with their bounty in their mouths, the wolves turn around and bound away into the wood.^";
+		       };
+
+		      StopDaemon(wolvin);
+
+		      move kaft to bos_2;
+		      print "^All that remains, wet from the snow, is the diary's cover.^";
+
+		      wolvin.status = 7;
+		      return true;
+		    };
+
+
+	          if (noun == beer && parent(beer) == player) {
+
+		      remove beer;
+		      remove wolvin;
+		      remove jongewolf;
+
+		      print
+		        "You take Brown and consider offering him to the wolf. His button eyes implore you not to.^^
+			~Sorry Brown.~ You throw him to the she-wolf, hoping to distract her. Before the toy bear so much as reaches the ground, she jumps towards it and catches it in her mouth. ";
+
+		      if(wolvin.status == 1) {
+		         print "From between the trees a small, very lean wolf steps onto the path and walks up to his mother and her bounty. He pulls at Brown's head, and after a few attempts pulls it from the bear's body with a ripping sound. Then mother and child, each carrying their part of Maartje's loyal friend, disappear into the woods.^";
+		       } else {
+		         print "The young wolf walks up to his mother and her bounty. He pulls at Brown's head, and after a few attempts pulls it from the bear's body with a ripping sound. Then mother and child, each carrying their part of Maartje's loyal friend, disappear into the woods.^";
+		       };
+
+		      StopDaemon(wolvin);
+
+		      wolvin.status = 8;
+		      return true;
+		    };
+		   };
+
+
+	        Take: if(self.status < 5) "The she-wolf won't take kindly to you trying to pick her up.";
+		      if(self hasnt animate) "You don't need another skeleton in your closet.";
+	  ],
+	  life [;
+	     Kiss: if (self.status < 5) {<<Touch self>>;};
+	     Show: if (self.status < 4) {
+	              if(noun == beer) "Saliva starts dripping from the she-wolf's mouth when she sets eyes on the tender toy bear.";
+		      if(noun == dagboek) "The she-wolf eyes the diary hungrily.";
+
+		   }
+	  ],
+      has scenery female animate;
+
+   Object jongewolf "young wolf"
+     with pname '.p' 'young' 'wolf' '.p' 'young' '.p' 'child' '.p' 'son',
+          short_name [;
+            if(self has animate && wolvin.status ~= 99) {print "young wolf"; return;}
+	    if(self has animate && wolvin.status == 99) {print "your young"; return;}
+	    print "dead young wolf"; return;
+          ],
+          description
+               "Like its mother, the young wolf has a dark grey pelt, now dirty and lustreless. He is so lean that you could easily count his ribs if there were better light. If his mother doesn't get him something to eat soon, he will not survive the winter.",
+	  before [;
+	    Take: if(wolvin.status == 5 || wolvin.status == 6) {
+	       "The young wolf shrinks back at your approach.";
+	    } else if (wolvin.status < 5) {
+	       "You'll have to deal with the mother before you can try to pick up the young wolf.";
+	    } else if (wolvin.status == 99) {
+	       "No matter how strongly it goes against your instincts, you know that it is safer for you to leave your young here than to take him with you to the man-house.";
+	    };
+
+	    Touch: if(wolvin.status == 5 || wolvin.status == 6) {
+	       "The young wolf shrinks back at your approach.";
+	    } else if (wolvin.status < 5) {
+	       "You'll have to deal with the mother before you can try to touch the young wolf.";
+	    } else if (wolvin.status == 99) {
+	       "You lick your young and playfully bite him in the scruff of his neck. He growls contentedly, and looks at you with large trusting eyes. Then he happily starts devouring your prey again.";
+	    };
+
+	    Push, Pull: if(wolvin.status == 5 || wolvin.status == 6) {
+	       "The young wolf shrinks back at your approach.";
+	    } else if (wolvin.status < 5) {
+	       "The she-wolf certainly won't let you touch her child.";
+	    } else if (wolvin.status == 99) {
+	       "Why would you want to push or pull your child?";
+	    };
+
+	    Attack: if(wolvin.status == 5 || wolvin.status == 6) {
+	       !! attack_wolfje.select(1);
+	       return true;
+	    } else if (wolvin.status < 5) {
+	       "You'll have to deal with the mother first.";
+	    } else if (wolvin.status == 99) {
+	       "You certainly do not wish attack your own child.";
+	    };
+
+	    Spreek: if(wolvin.status == 5 || wolvin.status == 6) {
+	       !! spreek_wolfje.select(1);
+	       return true;
+	    } else if (wolvin.status < 5) {
+	       "You'll have to deal with the mother first.";
+	    } else if (wolvin.status == 99) {
+	       "You lovingly growl at your child. He growls back, contentedly.";
+	    };
+	  ],
+	  react_before [;
+	    ThrowAt, Give: if (wolvin.status < 5) {
+	       if(noun == dagboek && second == self) {<<throwat dagboek wolvin>>;}
+	       if(noun == beer && second == self) {<<throwat beer wolvin>>;}
+	       return false;
+	    }
+	  ],
+	  life [;
+	    Kiss: if(wolvin.status == 5 || wolvin.status == 6) {
+	       "The young wolf shrinks back at your approach.";
+	    } else if (wolvin.status < 5) {
+	       "You'll have to deal with the mother first.";
+	    } else if (wolvin.status == 99) {
+	       "Where did you pick up those man-manners?.";
+	    };
+	  ],
+      has animate male;
+
+   Object dode_ik "half-devoured corpse"
+     with name 'dead' 'body' 'man' 'human' 'corpse' 'me' 'half-devoured' 'prey',
+          description
+              "A half-devoured human corpse lies on the ground. His blood reddens the snow.",
+      has ;
+
+   Object kaft "cover of Maartje's diary"
+     with name 'cover' 'diary',
+          description "A cover, thick cardboard enveloped by fake red leather, is all that remains of Maartje's diary.",
+	  before [;
+	    Burn: "The fake leather doesn't burn.";
+	  ],
+      has ;
+
+
+
+
+
+
+
+Object bos_3 "Still on a path in the forest"
+  with description
+             [;
+	       if (wolvin.status ~= 99) {
+	          "From this part of the winding path you can see the baron's castle rising in the east, three leaning towers silhouetted against the starry sky. A trail of footprints--yours--indicates the path back west to the village. You hear nothing; so close to the baron's demesne, even the wolves are silent.";
+	       } else {
+	          "From this part of the winding path you can see the stone house of the evil human rising in the east, three leaning towers silhouetted against the starry sky. A trail of paw prints--yours--indicates the path back west to the forest. It is silent here; not even your pack dares to come this close to the baron's demesne.";
+	       }
+	     ],
+       e_to ophaalbrug,
+       w_to bos_2,
+       d_to "You don't have time for such tomfoolery.",
+       cant_go
+               [; if (wolvin.status ~= 99) {"It's hard enough to follow the path; if you set off across the woods, you will get lost for sure.";}
+	          else "No. The house of stone lies due east.";
+	       ],
+       before [;
+         Go: if(noun == w_obj) {
+	        if(wolvin.status == 12) {
+		   "Perhaps the she-wolf won't let you go as easily this time--better not to return there until you absolutely have to.";
+		 };
+	        if(wolvin.status == 13) {
+		   "After your narrow escape, it would be foolish to go back to the dangerous wolf.";
+		 };
+		if(wolvin.status == 15) {
+		   "Who knows how long the she-wolf will remain calm? You decide to be safe rather than sorry, and not to return until you absolutely have to.";
+		 };
+		if(wolvin.status == 25 || wolvin.status == 26) {
+		   "It is better to let the young wolf eat in peace. He has suffered enough.";
+		 };
+
+	     }
+	  Listen: "It is unnaturally silent here.";
+       ],
+   has light;
+
+
+   Object kasteel_in_bos "castle" bos_3
+    class Atrezzo,
+     with name 'castle' 'keep' 'house' 'stone' 'tower' 'towers' 'demesne',
+          description [;
+	    if (wolvin.status == 99) {
+	      "The stone house is as big as a hill. You have never been inside, so you do not know what dangers lurk within it.";
+	     }
+	    else
+	      "The baron's castle is of a curious architecture: it has three large towers, of which the smaller two to the left and the right lean outwards. The middle tower, both thicker and higher than the others, always appears to lean towards you, no matter where you are. The castle is dark; you see no lights burning there.";
+	   ],
+      has ;
+
+
+   Object afdrukken "footprints" bos_3
+    class Atrezzo,
+     with name 'pawprints' 'footprints' 'prints' 'paw' 'foot' 'trail' 'tracks' 'footsteps' 'steps',
+          description "They are your own.",
+      has ;
+
+
+
+
+
+
+
+Object wolf_touch
+ class Character,
+  with quip [a b;
+             switch (a) {
+               993: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       994: return self.qlist(b, 2,
+                                    1,
+                                    2);
+
+               11: "Calm the she-wolf completely.";
+               12: print "^~It's all right, dear wolf, just relax. Neither of us wants to fight, do we? We can be friends.~, you whisper in her ear.^^";
+	           wolvin.status = 9; return true;
+               13:  self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+
+               21: "Suddenly break her neck.";
+               22:
+	           print "^~It's all right, dear wolf, just relax,~ you whisper in her ear. Then, without warning, you apply all the force you can muster and break her neck with a sharp jerk. She emits a soft gurgling howl, but then lies still and limp in your arms.^^";
+		   wolvin.status = 10;  give wolvin ~scenery; give wolvin ~animate; return true;
+
+               23:  self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+
+	     }
+             rfalse;
+
+       ],
+   has concealed;
+
+
+Object wolf_spraak
+ class Character,
+  with quip [a b;
+             switch (a) {
+               13: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       14: return self.qlist(b, 3,
+                                    2,
+                                    3,
+				    4);
+
+
+               21: "Growl angrily and threateningly.";
+               22:
+	           print "^The she-wolf raises every hair in her neck, and growls back fiercely. Her muscles are tensed, and she is ready to leap at you if you make a wrong move.^^";
+               23: self.killz = true;
+                   self.killq = true;
+	       24: return self.qlist(b, 3,
+	                           5,
+				   6,
+				   7);
+
+
+               31: "Growl softly and calmly.";
+               32:
+	           print "^For a moment the she-wolf seems surprised that she can communicate with you. Then her muscles relax--she understand that you mean her no harm.^^";
+               33: self.killz = true;
+                   self.killq = true;
+	       34: return self.qlist(b, 3,
+	                           8,
+				   9,
+				   4);
+
+
+               41: "Howl, sorrowfully, to the moon.";
+               42:
+	           print "^You lift your head and a howl bursts forth that sounds exactly like the lament of a wolf. You howl--and put your soul in it. You never knew that so much pain and so much sorrow were hidden in your heart; but now the tones of your grief sound through the night, crystal clear and each distinct. After a moment of astonished silence, the she-wolf follows your example, and together you howl a heart-breaking duet.";
+		   Utils.press_any_key();
+		   print "After an eternity, you fall silent. The she-wolf regards you for a moment, then nods her head a single time, and disappears into the snow-covered woods.";
+		   if(wolvin.status>1) print " Her young follows her.";
+		   print "^";
+		   StopDaemon(wolvin);
+		   wolvin.status = 14;
+		   remove wolvin; remove jongewolf;
+		   return true;
+               43: self.killz = true;
+                   self.killq = true;
+
+               51: "Attack her.";
+               52: <<attack wolvin>>;
+               53: self.killz = true;
+                   self.killq = true;
+
+               61: "Growl again, fiercely.";
+               62: if(wolvin.status == 1) {
+	               print "^The she-wolf opens her mouth, revealing two rows of sharp teeth. From the woods a second shape slinks towards her: a young wolf, very lean.";
+		       Utils.press_any_key();
+	           }
+	           wolvin.status = 4; return true;
+               63: self.killz = true;
+                   self.killq = true;
+
+               71: "Offer her your throat.";
+               72: action = ##Eat;
+	           actor = wolvin;
+                   noun = player;
+                   return wolvin.orders();
+               73: self.killz = true;
+                   self.killq = true;
+
+               81: "Walk past her.";
+               82:
+	           print "Now that she is calm, you can just walk past the wolf. She looks at you as you go away, but shows no intention of following you.";
+		   Utils.press_any_key();
+		   print "When you can no longer see her in the darkness, her lonely howling breaks the silence of the night.^^
+		   But you walk on, in the direction of the baron's castle.^";
+		   PlayerTo(bos_3);
+		   StopDaemon(wolvin);
+		   wolvin.status = 15;
+		   remove wolvin; remove jongewolf;
+		   return true;
+               83: self.killz = true;
+                   self.killq = true;
+
+               91: "Stroke her.";
+               92: <<touch wolvin>>;
+               93: self.killz = true;
+                   self.killq = true;
+
+
+	     }
+             rfalse;
+
+       ],
+   has concealed;
+
+
+Object attack_wolfje
+ class Character,
+  with quip [a b;
+             switch (a) {
+               13: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       14: return self.qlist(b, 3,
+                                   2,
+                                   3,
+				   4);
+
+               21: "Kill him, because a world without wolves is a better place.";
+               22: if (parent(axe) == player) {
+	             print "You grin and run at the young wolf. Before he can react you slice his body in two with a single blow of your axe. One wolf less. Blood spurts in thick streams across the ground, while his warm entrails slowly sink into the melting snow.^";
+	           } else {
+		     print "You grin, and with a leap you jump right on top of the little wolf. Compared to his mother he is easy prey: with your strong arms you break his spine without much effort. The small body lies still in the snow. One wolf less.^";
+		   }
+
+	           give jongewolf ~animate; give jongewolf ~male; return true;
+               23:  self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+
+               31: "Kill him, to spare him the slow suffering of starvation.";
+               32:
+	           print "~Come here, little wolf,~ you say softly while you sink to your knees. With sweet words and calming gestures you are able to approach the small animal, which is still in shock because of his mother's death.";
+
+		   Utils.press_any_key();
+
+		   print "~I am very sorry, small one, but this is for the best,~ you whisper. With a sudden move you grab his head and break his little neck. The small body goes limp immediately; a whimper escapes from its mouth--but then he is silent and the light in his eyes goes out.^^
+		   Tears roll down your cheeks.^";
+
+	           give jongewolf ~animate; give jongewolf ~male; return true;
+               33:  self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+
+               41: "Scare him away.";
+               42: if (parent(axe) == player) {
+	             print "Screaming loudly and waving your axe, you come at the little animal, which runs away as fast as it can. Seconds later it disappears between the trees.^";
+	           } else {
+		     print "Screaming loudly and waving your arms, you come at the little animal, which runs away as fast as it can. Seconds later it disappears between the trees.^";
+		   }
+
+		   remove jongewolf; return true;
+               43:  self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+
+	     }
+             rfalse;
+
+       ],
+   has concealed;
+
+
+Object spreek_wolfje
+ class Character,
+  with quip [a b;
+             switch (a) {
+               13: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       14: return self.qlist(b, 3,
+                                   2,
+                                   3,
+				   4);
+
+               21: "~Go away, dumb beast! Shoo!~";
+               22:
+	           print "Screaming loudly and waving your arms, you come at the little animal, which runs away as fast as it can. Seconds later it disappears between the trees.^";
+
+		   remove jongewolf; return true;
+
+               23:  self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+
+               31: "~I... I... I am sorry that I killed your mother.~";
+               32:
+	           print "The young wolf looks at you, sad and uncomprehending.^^";
+
+               33:  self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       34: return self.qlist(b, 4,
+                                   5,
+                                   6,
+				   7,
+				   4);
+
+
+               41: "Howl a lament for his lost mother.";
+               42:
+	           print "^You lift your head and a howl bursts forth that sounds exactly like the lament of a wolf. You howl--and put your soul in it. You never knew that so much pain and so much sorrow were hidden in your heart; but now the tones of your grief sound through the night, crystal clear and each distinct. After a moment of astonished silence, the young wolf follows your example, and together you lament his mother's death.";
+		   Utils.press_any_key();
+		   print "After an eternity you fall silent. The little wolf looks at you--in his eyes only sorrow. Once more he glances at the lifeless body of his mother, then he turns around and disappears into the snow-covered forest.^";
+
+		   remove jongewolf; return true;
+
+               43:  self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+
+               51:
+	           "~You can't survive alone, little one. It is better if I spare you the slow death of starvation.~";
+               52:
+	            print "~Come here, little wolf,~ you say softly while you sink to your knees. With sweet words and calming gestures you are able to approach the small animal, which is still in shock because of his mother's death.";
+
+		   Utils.press_any_key();
+
+		   print "~I am very sorry, small one, but this is for the best,~ you whisper. With a sudden move you grab his head and break his little neck. The small body goes limp immediately; a whimper escapes from its mouth--but then he is silent and the light in his eyes goes out.^^
+		   Tears roll down your cheeks.^";
+
+	           give jongewolf ~animate; give jongewolf ~male; return true;
+
+               53:  self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+
+               61: "~Everything will turn out all right. You will overcome this loss and learn to cope for yourself.~";
+               62:
+	           print "The eyes of the young wolf dwell for a while on the soulless corpse of his mother. He lifts his little head an howls once again, a sharp note of pain and desperation. Then he turns away and disappears into the vastness of the forest, alone.^";
+
+		   remove jongewolf; return true;
+
+               63:  self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+
+               71:
+	            "~In the future you must go your own way, but now I can try to help you. Let your mother do you a last favour: no matter how grisly it is, you must eat her body. You must, in order to survive.~";
+               72:
+	           print "The small wolf looks at you with comprehending eyes, but doesn't dare to approach as long as you stand next to the body. Calmly you walk away, towards the baron's castle. When you have put enough distance between yourself and his mother's corpse, the young wolf leaves the trees and starts eating it--his revulsion quickly turns to enthusiasm.^^
+
+		   Fascinated, and with a mixture of horror and pity, you observe the scene. But you soon walk on--there is still your daughter to free.^";
+
+		   wolvin.status = wolvin.status + 20;
+		   remove jongewolf;
+		   PlayerTo(bos_3);
+		   return true;
+
+               73:  self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	     }
+             rfalse;
+
+       ],
+   has concealed;

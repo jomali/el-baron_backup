@@ -45,7 +45,6 @@
 !!
 !!	1) Atributos adicionales
 !!		<>	described
-!!		<>	remarkable
 !!
 !!	2)	Redefiniciones sobre la librería Inform
 !!		<>	Banner()
@@ -79,11 +78,6 @@
 !!------------------------------------------------------------------------------
 Attribute described;
 
-!!------------------------------------------------------------------------------
-!! Permite marcar un objeto como destacado.
-!!------------------------------------------------------------------------------
-Attribute remarkable;
-
 
 !!==============================================================================
 !!
@@ -96,13 +90,22 @@ Attribute remarkable;
 !! castellano.
 !!
 !!	@override verblibm.h
-!!	@version 2.1
+!!	@version 2.2
 !!------------------------------------------------------------------------------
 [ Banner
 	previous_style;
 	if (Story ~= 0) {
 		previous_style = Utils.set_text_style(TEXT_STYLE_HEADER);
 		print (string) Story;
+		switch (Scene) {
+			1: print " — Escena uno";
+			2: print " — Escena dos";
+			3: print " — Escena tres";
+			4: print " — Escena cuatro";
+			5: print " — Escena cinco";
+			6: print " — Escena seis";
+			7: print " — Escena siete";
+		}
 		Utils.set_text_style(previous_style);
 		new_line;
 	}

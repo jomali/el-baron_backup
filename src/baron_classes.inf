@@ -43,19 +43,19 @@
 !!
 !!	TABLA DE CONTENIDOS
 !!
-!!	<>	AdjacentRoom
 !!	<>	Receptacle
-!!	<>	Room
-!!	<>	Room:Indoors
-!!	<>	Room:Outdoors
 !!	<>	SmartEnterable
 !!	<>	Thing
 !!	<>	Thing:Atrezzo
+!!	<>	Thing:Atrezzo:AdjacentRoom
+!!	<>	Thing:Atrezzo:Immaterial
+!!	<>	Thing:Atrezzo:Room
+!!	<>	Thing:Atrezzo:Room:Indoors
+!!	<>	Thing:Atrezzo:Room:Outdoors
 !!	<>	Thing:Character
-!!	<>	Thing:HeavyItem
-!!	<>	Thing:Immaterial
 !!	<>	Thing:Item
 !!	<>	Thing:Item:Clothes
+!!	<>	Thing:Item:HeavyItem
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -232,92 +232,6 @@ Class	Receptacle
 						" soportar tanto peso.";
 				}
 		],
-;
-
-!!------------------------------------------------------------------------------
-!! Room
-!!------------------------------------------------------------------------------
-!! Representa un objeto localidad dentro del modelo de mundo.
-!!
-!!	@version 1.1
-!!------------------------------------------------------------------------------
-Class	Room
- with	description [;
-			if (action == ##Look || self hasnt visited) {
-				self.long_description();
-			} else self.short_description();
-			!! Espacio para elementos comunes a las dos descripciones.
-			new_line;
-			return true;
-		],
-		long_description "EN CONSTRUCCIÓN.",
-		!! Por defecto, la descripción corta es la misma descripción larga:
-		short_description [; return self.long_description(); ],
-		!! Código de estado. Ideado como reemplazo a la propiedad 'general',
-		!! por añadir mayor versatilidad al utilizar enteros en lugar de un
-		!! valor booleano:
-		state 0,
-		!! Permite listar las salidas visibles:
-		exits 0,
- has	light;
-
-!!------------------------------------------------------------------------------
-!! Room:Indoors
-!!------------------------------------------------------------------------------
-!!	@version 1.0
-!!------------------------------------------------------------------------------
-Class	Indoors
- class	Room
- with	n_to [;
-			if (~~Utils.is_compass_enabled()) return self.no_compass();
-			return 0;
-		],
-		s_to [;
-   			if (~~Utils.is_compass_enabled()) return self.no_compass();
-   			return 0;
-   		],
-		e_to [;
-   			if (~~Utils.is_compass_enabled()) return self.no_compass();
-   			return 0;
-   		],
-		w_to [;
-   			if (~~Utils.is_compass_enabled()) return self.no_compass();
-   			return 0;
-   		],
-		ne_to [;
-   			if (~~Utils.is_compass_enabled()) return self.no_compass();
-   			return 0;
-   		],
-		nw_to [;
-   			if (~~Utils.is_compass_enabled()) return self.no_compass();
-   			return 0;
-   		],
-		se_to [;
-   			if (~~Utils.is_compass_enabled()) return self.no_compass();
-   			return 0;
-   		],
-		sw_to [;
-   			if (~~Utils.is_compass_enabled()) return self.no_compass();
-   			return 0;
-   		],
-		no_compass [;
-			print "No eres capaz de orientarte por los puntos cardinales aquí dentro.";
-			if (self.exits ~= 0 && metaclass(self.exits) == Routine) {
-				print " ";
-				return self.exits();
-			}
-			new_line;
-			return true;
-		],
-;
-
-!!------------------------------------------------------------------------------
-!! Room:Outdoors
-!!------------------------------------------------------------------------------
-!!	@version 1.0
-!!------------------------------------------------------------------------------
-Class	Outdoors
- class	Room
 ;
 
 !!------------------------------------------------------------------------------
@@ -645,6 +559,7 @@ Class	Atrezzo
  has	scenery,
  with	before [
 			previous_style;
+			if (noun ~= self) return false;
 			Attack,
 			Blow,
 			Close,
@@ -655,7 +570,9 @@ Class	Atrezzo
 			Listen,
 			Lock,
 			Open,
+			Read,
 			Search,
+			Smell,
 			SwitchOn,
 			SwitchOff,
 			Unlock,
@@ -761,10 +678,10 @@ Class	Atrezzo
 			Wave:
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
-				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+				print "No puedes manipular ", (el_) noun;
+				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, noun);
 				PrintCharacterArray(temp_array);
-				print " no ", (es) self, " algo que puedas manipular así.";
+				print " de ese modo.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
 				new_line;
@@ -857,6 +774,190 @@ Class	AdjacentRoom
 ;
 
 !!------------------------------------------------------------------------------
+!! Thing:Atrezzo:Immaterial
+!!------------------------------------------------------------------------------
+!! Representa un objeto inmaterial (olores, ruidos, sensaciones) con el que no
+!! se puede interactuar de ningún modo por defecto.
+!!
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+Class	Immaterial
+ class	Atrezzo
+ with	before [
+			previous_style;
+			Attack,
+			Blow,
+			DefaultAction,
+			Enter,
+			Examine,
+			Listen,
+			Search,
+			Smell:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "No ", (es) self, " algo que necesites manipular para continuar la historia.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Close,
+			Lock:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(temp_array);
+				print " no ", (es) self, " algo que puedas cerrar.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Disrobe,
+			Wear:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(temp_array);
+				print " no ", (es) self, " algo con lo que te puedas vestir.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Open,
+			Unlock:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(temp_array);
+				print " no ", (es) self, " algo que puedas abrir.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			SwitchOn:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(temp_array);
+				print " no ", (es) self, " algo que puedas encender.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			SwitchOff:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(temp_array);
+				print " no ", (es) self, " algo que puedas apagar.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+		],
+;
+
+!!------------------------------------------------------------------------------
+!! Thing:Atrezzo:Room
+!!------------------------------------------------------------------------------
+!! Representa un objeto localidad dentro del modelo de mundo.
+!!
+!!	@version 2.0
+!!------------------------------------------------------------------------------
+Class	Room
+ class	Atrezzo
+ has	light,
+ with	before [;
+			Examine:
+				if (noun == self) {
+					<<Look>>;
+				}
+		],
+		cant_go [;
+			switch (Utils.get_grammatical_inflection()) {
+				FIRST_PERSON_PRESENT:
+					if (IsPluralNoun(player)) print "No vemos";
+					else print "No veo";
+					print " ninguna salida en esa dirección.";
+				SECOND_PERSON_PRESENT:
+					if (IsPluralNoun(player)) print "No veis";
+					else print "No ves";
+					print " ninguna salida en esa dirección.";
+				THIRD_PERSON_PRESENT:
+					if (IsPluralNoun(player)) print "No ven";
+					else print "No ve";
+					print " ninguna salida en esa dirección.";
+				FIRST_PERSON_PAST:
+					if (IsPluralNoun(player)) print "No veíamos";
+					else print "No veía";
+					print " ninguna salida en aquella dirección.";
+				SECOND_PERSON_PAST:
+					if (IsPluralNoun(player)) print "No veíais";
+					else print "No veías";
+					print " ninguna salida en aquella dirección.";
+				THIRD_PERSON_PAST:
+					if (IsPluralNoun(player)) print "No veían";
+					else print "No veía";
+					print " ninguna salida en aquella dirección.";
+				FIRST_PERSON_FUTURE:
+					if (IsPluralNoun(player)) print "No veremos";
+					else print "No veré";
+					print " ninguna salida en esa dirección.";
+				SECOND_PERSON_FUTURE:
+					if (IsPluralNoun(player)) print "No veréis";
+					else print "No verás";
+					print " ninguna salida en esa dirección.";
+				THIRD_PERSON_FUTURE:
+					if (IsPluralNoun(player)) print "No verán";
+					else print "No verá";
+					print " ninguna salida en esa dirección.";
+			}
+			if (self.exits ~= 0) {
+				print " ";
+				return PrintOrRun(self, exits);
+			}
+			new_line;
+			return true;
+		],
+		description [;
+			if (action == ##Look || self hasnt visited) {
+				self.description_verbose();
+			} else {
+				self.description_brief();
+			}
+			new_line;
+			return true;
+		],
+		description_verbose 0,
+		!! Por defecto la descripción breve es igual a la descripción larga:
+		description_brief [; return self.description_verbose(); ],
+		!! Permite listar las salidas visibles:
+		exits 0,
+ has	light;
+
+!!------------------------------------------------------------------------------
+!! Thing:Atrezzo:Room:Indoors
+!!------------------------------------------------------------------------------
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+Class	Indoors
+ class	Room
+;
+
+!!------------------------------------------------------------------------------
+!! Thing:Atrezzo:Room:Outdoors
+!!------------------------------------------------------------------------------
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+Class	Outdoors
+ class	Room
+;
+
+!!------------------------------------------------------------------------------
 !! Thing:Character
 !!------------------------------------------------------------------------------
 !! Representa un personaje.
@@ -886,58 +987,13 @@ Class	Character
 					<<TalkTo self>>;
 				}
 		],
-;
-
-!!------------------------------------------------------------------------------
-!! Thing:HeavyItem
-!!------------------------------------------------------------------------------
-!! Representa un objeto pesado dentro del modelo de mundo. Se le aplica la
-!! propiedad 'static' definida por la librería Inform.
-!!
-!!	@dependency SpanishLM.h
-!!	@version 1.0
-!!------------------------------------------------------------------------------
-Class	HeavyItem
- class	Thing
- has	static,
- with	before [;
-			Pull,
-			Push,
-			PushDir,
-			Take,
-			Turn:
-				switch (Utils.get_grammatical_inflection()) {
-					FIRST_PERSON_PRESENT,
-					SECOND_PERSON_PRESENT,
-					THIRD_PERSON_PRESENT:
-						print (The) self, " ", (es) self;
-					FIRST_PERSON_PAST,
-					SECOND_PERSON_PAST,
-					THIRD_PERSON_PAST:
-						print (The) self, " era", (n) self;
-					FIRST_PERSON_FUTURE,
-					SECOND_PERSON_FUTURE,
-					THIRD_PERSON_FUTURE:
-						print (The) self, " será", (n) self;
-				} " demasiado pesad", (o) self, " para andar moviéndol",
-				(o) self, ".";
-		],
-;
-
-!!------------------------------------------------------------------------------
-!! Thing:Immaterial
-!!------------------------------------------------------------------------------
-!! Representa un objeto inmaterial (olores, ruidos, sensaciones) con el que no
-!! se puede interactuar de ningún modo por defecto.
-!!
-!!	@version 1.0
-!!------------------------------------------------------------------------------
-Class	Immaterial
- class	Thing
- has	scenery,
- with	before [;
-			"", (parser) "Eso no es necesario para continuar la historia.";
-		],
+		!! FIXME - eliminar
+		killz 0,
+		killq 0,
+		qlist 0,
+		qoff 0,
+		qqon 0,
+		qtype 0,
 ;
 
 !!------------------------------------------------------------------------------
@@ -1026,3 +1082,39 @@ Class	Clothes
 		],
 		layers 0,
  has	clothing;
+
+!!------------------------------------------------------------------------------
+!! Thing:Item:HeavyItem
+!!------------------------------------------------------------------------------
+!! Representa un objeto pesado dentro del modelo de mundo. Se le aplica la
+!! propiedad 'static' definida por la librería Inform.
+!!
+!!	@dependency SpanishLM.h
+!!	@version 1.0
+!!------------------------------------------------------------------------------
+Class	HeavyItem
+ class	Item
+ has	static,
+ with	before [;
+			Pull,
+			Push,
+			PushDir,
+			Take,
+			Turn:
+				switch (Utils.get_grammatical_inflection()) {
+					FIRST_PERSON_PRESENT,
+					SECOND_PERSON_PRESENT,
+					THIRD_PERSON_PRESENT:
+						print (The) self, " ", (es) self;
+					FIRST_PERSON_PAST,
+					SECOND_PERSON_PAST,
+					THIRD_PERSON_PAST:
+						print (The) self, " era", (n) self;
+					FIRST_PERSON_FUTURE,
+					SECOND_PERSON_FUTURE,
+					THIRD_PERSON_FUTURE:
+						print (The) self, " será", (n) self;
+				} " demasiado pesad", (o) self, " para andar moviéndol",
+				(o) self, ".";
+		],
+;

@@ -1,0 +1,790 @@
+
+
+!!==============================================================================
+!!
+!!	EL BARÓN
+!!	Escena sexta
+!!
+!!==============================================================================
+!!
+!!	Archivo:		baron_scene-sexta.xinf
+!!	Autor(es):		Victor Gijsbers
+!!					J. Francisco Martín <jfm.lisaso@gmail.com>
+!!	Idioma:			ES (Español)
+!!	Sistema:		Inform-INFSP 6
+!!	Plataforma:		Máquina-Z/Glulx
+!!	Versión:		0.0
+!!	Fecha:			2019/02/XX
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	Este archivo forma parte de la ficción interactiva EL BARÓN.
+!!
+!!	EL BARÓN es software libre: usted puede redistribuirlo y/o
+!!	modificarlo bajo los términos de la Licencia Pública General
+!!	GNU publicada por la Fundación para el Software Libre, ya
+!!	sea la versión 3 de la Licencia, o (a su elección) cualquier
+!!	versión posterior.
+!!
+!!	EL BARÓN se distribuye con la esperanza de que sea útil,
+!!	pero SIN GARANTÍA ALGUNA; ni siquiera la garantía implícita
+!!	MERCANTIL o de APTITUD PARA UN PROPÓSITO DETERMINADO.
+!!	Consulte los detalles de la Licencia Pública General GNU
+!!	para más información.
+!!
+!!	Debería haber recibido una copia de la Licencia Pública
+!!	General GNU junto a EL BARÓN. En caso contrario, consulte
+!!	<http://www.gnu.org/licenses/>.
+!!
+!!	Copyright (c) 2004, Victor Gijsbers
+!!	Copyright (c) 2019, J. Francisco Martín
+!!
+!!------------------------------------------------------------------------------
+
+Object kasteel_toren_2 "In the baron's chamber"
+  with firsttime 0,
+       description [;
+	    if(self.firsttime == 0) {
+	       StartDaemon(baron);
+	       Baron.status = 6;
+	     };
+	    self.firsttime = 1;
+	    print "The room is sparsely furnished and dark, illuminated only by the candles of a single chandelier. ";
+	    if(parent(baron_berenvel) == self) {print "In the middle of the room lies a bear skin; on the walls hang the ";}
+	      else print "On the walls hang the ";
+	    if(baron_koppen has general) print "now blackened ";
+	    "stuffed heads of wolves, reindeer and other large mammals. In the back of the room is a large stone throne, inlaid with fierce rubies that reflect the light of the chandelier thousandfold. Behind it, on the northern side of the chamber, are two large bronze doors.";
+	],
+       d_to "To find Maartje you must go forward, not back.",
+       n_to baron_deuren,
+   has light transparent;
+
+
+
+   Object baron_deuren "bronze doors" kasteel_toren_2
+    class Atrezzo,
+     with name 'doors' 'bronze' 'brass' 'two' 'door',
+          description "The wall to the north, behind the baron's throne, contains two large bronze doors. An image of a burning man has been engraved on them.",
+	  before
+	    [;
+	      Open:
+	        if(self has open) "The doors are already open.";
+	        if(baron_kroon hasnt worn && baron.state ~= 1 && baron.state ~= 3) {
+		  "You walk towards the doors and push against them as hard as you are able to, but without effect. Then you try to pull with all your strength, but that doesn't move the doors either. The burning man which has been engraved on the doors seems to grin ever broader.";
+		}
+	       if(baron_kroon hasnt worn)
+		 "You walk towards the doors and push against them as hard as you are able to, but without effect. Then you try to pull with all your strength, but that doesn't move the doors either.^^
+		 ~Only one who wears my crown can pass through those doors,~ the baron remarks, after he has watched you with obvious amusement.";
+
+	       give self open;
+
+               while(child(player)) remove child(player);
+
+	       Baron.status = 7;
+
+	       print "As soon as you walk towards the doors they start swinging open, away from you--behind them lies nothing but darkness. You walk onwards, and when you cross the threshold the left door falls crashes down, emitting the sound of a huge copper gong. Immediately afterwards, the right door falls down too and another tremendous, harrowing dissonance resounds. You take another step, and are standing...";
+
+	       Utils.press_any_key();
+
+	       PlayerTo(final_overloop);
+
+	       return true;
+
+	      Lock, Unlock: "These doors do not have a keyhole.";
+	      Knock:
+	         if(baron_kroon has worn) <<Open self>>;
+		 "You knock on the doors, but are unable to make even the faintest sound.";
+	      Attack: <<Knock self>>;
+	    ],
+	  door_dir n_obj,
+	  door_to final_overloop,
+      has door ~open openable pluralname;
+
+      Object baron_man "burning man" kasteel_toren_2
+       class Atrezzo,
+        with name 'burning' 'man' 'image' 'engraving' 'depiction' 'figure',
+	     description "Instead of the pain you would expect on the face of a burning man, the graven figure's expression speaks of craving and desire. It is as if the flames drive him towards the object of his lust, which is undoubtedly behind these doors. On the figure's head rests a round crown.",
+	 has male;
+
+
+   Object baron_troon "stone throne" kasteel_toren_2
+    class HeavyItem,
+     with name 'throne' 'stone',
+          description "The throne is so big that even a grown man cannot touch his feet to the ground when he sits on it and will have difficulty leaning on both armrests simultaneously. The white stone has been adorned with a profusion of red jewels--rubies. It is a dazzling but gaudy piece of furniture.",
+	  describe [;
+	    if(parent(baron) == self)
+	      "^On the throne is the baron.";
+	    return true;
+	  ],
+	  before [;
+	    Enter, Climb:
+	      if(parent(baron) == self)
+	       "^The baron is on the throne.";
+	      move player to baron_troon;
+	     "You climb on the throne and sit down.";
+
+	    Exit, GetOff:
+	     move player to kasteel_toren_2;
+	     "Carefully, you step down from the throne.";
+
+	    LookUnder:
+	     "There is nothing under the throne.";
+	  ],
+      has enterable supporter transparent static;
+
+   Object baron_kaarsen "candles" kasteel_toren_2
+    class Atrezzo,
+     with name 'candle' 'candles' 'candlesticks' 'grease' 'drops',
+          description
+	    "The thick white candles in the chandelier throw a yellow light through the room. Now and then drops of grease fall down.",
+	  before [;
+	    Take, Doof: "You cannot reach the chandelier.";
+
+	    Burn: "The candles are already burning.";
+	  ],
+      has pluralname;
+
+   Object baron_kroonluchter "chandelier" kasteel_toren_2
+    class Atrezzo,
+     with name 'chandelier',
+          description
+	    "A chandelier has been cast from crude iron. It fulfills it task--the carrying of several dozen candlesticks--without elegance or style.",
+	  before [;
+	    Take, Climb, Attack: "The chandelier hangs too high.";
+	  ],
+      has female;
+
+   Object baron_robijnen "rubies" kasteel_toren_2
+    class Atrezzo,
+     with name 'rubies' 'ruby' 'gem' 'gems' 'light' 'reflection',
+          description [;
+	   if (parent(toorts) == player || parent(toorts) == parent(self)) {
+	     if(toorts has general) {
+                 "Bright red gems reflect the light of the torch and the candles, a sea of lights with the colour of blood. Do they deform reality, or do they show it as it really is?";
+	       }
+	     }
+	  "Bright red gems reflect the light of the candles, a sea of lights with the colour of blood. Do they deform reality, or do they show it as it really is?";
+	  ],
+	  before [;
+	    Take:
+	     "The gems have been tightly fixed to the stone from which the throne is built.";
+	  ],
+      has pluralname;
+
+   Object baron_berenvel "bear skin" kasteel_toren_2
+    class Atrezzo,
+     with name 'skin' 'bear',
+          description
+	    "A brown bear looks at you from the ground with stupid eyes, as if he is eternally surprised of being in this situation. It is probably not very pleasant, having your inner self removed completely.",
+	  before [;
+	    LookUnder: "You take a look under the bear skin, but all you see is the floor's black stone.";
+	    Take: "The bear skin would not look good in your house. Besides, you've never liked hunting.";
+
+	    Burn:
+	       if(TestScope(toorts,player)) {
+	         if(second == toorts || second == nothing) {
+	           if(toorts has general) {
+		     remove self;
+		     print
+		       "The bear skin immediately transforms into a sea of fire, in which only the predator's two eyes can be seen for a few moments before they too melt and dissolve.";
+		     if (baron.state == 1 || baron.state == 3)
+		       "^^The baron raises an eyebrow. ~You could simply have said that you didn't like it. That is more customary, in civilised circles.~";
+		     if (baron.state == 2)
+		       "^^Fearfully the baron watches from his kneeling position as you deliver his possessions to the devouring flames.";
+		     if (baron.state == 4)
+		       "^^~Yes!, destroy all those signs of death!~, the baron shouts enthusiastically, before falling silent again and resuming his sombre gazing.";
+		     "";
+
+		   } else {
+		     "Now that the torch has gone out, it can't set anything on fire.";
+		 }
+	       } else {
+	         "You can't use that to make a fire.";
+	         }
+	        }
+	  ],
+      has ;
+
+   Object baron_koppen "stuffed heads" kasteel_toren_2
+    class Atrezzo,
+     with name
+            'stuffed' 'heads' 'head' 'trophy' 'trophies' 'hunting' 'wolves' 'reindeers' 'mammals' 'wild' 'dead',
+	  description
+	    [;
+	      if(self hasnt general)
+	         "Dozens of hunting trophies are hanging on the walls: about ten wolves, half a dozen reindeer with their huge antlers, the sad little heads of deer and even a few bears. They have been stuffed so artfully that it almost seems as if they are alive--a parody of their former life which you can hardly bear to look at.",
+	      "Dozens of blackened hunting trophies are hanging on the walls, monuments to the destructive power of the human will to hunt and the more ancient power of fire.";
+	    ],
+	  before [;
+	    Take:
+	      "You always become a bit nauseous when you look at dead animals, especially when they look so pitiful. No way you're taking them.";
+
+	    Burn:
+	       if(TestScope(toorts,player)) {
+	         if(second == toorts || second == nothing) {
+	           if(toorts has general) {
+		     if(self has general) "The heads have already been burnt.";
+		     give self general;
+		     print
+		       "With the torch in your hand you run towards the first head, once the house of a proud reindeer brain. You touch the flame to his skin and the fire engulfs him immediately--the blackened and charred head, only the antlers still intact, bears witness to the true nature of death. You laugh, shrilly, and ignite the next head, and the next, and the next; you run around the room, and do not stop until each of the stuffed animals has been returned to the earth as smoke and ashes.";
+		     if (baron.state == 1 || baron.state == 3)
+		       "^^The baron smiles silently, while he carefully watches you. ~Thank you, that will save me quite some time. I was already planning on replacing them with a Bosch or a Goya,~ he says when the last head has burnt down.";
+		     if (baron.state == 2)
+		       "^^Fearfully the baron watches from his kneeling position as you deliver his possessions to the devouring flames.";
+		     if (baron.state == 4)
+		       "^^~Yes!, destroy the fetishes of my death worship!~, the baron shouts enthusiastically, before he lapses again into his catatonic silence.";
+		     "";
+
+		   } else {
+		     "Now that the torch has gone out, it can't set anything on fire.";
+		 }
+	       } else {
+	         "You can't use that to make a fire.";
+	         }
+	        }
+	  ],
+      has pluralname;
+
+   Object baron_wanden "walls" kasteel_toren_2
+    class Atrezzo,
+     with name 'walls' 'wall',
+          description
+	    "The stone walls of the room are adorned by the stuffed heads of dead animals.",
+      has pluralname;
+
+
+Object baron_doppelganger "baron" baron_troon
+  with state 1,   ! 0 = dead, 1 = intial, sardonic, 2 = repentant, 3 = triumphant, 4 = forgiven
+       try_calm 0,
+       name 'baron' 'villain',
+       article "the",
+       description [;
+          if(self.state == 1)
+	    "A muscled man, in his late forties, has pulled an ermine cloak tightly around him. A sardonic smile plays around his lips as he drums with his fingers on the throne. Now and then he reaches up to readjust the heavy crown on his head.";
+       	  if(self.state == 2)
+	    "The baron kneels on the stone floor and looks up at you with tear-filled eyes. Nothing remains of his prideful attitude.";
+	  if(self.state == 3)
+	    "The baron, a muscled man wearing a long cloak, sprawls on the throne. He laughs, and in his eyes burns the fire of victory.";
+	  if(self.state == 4)
+	    "The baron sits on his throne, calm but pale. With his crown and without his sardonic, self-assured attitude he seems out of place here; a common man whom the cruel twists of fate have taken to a place he doesn't belong.";
+        ],
+	before [;
+	  Attack:
+	    if(self.state == 1) {
+	       if(self.try_calm == 0) {
+	          self.try_calm = 1;
+	          "The baron raises his arms when you run towards him. ~Why resort to violence so soon, good man?~, he asks. ~I think it would be more sensible if we talked first.~";
+	       }
+	       "";
+	    }
+
+	    if(self.state == 2) {
+	      if(parent(axe) == player) {
+		   StopDaemon(baron);
+		   baron.state = 0;
+		   remove baron;
+		   "The baron is still kneeling on the ground, and still doesn't move when you grab your axe and decapitate him. You imagine that, for a fraction of a second, you saw a look of gratitude in his eyes. His body topples over--but before it has reached the ground, it has dissolved into fine dust.";
+	      } else {
+	           "~Asshole,~ you mutter, and kick the baron in his crotch. The pain makes him groan.";
+	      }
+	    }
+
+	    if(self.state == 3) {
+              "With deadly intention you walk towards the baron. He raises his eyebrow, and involuntarily you stop in your tracks and even take a few paces backwards.";
+	    }
+
+	    if(self.state == 4) {
+              "You do not attack someone you have just forgiven.";
+	    }
+
+	  Burn:
+	    if(self.state == 1) <<Attack self>>;
+	    if(self.state == 2) "He will burn enough in Hell.";
+	    if(self.state == 3) {
+	            give toorts ~general;
+		    give toorts ~light;
+	    	    "~I don't think that is a sensible plan,~ the baron says as you walk towards him. With a curt gesture he extinguishes the flame of your torch.";
+	       }
+	    if(self.state == 4) "You don't set fire to a person you have forgiven.";
+
+	  Spreek:
+	    if(self.state == 1) { return true;};
+	    if(self.state == 2) "The baron only cries, softly, and doesn't react to your words.";
+	    if(self.state == 3)
+	       "~Come, come, don't procrastinate!~ the baron shouts merrily. ~You will find your daughter behind those doors!~";
+	    if(self.state == 4) "The baron looks into infinity and doesn't react.";
+	],
+	life [;
+	  Kiss: "There is nothing you'd enjoy less than kissing the baron.";
+
+	  Show:
+	    if (noun == dagboek_pagina_1 || noun == dagboek_pagina_2 || noun == pop_dochter_kerker || noun == nieuwe_fotos){
+	       if(self.state == 1)
+	         "The baron takes a look at ", (the) noun ,", laughs softly and stops paying attention to it.";
+	       if(self.state == 2) "When the baron sees ", (the) noun, ", he start crying even louder.";
+	       if(self.state == 3)
+	       "~We are not responsible, remember? It's not our fault.~";
+   	       if(self.state == 4) "The baron looks into infinity and doesn't react.";
+	    } else {
+	      "The baron doesn't appear very interested.";
+
+	     }
+
+	],
+	count 0,
+	daemon [x;
+	  if(self.count == 2)
+	    print "^~Welcome to my humble abode,~ the baron says in an ironic tone.^";
+	  if(self.count == 3)
+	    print "^The baron studies his nails, as if they are the most interesting thing in the world.^^~Of course I would love to offer you a drink, but unfortunately I have run out of everything.~^";
+
+	  if(self.count > 4){
+	    x = random(15);
+	    switch(x) {
+	      1: print "^The baron watches with interest.^";
+	      2: print "^~Did you have a pleasant journey?~, the baron asks from his throne.^";
+	      3: print "^The baron sighs deeply. ~This bores me. Let us come to the heart of the matter.~^";
+	      4: print "^The baron's fingers stroke the throne in admiration.^";
+	      5:
+	         print "^For a moment it seems as if your adversary falls asleep upon his throne, but as soon as you take a step towards him he is suddenly wide awake again.^";
+	      6: print "^~A beautiful girl, that Maartje,~ the baron murmurs.^";
+	      7: print "^With a broad grin, the baron scratches his crotch elaborately.^";
+	      8:
+	         print "^The baron yawns. ~Forgive me,~ he says from behind his hand, ~but I had little sleep again tonight.~^";
+	    }
+	  }
+
+	  self.count++;
+
+	],
+   has male animate transparent;
+
+
+   Object baron_kroon "crown" baron
+     with name 'crown',
+          description "Dull metal forms a single round ring, without decorations, without gems, without engravings: only a simple band without interruptions that goes round and round eternally, made to fit a man's head.",
+	  before [;
+	    Wear:
+	      if(parent(baron_kroon) == player && baron_kroon has worn) "You already wear the crown.";
+	      if(parent(baron_kroon) ~= player) "You'll have to get hold of the crown first.";
+	      give baron_kroon worn;
+              "You grab the metal circle with two hands, and carefully put it on your head. The crown is heavy and presses painfully on your mind.";
+
+	    Disrobe:
+	      if(parent(baron_kroon) == player && baron_kroon has worn)
+	        "You try to take the crown from your head, but it doesn't move--it is as if the metal of the crown has grown together with your skull the moment you put it on.";
+	      return false;
+	  ],
+      has male clothing;
+
+   Object baron_mantel "cloak" baron
+     with name 'cloak' 'ermine',
+          description
+	    "This impressive cloak was made of the tails of hundreds of stoats.",
+	  before [;
+	    Burn:
+	      if(parent(self) == baron)
+	        <<Burn baron>>;
+
+	  ],
+      has clothing female;
+
+
+! *kaarsen, *kroonluchter, *berenvel, *opgezette koppen, *troon, *wanden, *robijnen, *licht, *deuren, *mantel, *baron, *kroon, *dingen in de fik steken, *gesprek met de baron (5 uitkomsten: *dood, *berouw, *vergeving, *toegeven, *een worden), als je jezelf in de fik steekt kan je ook de deuren door, *Daemon.
+
+
+Object attack_baron
+ class Character,
+  with quip [a b;
+             switch (a) {
+	       13: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       14: return self.qlist(b, 4,
+                                   2,
+				   3,
+				   4,
+				   5);
+
+               21: "Kill him with the axe.";
+               22:
+	           print "You grab the axe and walk towards the baron--calmly, in a cocoon of silence. He is immobile, staring mesmerisedly at the blinking steel in your hands. When you have almost reached him you suddenly swing your arms backwards, then forwards and with a blow as hard as you have never made before you split his cursed skull in two.";
+
+		   Utils.press_any_key();
+
+		   print "He doesn't even have the time to scream when his blood and brains splash all around. You close your eyes to protect them against the bodily fluids flying everywhere. However, when you open them a few seconds later, no blood can be seen, and the baron's body has disappeared as well. But at your feet lies the baron's crown.";
+
+		   move baron_kroon to kasteel_toren_2;
+		   StopDaemon(baron);
+		   baron.state = 0;
+		   remove baron;
+		   return true;
+
+               23:  if (parent(axe) == player) {self.qqon = true;}
+		      else {self.qqon = false;};
+
+                    self.killz = true;
+                    self.killq = true;
+
+               31: "Kill him with your bare fists.";
+               32:
+	           print "Mad with rage you run at the baron, whom at first doesn't move but looks at you like a rabbit looks at the front lights of a incoming car. Your fist hits him right in his face; you feel his nose breaking. You immediately follow up with your other fist, a punch in his stomach that makes him double up. It appears as if he wants to open his mouth to say something.";
+
+		   Utils.press_any_key();
+
+		   print "But before he can utter as much as a word, you have grabbed his head with both hands and smash it against the stone throne as hard as you can. Several teeth fall from his mouth, but you hardly notice them--again you smash his head against the throne, and again, and again. ~Bastard! Asshole!~, you scream, with a cracking voice, and you continue punching and punching and punching until the world turns red.";
+
+		   Utils.press_any_key();
+
+		   print "When you return to your senses, you see no trace of the baron--no blood, no teeth, no corpse. But on the throne, right where you smashed his head against it, lies his crown.";
+
+		   move baron_kroon to kasteel_toren_2;
+		   StopDaemon(baron);
+		   baron.state = 0;
+		   remove baron;
+		   return true;
+
+               33:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+
+
+               41: "Beat him up.";
+               42:
+	           print "Mad with rage you run at the baron, whom at first doesn't move but looks at you like a rabbit looks at the front lights of a incoming car. Your fist hits him right in his face; you feel his nose breaking. You immediately follow up with your other fist, a punch in his stomach that makes him double up. It appears as if he wants to open his mouth to say something.";
+
+		   Utils.press_any_key();
+
+		   "You spare him for a moment, allowing him to speak.^^
+
+		   ~Please, let me explain,~ he whispers.";
+
+
+               43:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+
+	       44: return self.qlist(b, 2,
+                                   6,
+				   7);
+
+               51: "Set him on fire.";
+               52:
+	           print "You laugh and toss the torch from hand to hand as you walk towards the baron.^^
+
+		   ~You will burn, bastard,~ you snap at him.
+
+		   Fearfully he looks around for a way to escape--but you have already reached him, and you push the hungry flame of the torch against the hem of his cloak. The fire spreads wildly, and after a few heartbeats the baron is enveloped in flames. He screams in horror and pain.^^
+
+		   ~Mercy, mercy!,~ he begs and screams.^^";
+
+		   move baron_kroon to kasteel_toren_2;
+		   StopDaemon(baron);
+		   baron.state = 0;
+		   remove baron;
+		   return true;
+
+               53:  if (parent(toorts) == player && toorts has general) {self.qqon = true;}
+		      else {self.qqon = false;};
+
+                    self.killz = true;
+                    self.killq = true;
+
+               54: return self.qlist(b, 2,
+                                   8,
+				   9);
+
+
+               61: "Allow him to explain.";
+               62:
+	           print "~You have ten seconds,~ you snap at him.^^";
+
+		   return true;
+
+               63:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+
+               71: "Keep hitting him.";
+               72:
+	           print "Before he can utter another word, you have grabbed his head with both hands and smash it against the stone throne as hard as you can. Several teeth fall from his mouth, but you hardly notice them--again you smash his head against the throne, and again, and again. ~Bastard! Asshole!~, you scream, with a cracking voice, and you continue punching and punching and punching until the world turns red.";
+
+ 		   Utils.press_any_key();
+
+		   print "When you return to your senses, you see no trace of the baron--no blood, no teeth, no corpse. But on the throne, right where you smashed his head against it, lies his crown.";
+
+		   move baron_kroon to kasteel_toren_2;
+		   StopDaemon(baron);
+		   baron.state = 0;
+		   remove baron;
+		   return true;
+
+               73:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+
+               81: "Laugh.";
+               82:
+	           print "You laugh, roaringly, manically, hysterically, while the baron begs for his life and screams, first louder and louder, then gradually diminishing in intensity. Shortly after he has fallen silent, the fire burns out--leaving nothing but the baron's crown, cool and undamaged.";
+
+		   move baron_kroon to kasteel_toren_2;
+		   StopDaemon(baron);
+		   baron.state = 0;
+		   remove baron;
+		   return true;
+
+               83:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+
+
+               91: "Weep.";
+               92:
+	           print "Tears rolls across your cheeks while the baron begs for his life and screams, first louder and louder, then gradually diminishing in intensity. Shortly after he has fallen silent, the fire burns out--leaving nothing but the baron's crown, cool and undamaged.";
+
+		   move baron_kroon to kasteel_toren_2;
+		   StopDaemon(baron);
+		   baron.state = 0;
+		   remove baron;
+		   return true;
+
+               93:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+	      }
+             rfalse;
+
+       ],
+   has concealed;
+
+
+Object uitleg_baron
+ class Character,
+  with quip [a b;
+             switch (a) {
+	       12: ! Wanneer de baron nog in een goede conditie is.
+	         print "~You have to understand,~ the baron says before you have been able to say anything, ~that I have acted only from the most noble of motives. At each point, it has been my only wish to make your daughter happy.~^^";
+
+	       13: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       14: return self.qlist(b, 3,
+                                   3,
+				   4,
+				   5);
+
+               22: ! Wanneer je de baron eerst hebt geslagen.
+	          print "~I know that my acts were wrong,~ the baron mumbles. ~But you have to understand that my love for your daughter was too big; I couldn't but kidnap her and keep her here, because the thought of being separated from her was more than my mind could encompass. But...but don't condemn for doing this! I couldn't help it! Please, you cannot condemn me!~^^";
+
+               23: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       24: return self.qlist(b, 3,
+                                   6,
+				   7,
+				   8);
+
+               31:
+	           "\[Enraged\] ~Happy? Even your beastly brain cannot be so perverted that you believe these lies!~";
+               32:
+	           print "~All right, all right.~ The baron raises his hands, as if to clam you. ~Perhaps her happiness was not the reason I kidnapped her. But nevertheless: could I help it? Could I have acted otherwise? Are you justified in being so angry at me?~^^";
+
+
+               33:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+	       34: return self.qlist(b, 3,
+                                   6,
+				   7,
+				   8);
+
+               41: "\[Sadly\] ~No, that is not true. Her happiness has never been the aim of your actions.~";
+               42:
+	           print "For a while the baron looks at you, searchingly. Then he answers:^^
+		   ~Let us say you are right; perhaps I only acted for my own sake. But--could I have acted otherwise? Isn't it very unjust to condemn me?~^^";
+
+
+               43:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+	       44: return self.qlist(b, 3,
+                                   6,
+				   7,
+				   8);
+
+               51:
+	          "\[Tiredly\] ~Spare me your lies--our lies. I have heard them too often, and too often have I learnt to recognise them for the pathetic self-justifications they are.~";
+               52:
+	           print "~I see that you have understood the situation; you have seen through us and discovered our true nature. But--I hardly dare to propose this, but perhaps I can help you? Do you know that I, you, we both are quite guiltless, and should not be condemned for what we have done and what we will do?~^^";
+
+
+               53:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+	       54: return self.qlist(b, 3,
+                                   6,
+				   7,
+				   8);
+
+
+
+               61:
+	          "~Why? How could it possibly be the case that here--here!--condemnation is inappropriate?~";
+               62:
+	           print "~I admit, I admit, it is hard to understand,~ the baron agrees. ~And yet it is true. Can one condemn the eagle when it devours a young lamb? The sheep will undoubtedly say yes, and they will call the eagle evil--but they do not know the desire to eat lamb meat. The eagle has been made in such a way that he has to eat lambs, it is his nature, he cannot do elsewise. No matter how evil the sheep may think his, in fact there is nothing in the bird's behaviour that can be condemned.~^^";
+
+
+               63:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+	       64: return self.qlist(b, 2,
+                                   9,
+				   10);
+
+
+               71:
+	          "~Don't say a word. It are only my own fantasies and chimeras you put into words.~";
+               72:
+	           print "The baron watches you uncertainly. ~Wait,~ he says. ~You don't know what I want to tell you! It is always good to listen to the wise advice of...~^^";
+
+
+               73:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+	       74: return self.qlist(b, 1,
+                                   11);
+
+               81:
+	          "Kill the baron before he can convince you of anything.";
+               82:
+	           print "~I don't want to hear your lies any more,~ you say, and walk towards him. A fearful expression appears on his face. ";
+
+		   if(parent(axe) == player) {
+		     print "You tightly grab the axe you have brought from home for exactly this purpose, and then--a single blow is enough.";
+		   } else {
+		     print "Your hands grab his throat and squeeze. His face first turns red, then blue, finally as white as milk--when he is about to lose consciousness, you break his neck with a sudden wrench.";
+		   }
+
+		   Utils.press_any_key();
+		   move baron_kroon to kasteel_toren_2;
+		   StopDaemon(baron);
+		   baron.state = 0;
+		   remove baron;
+
+		   "Like the nothing he has always been the baron implodes, becomes smaller and smaller and then disappears entirely. All that remains is his crown.";
+
+
+               83:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+
+               91:
+	          "~And how does that relate to you, me and Maartje?~";
+               92:
+	           print "~It is very simple! I will speak only for myself. What I feel is an extreme lust; and that lust is so strong that there is nothing in me that can conquer it. I can try anything I want: my moral feelings, my love, anything--they are all too weak to conquer the lust that burns inside me. So I do what I do; and I cannot do anything else. But how could it be evil to do what you have to do? How could you be condemned for something you could not possibly have done otherwise? Although at a first glance it may appear entirely different, I am in fact just as innocent as the eagle; I am but a leaf that is carried around by a strong wind, and I cannot choose my own path.~^^";
+
+
+               93:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+	       94: return self.qlist(b, 2,
+	                           12,
+                                   13);
+
+               101:
+	          "~And you want to fool me into believing that you are that eagle, and Maartje the lamb?~";
+               102:
+	           print "~But that is exactly how it is, exactly! Listen; I will speak only for myself. What I feel is an extreme lust; and that lust is so strong that there is nothing in me that can conquer it. I can try anything I want: my moral feelings, my love, anything--they are all too weak to conquer the lust that burns inside me. So I do what I do; and I cannot do anything else. But how could it be evil to do what you have to do? How could you be condemned for something you could not possibly have done otherwise? Although at a first glance it may appear entirely different, I am in fact just as innocent as the eagle; I am but a leaf that is carried around by a strong wind, and I cannot choose my own path.~^^";
+
+
+               103:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+	       104: return self.qlist(b, 2,
+	                            12,
+                                    13);
+
+               111:
+	          "~Be silent, specter, and come here. This masquerade has lasted long enough.~";
+               112:
+	           print "~No, let us talk about this like...no...no!~^^
+		   Against his will, apparently, the baron rises from his throne and starts walking towards you. You open your arms to embrace him; he does the same, even though his face is a mask of pure terror. When the two of you fall into each others arms, you feel how his body, his spirit, his essence merges with yours...after a few moments you are alone in the room. The baron has returned to where he came from: your soul. Only his crown lies before you on the throne.^";
+
+		   move baron_kroon to kasteel_toren_2;
+		   StopDaemon(baron);
+		   baron.state = 0;
+		   remove baron;
+		   return true;
+
+               113:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+
+               121:
+	          "\[Defeated\] ~You are right. You--we cannot be blamed. We cannot help what we do.~";
+               122:
+	           move baron_kroon to player;
+		   StopDaemon(baron);
+		   baron.state = 3;
+
+		   "~Indeed! Well, I am happy that you have finally reached this insight!!~ The baron seems very pleased. Then he takes off his crown and throws it at you; in a reflex, you catch it. ~It is not much, that crown, I have to admit is, but you will need to wear it to reach your daughter behind yonder walls. Have fun!~^^
+		   His grin is worst.";
+
+               123:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+
+               131:
+	          "\[Sadly\] ~Always these attempts to justify yourself. Look at her pain, open yourself to it--and feel the guilt. We are guilty, deeply, deeply guilty, and you know it, and you know there is no excuse.~";
+               132:
+	           print "At first the baron only looks at you intently, but then his eyes focus on infinity. Slowly, during a space of minutes, his facial expression transforms from a sardonic grin to one of utter dismay.";
+
+		   Utils.press_any_key();
+
+		   print "Suddenly he rises, sways, then falls on his knees before you. Tears roll across his cheeks, and with an almost hysterical voice he begs:^^
+		   ~Yes, I am guilty, infinitely guilty! This burden is too heavy for me, mercy, mercy, mercy! Please, for what I have done to your daughter--can you forgive me? I beg you, forgive me!~^^";
+
+
+               133:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+	       134: return self.qlist(b, 2,
+                                   14,
+				   15);
+
+               141:
+	          "~No. Here, no forgiveness is possible.~";
+               142:
+	           print "Weeping, the baron bows his head. His crown falls from his head, rolls over the floor and comes to a rest right between the two of you.^";
+
+		   move baron_kroon to kasteel_toren_2;
+		   StopDaemon(baron);
+		   baron.state = 2;
+                   return true;
+
+               143:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+
+
+               151:
+	          "~I forgive what you did to my daughter. I am the one who has to carry this load.~";
+               152:
+	           print "~Oh, thank you, thank you!~ The baron kisses your feet, while the tears still run down his face. Then he slowly rises, pulls himself somewhat together, and takes the crown from his head with all the dignity he can still muster.^^
+		   ~This is now yours,~ he says, and hands over the metal adornment. Then he turns around and reseats himself on the throne--a pale shadow of his former self.^";
+
+		   move baron_kroon to player;
+		   StopDaemon(baron);
+		   baron.state = 4;
+                   return true;
+
+               153:  self.qqon = true;
+                    self.killz = true;
+                    self.killq = true;
+
+               }
+	],
+    has concealed;

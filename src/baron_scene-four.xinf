@@ -1,0 +1,1951 @@
+
+
+!!==============================================================================
+!!
+!!	EL BARÓN
+!!	Escena cuarta
+!!
+!!==============================================================================
+!!
+!!	Archivo:		baron_scene-four.xinf
+!!	Autor(es):		Victor Gijsbers
+!!					J. Francisco Martín <jfm.lisaso@gmail.com>
+!!	Idioma:			ES (Español)
+!!	Sistema:		Inform-INFSP 6
+!!	Plataforma:		Máquina-Z/Glulx
+!!	Versión:		0.0
+!!	Fecha:			2019/02/XX
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	Este archivo forma parte de la ficción interactiva EL BARÓN.
+!!
+!!	EL BARÓN es software libre: usted puede redistribuirlo y/o
+!!	modificarlo bajo los términos de la Licencia Pública General
+!!	GNU publicada por la Fundación para el Software Libre, ya
+!!	sea la versión 3 de la Licencia, o (a su elección) cualquier
+!!	versión posterior.
+!!
+!!	EL BARÓN se distribuye con la esperanza de que sea útil,
+!!	pero SIN GARANTÍA ALGUNA; ni siquiera la garantía implícita
+!!	MERCANTIL o de APTITUD PARA UN PROPÓSITO DETERMINADO.
+!!	Consulte los detalles de la Licencia Pública General GNU
+!!	para más información.
+!!
+!!	Debería haber recibido una copia de la Licencia Pública
+!!	General GNU junto a EL BARÓN. En caso contrario, consulte
+!!	<http://www.gnu.org/licenses/>.
+!!
+!!	Copyright (c) 2004, Victor Gijsbers
+!!	Copyright (c) 2019, J. Francisco Martín
+!!
+!!------------------------------------------------------------------------------
+
+
+
+Object ophaalbrug "Before the castle gate"
+  with daemon_starter 0,
+       description [;
+         if (self.daemon_starter == 0) {
+	      StartDaemon(gargouille);
+	      Baron.status = 4;
+	      self.daemon_starter = 1;
+	     }
+	 "The castle's drawbridge has been lowered, twenty meters of wooden boards that allow you to cross the deep moat to the north. On the other side a massive gate guards the entrance to the keep, but the doors are wide open. From where you are standing, the three towers appear to reach to the heavens, and the hordes of gargoyles that people the walls stare down at you disapprovingly.";
+       ],
+       w_to "This is not the moment to retrace your steps.",
+       cant_go "The baron's castle lies to the north.",
+       d_to "You'd like to avoid lying flat on the ground, in the snow.",
+       n_to kasteel_hal,
+   has light;
+
+   Object brug_zelf "drawbridge" ophaalbrug
+    class Atrezzo,
+     with name 'bridge' 'drawbridge' 'lift',
+          description
+	     "The drawbridge has been lowered, so you can easily reach the castle. Strangely enough, you cannot see cables or chains with which the bridge could be raised. It seems as if the baron doesn't fear an attack.",
+	  before [;
+	    Cross: <<Go n_obj>>;
+	    Open: "The drawbridge has already been lowered: you can simply cross it.";
+	    Close:
+	       "You see no method to raise the bridge again.";
+	  ],
+      has ;
+
+   Object planken "boards" ophaalbrug
+    class Atrezzo
+     with name 'board' 'boards' 'wooden',
+          description "The bridge has been built from broad oaken boards, well maintained and sawed professionally.",
+      has pluralname;
+
+  Object slotgracht "moat" ophaalbrug
+    class Atrezzo
+     with name 'moat' 'water' 'ice' 'layer',
+          description "The moat is ten meters wide; you cannot determine its depth in the darkness of the night. It is a good thing that the bridge has been lowered, for you certainly couldn't have walked across the thin layer of ice covering the water.",
+	  before [;
+	    Enter, Cross: "Falling through the ice and ending up in the cold water doesn't seem like a good step towards defeating the baron. Quite the contrary.";
+	    JumpOver: "The moat is far too wide to jump across. Fortunately, the drawbridge has been lowered - as if you are expected.";
+	    ThrownAt, Receive:
+	     if(noun ~= baron_brief && noun ~= snippers) {
+	      print (The) noun;
+	      if (noun has pluralname) {print " fall ";} else {print " falls ";}
+	      print"through the ice and sinks in the black water. Within seconds, the winter air has restored the ice, and no trace of the hole remains.^";
+	      remove noun; return true;
+	     } else {
+	      if (noun has pluralname) {print "They would";} else {print "It would";}
+	      " just lie there on the ice, slowly soaking through.";
+	     }
+	  ],
+      has enterable ;
+
+   Object poort "gate" ophaalbrug
+    class Atrezzo,
+     with name 'gate' 'entrance' 'massive',
+          description "The entrance gate to the castle has been built from seamlessly fitting white stones. If the doors had been closed, it would have been a tough job to climb it; but the gigantic metal doors are open, ready to receive you. Behind awaits a threatening darkness.",
+          before [;
+	    Enter: <<Go n_obj>>;
+	  ],
+      has enterable ;
+
+      Object poort_deuren "doors of the gate" ophaalbrug
+       class Atrezzo,
+        with name 'door' 'doors' 'metal' 'gigantic',
+	     description "",
+	     before [;
+	       Open: "The metal doors are already open.";
+	       Close, Push, Pull:
+	          "Even when you throw your entire weight at them, the doors don't budge.";
+	     ],
+	 has pluralname ;
+
+      Object poort_duister "threatening darkness" ophaalbrug
+       class Atrezzo,
+        with name 'darkness' 'threatening',
+	     description "You can't descry anything in the castle itself, but the hairs on your arms stand on end when you gaze inside.",
+	     before [;
+	       Enter: <<Go n_obj>>;
+	     ],
+	 has enterable;
+
+   Object waterspuwers "gargoyles" ophaalbrug
+    class Atrezzo,
+     with name 'gargoyles' 'monsters' 'ornaments',
+          description
+	     "Devils and demons, humans with misshapen faces, fabulous creatures, angels, skeletons, bats: a motley collection of gargoyles stares down from the castle walls. They have been executed in a dark stone that contrasts sharply with the white castle. Through the years they have been so eroded by wind and rain that the identity of many can only be guessed.",
+	  before [;
+	    Climb: "Even the lowest gargoyles are too high on the walls to serve as handholds for an ascent.";
+	  ],
+      has pluralname;
+
+   Object brug_slot "baron's castle" ophaalbrug
+    class Atrezzo,
+     with name 'keep' 'castle',
+          description "Almost as in a fairy tale, the white castle rises from the snow. An enormous gate guards the only entrance. Two smaller towers, to the left and to the right of the gate, lean frightfully forward, as if they could fall over any moment. But it is the middle tower that truly inspires awe: dozens of meters high, it always seems to lean towards you no matter where you stand, ready to crush you as soon as soon as it has the chance. Black gargoyles adorn the walls everywhere.",
+	  before [;
+	    Enter: <<Go n_obj>>;
+	    Climb: "Even in daylight, with good tools and no enemies inside the castle, it would be madness to try to climb the keep.";
+	  ],
+      has enterable;
+
+   Object brug_torens "leaning towers" ophaalbrug
+    class Atrezzo,
+     with name 'towers' 'tower' 'small' 'smaller' 'big' 'bigger' 'left' 'right' 'middle' 'leaning',
+          description "The two smaller towers to the left and to the right of the gate lean frightfully forward, as if they could fall over any moment. But it is the middle tower that truly inspires awe: dozens of meters high it always seems to lean towards you, no matter where you stand, ready to crush you as soon as soon as it has the chance.",
+	  before [;
+	    Climb: "Even in daylight, with good tools and no enemies inside the castle, it would be madness to try and climb one of the leaning towers.";
+	  ],
+      has pluralname;
+
+   Object brug_muren "walls" ophaalbrug
+    class Atrezzo,
+     with name 'wall' 'walls' 'merlon' 'merlons',
+          description "The walls of the castle are thick and high, and not even the tiniest crack can be found between their stones. Merlons grace the battlements, displayed against the star-filled sky.",
+	  before [;
+	    Climb: "Even in daylight, with good tools and no enemies inside the castle, it would be madness to try and climb the walls.";
+	  ],
+      has pluralname;
+
+   Object brug_bos "forest" ophaalbrug
+    class Atrezzo,
+     with name 'forest' 'woods' 'wood' 'trees' 'tree',
+          description "The forest surrounding the castle is deadly silent. Not a single tree grows within a stone's throw of the walls, as if even the plants fear the baron.",
+	  before [;
+	    Enter: "That will not bring you closer to the baron.";
+	  ],
+      has enterable;
+
+   Object brug_pad "path" ophaalbrug
+    class Atrezzo,
+     with name 'path',
+          description "The path is hardly visible under the snow that, here, outside the forest, has accumulated into a thick and loose layer.",
+      has ;
+
+   Object brug_sneeuw "snow" ophaalbrug
+    class Atrezzo,
+     with name 'snow',
+          description "A thick layer of snow covers everything except the moat, which is covered by ice.",
+      has ;
+
+
+
+Object gar_hoofd "gargoyle's head"
+  with name 'head' 'gargoyle^s',
+       article "the",
+       description
+          "The stone head of the gargoyle has frozen with an expression of eternal pain on its face. You shiver when you look at it.",
+       before [;
+         Burn: "Stone doesn't burn.";
+       ],
+   has ;
+
+Object gar_hart "gargoyle's heart"
+  with name 'heart' 'gargoyle^s',
+       article "the",
+       description
+          "The gargoyle's heart is a chunk of black lava rock, now hard and cold and lifeless.",
+       before [;
+         Burn: "You'd need more than fire to melt the lava.";
+       ],
+   has ;
+
+
+Object gargouille "gargoyle"
+ class Character,
+  with name 'gargoyle' 'monster',
+       description "A stone monster, as big as a man, with features of bats and devils.",
+       opening 0,
+       daemon [;
+         move self to ophaalbrug;
+	 print "^The sound of flapping wings makes you look up, where the battlements, towers and monstrous gargoyles of the castle are outlined against the star-filled sky. One of the gargoyles has spread his wings, and with slow flaps sails down to the drawbridge. A few steps in front of you, he lands, a stone demon as big as a man. Two ink-black eyes stare at you intently.";
+
+	 Utils.press_any_key();
+
+	 print "Then the gargoyle says with a voice like tearing rock: ";
+
+	 switch(wolvin.status) {
+	    5:
+	       print "~Violence is often the quickest road to your goal, but others must pay the price for it. Is it just to demand that of them?~^^";
+	       self.opening = 10;
+	    6:
+	       print "~Violence is often the quickest road to your goal, but others must pay the price for it. Is it just to demand that of them?~^^";
+	       self.opening = 10;
+	    7:
+	       print "~To get to her you sacrifice her innermost thoughts. Has she no right to a life of her own?~^^";
+	       self.opening = 20;
+	    8:
+	       print "~The only thing that could console her you have just sacrificied to reach her. Are you sure you can offer her more than Brown, who was always there for her?~^^";
+	       self.opening = 30;
+	    9:
+	       print "~Fear and tension are bad counselors; with serenity, wisdom returns. But if you always calm your emotions, will you still be able to act when you have to?~^^";
+	       self.opening = 40;
+	    10:
+	       print "~You assume the role of protector, and only when she has given you her trust do you reveal your true intentions. Doesn't that make your crime a thousand times worse?~^^";
+	       self.opening = 50;
+	    11:
+	       print "~Faced with problems, you run away, only to return when they have vanished. How could a coward like you ever fulfill the task you have been given?~^^";
+	       self.opening = 60;
+	    12:
+	       print "~It takes courage not to be diverted from the path you have chosen. But won't you just keep going in circles if you never confront the threat?~^^";
+	       self.opening = 70;
+	    13:
+	       print "~It takes courage not to be diverted from the path you have chosen. But won't you just keep going in circles if you never confront the threat?~^^";
+	       self.opening = 70;
+	    14:
+	       print "~Sharing one's sorrow is great and humane. But do you have the right to wallow in pity when you have the power to take away the suffering?~^^";
+	       self.opening = 80;
+	    15:
+	       print "~Fear and tension are bad counselors; with serenity, wisdom returns. But if you always calm your emotions, will you still be able to act when you have to?~^^";
+	       self.opening = 40;
+	    25:
+	       print "~Your attempt to lessen the suffering you created is noble - but is it enough?~^^";
+	       self.opening = 90;
+	    26:
+	       print "~Your attempt to lessen the suffering you created is noble - but is it enough?~^^";
+	       self.opening = 90;
+	    99: if(wolvin.offered == 1) {
+	           print
+		          "~Today you come as wolf. Interesting.~^^
+			  The gargoyle traces an intricate pattern with his claws, and you feel your body suddenly take another form.^^
+			  ~Your deed was noble,~ he continues, ~but death is always an easy way out. Would you have helped her if you had had to live with the pain?~^^";
+	           self.opening = 100;
+	        } else {
+		   print
+		          "~Today you come as wolf. Interesting.~^^
+			  The gargoyle traces an intricate pattern with his claws, and you feel your body suddenly take another form.^^
+			  ~It is your indecisiveness,~ he continues, ~that always does you in. How could you possibly hope to save her if all you do is stand still, filled with impotent anger?~^^";
+	           self.opening = 110;
+		   wolvin.status = 100;
+	        };
+		move selfobj to ophaalbrug;
+		ChangePlayer(selfobj);
+		wolvin.status = 100;
+                remove wolvin;
+
+	    default:  print "This is a BUG. Please notify the author of this piece.^^";
+
+	 };
+	 StopDaemon(self);
+       ],
+       qflag 0 0 0 0 0 0 0 0,
+       quip [a b;
+             switch (a) {
+               103: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       104: return self.qlist(b, 4,
+                                    11,
+                                    12,
+				    13,
+				    14);
+
+
+               111: "~My goal is my goal, and whoever stands in my way will be destroyed.~";
+               112:
+	            return true;
+               113: self.killz = true;
+                    self.killq = true;
+
+               121:
+	            "~It wasn't just, and I weep for what I had to do. But my goal is too important--I can't accept any delays.~";
+               122:
+	            return true;
+               123: self.killz = true;
+                    self.killq = true;
+
+	       131:
+	            "~You do not always have a choice between paying the price yourself, and making someone else pay it for you.~";
+               132:
+	            return true;
+               133: self.killz = true;
+                    self.killq = true;
+
+	       141: "~I am not a murderer! It was self-defence, I had no choice.~";
+               142:
+	            return true;
+               143: self.killz = true;
+                    self.killq = true;
+
+               203: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       204: return self.qlist(b, 3,
+                                    21,
+                                    22,
+				    23);
+
+
+               211:
+	            "~She is a child, and it was a child's diary. In a few years, she would just have laughed about her youthful confessions.~";
+               212:
+	            return true;
+               213: self.killz = true;
+                    self.killq = true;
+
+               221:
+	            "~In a close family in a close community, one needs no 'innermost' thoughts. One's life is based on the love of the people around you.~";
+               222:
+	            return true;
+               223: self.killz = true;
+                    self.killq = true;
+
+	       231:
+	            "~It was a heavy sacrifice, but I would trade her memories for her safe return from the baron's talons any day.~";
+               232:
+	            return true;
+               233: self.killz = true;
+                    self.killq = true;
+
+
+               303: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       304: return self.qlist(b, 3,
+                                    31,
+                                    32,
+				    33);
+
+
+               311:
+	            "~It hurt me to feed Brown to the wolf, but Maartje will not be a child for much longer. Once she has grown up she will have no need for stuffed animals. In the end, the love of humans means infinitely more.~";
+               312:
+	            return true;
+               313: self.killz = true;
+                    self.killq = true;
+
+               321:
+	            "~I will console her, once I have freed her; I, too, have always been there and will always be there for her. There is nothing that Brown could mean for Maartje that I cannot mean, and a hundred times stronger at that.~";
+               322:
+	            return true;
+               323: self.killz = true;
+                    self.killq = true;
+
+	       331:
+	            "~Maartje won't think the price of a toy bear too high for escape from the baron's castle. Against him Brown could not protect her.~";
+               332:
+	            return true;
+               333: self.killz = true;
+                    self.killq = true;
+
+
+               403: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       404: return self.qlist(b, 3,
+                                    41,
+                                    42,
+				    43);
+
+
+               411:
+	            "~Yes. Only in distant, rational contemplation can we carefully weigh the pros and cons and make the right decision. He who allows himself to be led by his passions will reap nothing but sorrow.~";
+               412:
+	            return true;
+               413: self.killz = true;
+                    self.killq = true;
+
+               421:
+	            "~No. But in my heart burns the fire of anger, and that gives me the strength to confront the true culprit--the baron--and force him, in whatever way may be needed, to let my daughter go. My feelings are far from dead.~";
+               422:
+	            return true;
+               423: self.killz = true;
+                    self.killq = true;
+
+	       431:
+	            "~To act, one only needs willpower, and the will is not dependent on emotions. A strong-willed person can do everything that is necessary, even when he feels nothing. For a weak-willed person, even the strongest emotions will be too little.~";
+               432:
+	            return true;
+               433: self.killz = true;
+                    self.killq = true;
+
+
+               503: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       504: return self.qlist(b, 3,
+                                    51,
+                                    52,
+				    53);
+
+
+               511: "~I did what I had to do. I do not think you can condemn me.~";
+               512:
+	            return true;
+               513: self.killz = true;
+                    self.killq = true;
+
+               521:
+	            "~If I had done it to a human it would have been unforgivable, a crime for which even the noose would have been too merciful a punishment. But it was only an animal, so other laws applied.~";
+               522:
+	            return true;
+               523: self.killz = true;
+                    self.killq = true;
+
+	       531:
+	            "~I am a bastard and a villain, and nothing can justify my misdeeds. But the urge to see my daughter was too strong, and I could not resist it.~";
+               532:
+	            return true;
+               533: self.killz = true;
+                    self.killq = true;
+
+
+               603: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       604: return self.qlist(b, 3,
+                                    61,
+                                    62,
+				    63);
+
+
+               611:
+	            "~It wasn't cowardly, but smart. Smart people avoid problems they cannot solve and concentrate on those they can.~";
+               612:
+	            return true;
+               613: self.killz = true;
+                    self.killq = true;
+
+               621:
+	            "~Indeed, I am a coward. But I hope to find the courage and strength to continue when I will really need it. I cannot do more than that; giving up without trying is not an option.~";
+               622:
+	            return true;
+               623: self.killz = true;
+                    self.killq = true;
+
+	       631:
+	            "~I am not normally courageous, that is true. But my hate for the baron is so strong that I will not let myself be scared away by him.~";
+               632:
+	            return true;
+               633: self.killz = true;
+                    self.killq = true;
+
+
+               703: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       704: return self.qlist(b, 3,
+                                    71,
+                                    72,
+				    73);
+
+
+               711:
+	            "~If your life is satisfactory and pleasant, why would you want to confront threats? What is wrong with going in circles, as long as the circle is easy going?~";
+               712:
+	            return true;
+               713: self.killz = true;
+                    self.killq = true;
+
+               721:
+	            "~My aim is clear, my path is straight. I am here to get my daughter, and I will not shun a confrontation with the baron.~";
+               722:
+	            return true;
+               723: self.killz = true;
+                    self.killq = true;
+
+	       731:
+	            "~The most important thing is to remain true to one's self, and to make sure that external forces do not divert you from the path your soul has determined for you. Authenticity trumps everything, even it it leads to circles.~";
+               732:
+	            return true;
+               733: self.killz = true;
+                    self.killq = true;
+
+
+               803: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       804: return self.qlist(b, 3,
+                                    81,
+                                    82,
+				    83);
+
+
+               811:
+	            "~As long as it is possible, one must try to take away suffering. But sometimes the emotions are too strong, and then it is only human to burst into tears and simply experience the sadness.~";
+               812:
+	            return true;
+               813: self.killz = true;
+                    self.killq = true;
+
+               821:
+	            "~We humans are powerless against suffering, and can never do more than express our sorrow. It is madness to believe that the tragedy of life can be turned into a comedy.~";
+               822:
+	            return true;
+               823: self.killz = true;
+                    self.killq = true;
+
+	       831:
+	            "~Yes, we always have to look for happiness, and make sure we do not get stuck in our sorrow. There is always hope. That is why I am here; because I believe there is hope.~";
+               832:
+	            return true;
+               833: self.killz = true;
+                    self.killq = true;
+
+
+               903: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       904: return self.qlist(b, 3,
+                                    91,
+                                    92,
+				    93);
+
+
+               911:
+	            "~I did what I could; it will have to be enough. Surely, more cannot be asked of me? My conscience is clear.~";
+               912:
+	            return true;
+               913: self.killz = true;
+                    self.killq = true;
+
+               921:
+	            "~My misdeed cannot be forgiven. It wasn't enough, and it will never be enough. I am forever guilty.~";
+               922:
+	            return true;
+               923: self.killz = true;
+                    self.killq = true;
+
+	       931:
+	            "~Everything can be forgiven, if one is repentant. When I saw what I had done, I felt remorse, deep and strong. I hope I can be forgiven.~";
+               932:
+	            return true;
+               933: self.killz = true;
+                    self.killq = true;
+
+
+               1003: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       1004: return self.qlist(b, 3,
+                                    101,
+                                    102,
+				    103);
+
+
+               1011:
+	             "~Death is not an easy way out; it is the most terrifying. I have made the biggest sacrifice that is possible, and if I have to, I will make it again.~";
+               1012:
+	             return true;
+               1013: self.killz = true;
+                     self.killq = true;
+
+               1021:
+	             "~Yes, I am ready to pay any price to do what is good. I do not fear death, and I do not fear suffering. I will carry anything that is put upon my shoulders.~";
+               1022:
+	             return true;
+               1023: self.killz = true;
+                     self.killq = true;
+
+	       1031:
+	             "~No, nobody can expect that I will suffer pain to aid another. That choice is too heavy.~";
+               1032:
+	             return true;
+               1033: self.killz = true;
+                     self.killq = true;
+
+
+               1103: self.qtype = 0;
+	             self.qqon  = true;
+                     self.killz = true;
+                     self.killq = true;
+	       1104: return self.qlist(b, 3,
+                                    111,
+                                    112,
+				    113);
+
+
+               1111:
+	             "~I do not know, for yes, I am indecisive. But I hope to find the courage and strength to continue when I will really need it. I cannot do more than that; giving up without trying is not an option.~";
+               1112:
+	             return true;
+               1113: self.killz = true;
+                     self.killq = true;
+
+               1121:
+	             "~You are mistaken, I can act whenever I want to. This time I decided to wait and see what would happen, but if I had wanted to, I could have done all kinds of things.~";
+               1122:
+	             return true;
+               1123: self.killz = true;
+                     self.killq = true;
+
+	       1131:
+	             "~My decision has already been made: I will free my daughter, and I will do anything that is necessary to accomplish that. I do not need to know anything else, there are no other decisions. There is only going onwards and doing what is necessary.~";
+               1132:
+	             return true;
+               1133: self.killz = true;
+                     self.killq = true;
+
+
+         }
+       ],
+
+   has animate male;
+
+
+Object gar_stage2
+ class Character,
+  with quip [a b;
+             switch (a) {
+	       12: "^The gargoyle regards you thoughtfully, as if considering your answer. The he nods, once.^^
+	            ~Again you come here,~ he goes on to say, ~to fail once more. Do you still believe that it will ever end differently?~^";
+               13: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+	       14: return self.qlist(b, 4,
+                                    2,
+				    3,
+				    4,
+				    5);
+
+
+               21: "~You are mistaken. This is the first time I've come here.~";   ! Vanaf 1
+               22:
+	           print "~So you have forgotten again.~ In the unearthly bass of the gargoyle, you hear tiredness and pity. ~You come here every night, I speak to you every night, every night you lose the fight, and the next night you once again stand before me with filled with naive courage. If you keep closing your eyes to your own deeds, you will never overcome yourself!~^^";
+               23: self.killz = true;
+                   self.killq = true;
+	       24: return self.qlist(b, 3,
+                                   6,
+                                   7,
+				   8);
+
+
+               31: ! Vanaf 1
+	           "~'Again'? You mean that I have already been here, that I have penetrated the baron's castle before?~";
+               32:
+	           print "~So you have forgotten again.~ In the unearthly bass of the gargoyle, you hear tiredness and pity. ~You come here every night, I speak to you every night, every night you lose the fight, and the next night you once again stand before me with filled with naive courage. If you keep closing your eyes to your own deeds, how will you ever overcome yourself?~^^";
+
+               33: self.qqon  = true;
+                   self.killz = true;
+                   self.killq = true;
+	       34: return self.qlist(b, 3,
+                                   6,
+                                   7,
+				   8);
+
+               41: ! Vanaf 1
+	           "~Again and again and again, and so on throughout eternity, until I manage to bring it to an end. There is always another chance.~";
+               42:
+	           print "~So you tell me, every night.~ The gargoyle leans towards you, bringing his face to a height with and very close to yours. ~But is it true that there is always another chance? How do you know that you haven't been condemned to the eternal recurrence of suffering, like me?~^^";
+
+               43: self.qqon  = true;
+                   self.killz = true;
+                   self.killq = true;
+	       44: return self.qlist(b, 3,
+                                   16,
+                                   17,
+				   18);
+
+               51: ! Vanaf 1
+	           "~No, I cannot change. I have tried, as you well know. But the circle of fate is too strong: I am doomed to walk for eternity, and with each circuit I paint my soul a deeper shade of black.~";
+               52:
+	           print "~And with each circuit you turn the joy of others to ashes,~ adds the gargoyle. He sounds tired, infinitely tired. ~I remember the first time you came here, convinced of your own goodness and justness. It took a long time before you learned to recognise the dark abyss of your soul. And even longer before you lost hope of ever closing the abyss.~^^";
+
+               53: self.qqon  = true;
+                   self.killz = true;
+                   self.killq = true;
+	       54: return self.qlist(b, 3,
+                                   52,
+                                   53,
+				   54);
+
+               61: ! Vanaf 2 en 3
+	           "\[Firm\] ~Be silent, devil! I am here for the first time, and your lies cannot take my courage away from me.~";
+               62:
+	           print "~As you wish.~ With a cracking sound the stone monster respectfully bows its head. ~I doubt you will succeed, but who knows--life has many surprises. Don't let me detain you...unless...unless I am allowed to ask you a question about my own problem?~^^";
+               63: self.killz = true;
+                   self.killq = true;
+	       64: return self.qlist(b, 2,
+                                   9,
+                                   10);
+
+               71: ! Vanaf 2 en 3
+	           "\[With a panicky voice\] ~No, no, you are mistaken or trying to deceive me! I have never been here before, and it will not be necessary for me to come here again!~";
+               72:
+	           print "~If that is what you want to believe.~ You think you can read contempt on his stony face.  ~I doubt you will succeed, but who knows--life has many surprises. Don't let me detain you. Unless you perchance wish to take the time to listen to my problem?~^^";
+               73: self.killz = true;
+                   self.killq = true;
+	       74: return self.qlist(b, 2,
+                                   9,
+                                   10);
+
+               81: ! Vanaf 2 en 3
+	           "Try to remember whether you have been here before.";
+               82:
+	           print "You close your eyes and start digging in the depths of your mind. Images appear: of a dragon, and of one fiery death after another; of the she-wolf--how you have killed her, have scared her away, have calmed her, have howled with her, have fed her with your own flesh and blood...the images merge with each other, blur, lose all structure--you see the gargoyle, you hear fragments of conversations you have had with him, now friendly and consoling, then aggressive and condemning. And then, at the top of a high spiral staircase, you step into the throne room of the baron, and he turns around and you see...but here you find no more images. You have never seen him, or your memory has abandoned you.^^";
+               83: self.killz = true;
+                   self.killq = true;
+	       84: return self.qlist(b, 3,
+                                   11,
+                                   12,
+				   13);
+
+               91: ! Vanaf 6 en 7 en 11
+	           "~I have no time for you and your un-life, vile creature. My daughter is waiting for me.~";
+               92:
+	           print "~Of course. As I said, I won't detain you any longer.~^^
+		   He turns around, and with several beats of his wings he takes off, circles around the castle and then disappears into the darkness of the night.^";
+		   remove gargouille;
+		   return true;
+               93: self.killz = true;
+                   self.killq = true;
+
+               101: ! Vanaf 6 en 7 en 11
+	           "~I can spare a few moments. Get it off your chest.~";
+               102:
+	           print "~Thank you. I will first explain to you how it is that I am alive.~";
+		   Utils.press_any_key();
+		   return true;
+               103: self.killz = true;
+                    self.killq = true;
+
+
+               111: ! Vanaf 8
+	           "\[Lie\] ~I can't remember that at all. I am here for the first time.~";
+               112:
+	           print "~As you wish.~ You hear that he doesn't believe you. ~Well, I doubt you will succeed, but who knows--life has many surprises. Don't let me detain you...unless...unless I am allowed to ask you a question about my own problem?~^^";
+               113: self.killz = true;
+                   self.killq = true;
+	       114: return self.qlist(b, 2,
+                                   9,
+                                   10);
+
+
+               121: ! Vanaf 8
+	           "~But, my god, but how is this possible? How can it be that I undertake this quest every night?~";
+               122:
+	           print "~Because you never achieve the victory that really counts. Unfortunately,~ he raises his hands apologetically, ~unfortunately my insight in the essence of your fight is no greater than what you yourself know about it. But I can tell you about mine, and perhaps you can learn from it~^^";
+               123: self.killz = true;
+                   self.killq = true;
+	       124: return self.qlist(b, 2,
+                                   14,
+                                   15);
+
+               131: ! Vanaf 8
+	           "~God, everything returns to me. Night after night after night...will this circle never stop? Am I doomed to keep walking it forever?~";
+               132:
+	           print "~That is exactly what I asked you.~ The gargoyle sighs, a surprisingly human sound. ~I cannot give you the answer, because I do not know what you are fighting, which power ties you to your endless track. But perhaps I can help you in another way, by telling you the tale of my own eternal recurrence. Perhaps some insight can be gleaned from it.~^^";
+               133: self.killz = true;
+                   self.killq = true;
+	       134: return self.qlist(b, 2,
+                                   14,
+                                   15);
+
+               141: ! Vanaf 12 en 13
+	           "~Yes, tell me about your sorrow. I feel that we are kindred souls.~";
+               142:
+	           print "~Thank you. I will first explain to you how it is that I am alive.~";
+		   Utils.press_any_key();
+		   return true;
+               143: self.killz = true;
+                   self.killq = true;
+
+               151: ! Vanaf 12 en 13
+	           "~I am sorry, but I have to rescue my daughter. I will come back another time to speak with you.~";
+               152:
+	           print "The gargoyle laughs a grinding laugh. ~I do not doubt that for a moment! Good luck, until next time, and next time and next time and so on throughout our damned eternity!~^^
+		   He turns around, and with several beats of his wings he takes off, circles around the castle and then disappears into the darkness of the night.^";
+		   remove gargouille;
+		   return true;
+               153: self.killz = true;
+                   self.killq = true;
+
+
+               161: ! Vanaf 4
+	           "~I know nothing, but I keep on hoping. Only when I have lost all hope will I become a true prisoner of my deeds.~";
+               162:
+	           print "~Then hold on to your hope. But remember that hope alone is not enough. At the hardest moment, you must also act.~^^";
+               163: self.killz = true;
+                   self.killq = true;
+	       164: return self.qlist(b, 3,
+                                   19,
+                                   20,
+				   21);
+
+               171: ! Vanaf 4
+	           "~Because, deep inside, I have remained human. I have always kept on fighting my fate. Every night anew I have undertaken this journey; never have I lost courage. There will be a time that I overcome myself. Perhaps not this night, perhaps not this year, but one day I will succeed.~";
+               172:
+	           print "~Human, yes. All too human, perhaps--but who am I to judge? As long as you keep on fighting, there is hope; but I just hope that you know whom you fight against.~^^";
+               173: self.killz = true;
+                   self.killq = true;
+	       174: return self.qlist(b, 3,
+                                   36,
+                                   37,
+				   38);
+
+               181: ! Vanaf 4
+	           "~Silence! Don't try to infect me with your pessimism. There is always the chance that something will free me!~";
+               182:
+	           print "~Your damned passivity!~ The gargoyle spits out the words as if they were the bitterest thing that ever entered his mouth. ~Fool, as long as you wait for 'something' to 'happen', instead of actively stepping up to the challenge, as long as you do that, nothing will change. Don't you understand?~^^";
+               183: self.killz = true;
+                   self.killq = true;
+	       184: return self.qlist(b, 3,
+                                   43,
+                                   44,
+				   45);
+
+
+
+               191: ! Vanaf 16 en 58
+	           "~You are right, and you are also right when you tell me that my failures have always been at the point where intentions should turn into actions. But I feel that this night is different than other nights. Tonight I will be able to act. I feel it.~";
+               192:
+	           print "~Then I wish you success. May your perseverance finally be rewarded! But I want to make a request to you: would you, in this night that differs from all others, listen to my story and give me advice?^^";
+               193: self.killz = true;
+                   self.killq = true;
+	       194: return self.qlist(b, 2,
+                                   22,
+                                   23);
+
+
+               201: ! Vanaf 16 en 58
+	           "~That is the problem--at the crucial moment I am not strong enough to act. But I hope that one day I will be able to find the strength to act.~";
+               202:
+	           print "~And where,~ the gargoyle eagerly continues, ~where do you think to find that strength?~^^";
+               203: self.killz = true;
+                   self.killq = true;
+	       204: return self.qlist(b, 5,
+                                   24,
+                                   25,
+				   26,
+				   27,
+				   28);
+
+
+               211: ! Vanaf 16 en 58
+	           "~I have already done too much, and always the situation grows worse and worse. Sometimes I think the solution lies in resignation, in passivity, in being strong enough not to act.~";
+               212:
+	           print "The gargoyle contemplates this for a while.^^
+		   ~Wise words,~ he finally says, ~but I suspect that passivity too is a kind of action.~^^";
+               213: self.killz = true;
+                   self.killq = true;
+	       214: return self.qlist(b, 3,
+                                   31,
+                                   32,
+				   33);
+
+
+               221: ! Vanaf 19
+	           "~Of course. Although I do not know whether my advice will benefit you.~";
+               222:
+	           print "~Perhaps more than you can imagine. My problem starts with the fact that I am alive.~";
+		   Utils.press_any_key();
+		   return true;
+               223: self.killz = true;
+                   self.killq = true;
+
+               231: ! Vanaf 19
+	           "~I am sorry, but I have to rescue my daughter. I cannot let this chance go by.~";
+               232:
+	           print "~Of course. Forgive my obtrusiveness.~ He sounds gloomy and sad.^^
+		   The gargoyle looks deep into your eyes for a final time, then turns around and takes off with several beats of his black wings. Before you say anything, he disappears into the darkness of the night.^";
+		   remove gargouille;
+		   return true;
+               233: self.killz = true;
+                   self.killq = true;
+
+
+
+               241: ! Vanaf 20
+	           "~In my hate.~";
+               242:
+	           print "The gargoyle thinks, silently, and then nods.^^
+		   ~Good. I wish you luck, and hope that the strength you will need can indeed be found where you look for it. But before you leave me, I have a request. I, too, need strength, and I do not know where I can seek it. Would you care to advise me?~^^";
+               243: self.killz = true;
+                   self.killq = true;
+	       244: return self.qlist(b, 2,
+                                   29,
+                                   30);
+
+
+               251: ! Vanaf 20
+	           "~In my love.~";
+               252:
+	           print "The gargoyle thinks, silently, and then nods.^^
+		   ~Good. I wish you luck, and hope that the strength you will need can indeed be found where you look for it. But before you leave me, I have a request. I, too, need strength, and I do not know where I can seek it. Would you care to advise me?~^^";
+               253: self.killz = true;
+                   self.killq = true;
+	       254: return self.qlist(b, 2,
+                                   29,
+                                   30);
+
+
+               261: ! Vanaf 20
+	           "~In my self-contempt.~";
+               262:
+	           print "The gargoyle thinks, silently, and then nods.^^
+		   ~Good. I wish you luck, and hope that the strength you will need can indeed be found where you look for it. But before you leave me, I have a request. I, too, need strength, and I do not know where I can seek it. Would you care to advise me?~^^";
+               263: self.killz = true;
+                   self.killq = true;
+	       264: return self.qlist(b, 2,
+                                   29,
+                                   30);
+
+
+               271: ! Vanaf 20
+	           "~In my resignation.~";
+               272:
+	           print "The gargoyle thinks, silently, and then nods.^^
+		   ~Good. I wish you luck, and hope that the strength you will need can indeed be found where you look for it. But before you leave me, I have a request. I, too, need strength, and I do not know where I can seek it. Would you care to advise me?~^^";
+               273: self.killz = true;
+                   self.killq = true;
+	       274: return self.qlist(b, 2,
+                                   29,
+                                   30);
+
+
+               281: ! Vanaf 20
+	           "~In my shame.~";
+               282:
+	           print "The gargoyle thinks, silently, and then nods.^^
+		   ~Good. I wish you luck, and hope that the strength you will need can indeed be found where you look for it. But before you leave me, I have a request. I, too, need strength, and I do not know where I can seek it. Would you care to advise me?~^^";
+               283: self.killz = true;
+                   self.killq = true;
+	       284: return self.qlist(b, 2,
+                                   29,
+                                   30);
+
+               291: ! Vanaf 24/28
+	           "~Of course. Although I do not know whether my advice will benefit you.~";
+               292:
+	           print "~Perhaps more than you can imagine. My problem starts with the fact that I am alive.~";
+		   Utils.press_any_key();
+		   return true;
+               293: self.killz = true;
+                   self.killq = true;
+
+               301: ! Vanaf 24/28
+	           "~I am sorry, but I have to rescue my daughter. You will have to find strength yourself.~";
+               302:
+	           print "~Of course. Forgive my obtrusiveness.~ He sounds gloomy and sad.^^
+		   The gargoyle looks deep into your eyes for a final time, then turns around and takes off with several beats of his black wings. Before you say anything, he disappears into the darkness of the night.^";
+		   remove gargouille;
+		   return true;
+               303: self.killz = true;
+                   self.killq = true;
+
+               311: ! Vanaf 21
+	           "~Passivity is the hardest form of acting, because our love always demands great deeds.~";
+               312:
+	           print "~True.~ The stone man hesitates for a moment, then goes on to ask his question. ~I can see that you have gathered much insight in life. Would you allow me to explain my curse to you and profit from your advice?~^^";
+               313: self.killz = true;
+                   self.killq = true;
+	       314: return self.qlist(b, 2,
+                                   34,
+                                   35);
+
+               321: ! Vanaf 21
+	           "~Passivity is the hardest form of acting, because our lust always demands great deeds.~";
+               322:
+	           print "~True.~ The stone man hesitates for a moment, then goes on to ask his question. ~I can see that you have gathered much insight in life. Would you allow me to explain my curse to you and profit from your advice?~^^";
+               323: self.killz = true;
+                   self.killq = true;
+	       324: return self.qlist(b, 2,
+                                   34,
+                                   35);
+
+               331: ! Vanaf 21
+	           "~Passivity is not a form of acting, and that is why it is so hard. Resignation is the last virtue of the wise.~";
+               332:
+	           print "~True.~ The stone man hesitates for a moment, then goes on to ask his question. ~I can see that you have gathered much insight in life. Would you allow me to explain my curse to you and profit from your advice?~^^";
+               333: self.killz = true;
+                   self.killq = true;
+	       334: return self.qlist(b, 2,
+                                   34,
+                                   35);
+
+
+               341: ! Vanaf 31/33
+	           "~Of course. Although I do not know whether my advice will benefit you.~";
+               342:
+	           print "~Perhaps more than you can imagine. My curse is that I am alive.~";
+		   Utils.press_any_key();
+		   return true;
+               343: self.killz = true;
+                   self.killq = true;
+
+               351: ! Vanaf 31/33
+	           "~I am sorry, but wisdom cannot be taught.~";
+               352:
+	           print "~Of course. Forgive my obtrusiveness.~ He sounds gloomy and sad.^^
+		   The gargoyle looks deep into your eyes for a final time, then turns around and takes off with several beats of his black wings. Before you say anything, he disappears into the darkness of the night.^";
+		   remove gargouille;
+		   return true;
+               353: self.killz = true;
+                   self.killq = true;
+
+               361: ! Vanaf 17
+	           "~I have to fight against the baron.~";
+               362:
+	           print "~Really?~ Irony drips from his question. ~Well, go on, confront him with your strength and your anger. I will not detain you any longer--unless you wish to learn from the tale of my sorrow.~^^";
+               363: self.killz = true;
+                   self.killq = true;
+	       364: return self.qlist(b, 2,
+                                   39,
+                                   40);
+
+               371: ! Vanaf 17
+	           "~I have to fight against myself.~";
+               372:
+	           print "~Very true. Fools believe that that is the easiest fight; wise men know it is the hardest.~ The gargoyle glances at you searchingly. ~I too fight against myself. Would you care to hear my story?~^^";
+               373: self.killz = true;
+                   self.killq = true;
+	       374: return self.qlist(b, 2,
+                                   39,
+                                   40);
+
+               381: ! Vanaf 17
+	           "~I have to fight against the world's indifference.~";
+               382:
+	           print "~Very true, and an answer that betrays great insight. Few fights are harder, few are more crucial. All that remains for me to do is wish you luck. Unless...~ For a moment, the gargoyle hesitates. ~Unless you would be interested in hearing the tale of my fight?~^^";
+               383: self.killz = true;
+                   self.killq = true;
+	       384: return self.qlist(b, 2,
+                                   41,
+                                   42);
+
+
+               391: ! Vanaf 36 en 37
+	           "~I would. I think I could learn much from it.~";
+               392:
+	           print "~Yes, it is very educational, and very tragic. It starts with the fact that I am alive.~";
+		   Utils.press_any_key();
+		   return true;
+               393: self.killz = true;
+                   self.killq = true;
+
+               401: ! Vanaf 36 en 37
+	           "~I don't have time for that kind of thing. The fight awaits me.~";
+               402:
+	           print "~Of course. Forgive me, I didn't want to detain you.~ His voice is listless.^^
+		   Then the gargoyle turns around and takes off with a few beats of his black wings. Before you can utter a single word, he has disappeared into the darkness of the night.^";
+		   remove gargouille;
+		   return true;
+               403: self.killz = true;
+                   self.killq = true;
+
+
+               411: ! Vanaf 38
+	           "~Tell me. Let nobody say that I am indifferent.~";
+               412:
+	           print "~This does me more good than you can know. Let me start with the mysterious fact that I am alive.~";
+		   Utils.press_any_key();
+		   return true;
+               413: self.killz = true;
+                   self.killq = true;
+
+               421: ! Vanaf 38
+	           "~I don't have time for that. I have to save my daughter.~";
+               422:
+	           print "~Of course. Forgive me.~ His voice is sombre.^^
+		   Then the gargoyle turns around and takes off with a few beats of his black wings. Before you can utter a single word, he has disappeared into the darkness of the night.^";
+		   remove gargouille;
+		   return true;
+               423: self.killz = true;
+                   self.killq = true;
+
+
+               431: ! Vanaf 18
+	           "\[Softly\] ~I am not strong enough to save her. Our deliverance will have to come from somewhere else.~";
+               432:
+	           print "~Then I weep for your fate.~^^
+		   Indeed, the gargoyle seems to brush away two tears before he continues: ~Will you allow me to tell you about the curse that rests on me? Perhaps my story can be just the external prod you need.~";
+               433: self.killz = true;
+                   self.killq = true;
+	       434: return self.qlist(b, 2,
+                                   46,
+                                   47);
+
+               441: ! Vanaf 18
+	           "\[Firmly\] ~Of course, that is what I mean! I will solve the problem, even if it is the very last thing I will ever do.~";
+               442:
+	           print "~Good. I hope that this time, it is more than mere words.~ He turns around, as if to leave, then reconsiders and turns back to you. ~I still want to ask you something. You are the only person who might understand the tragedy of my existence. Would you allow me to tell you about the curse that rests on me?~^^";
+               443: self.killz = true;
+                   self.killq = true;
+	       444: return self.qlist(b, 2,
+                                   48,
+                                   49);
+
+               451: ! Vanaf 18
+	           "~Passivity? I have come to the lion's den to attack the baron and save my daughter, and you reproach me for passivity?~";
+               452:
+	           print "~The baron? The baron!~ His howls of derision hurt your ears. ~You have learnt nothing, in all those thousand circles you have walked. Nothing! Come on then, go! Your doom is awaiting you as it awaits you each and every night. Or,~ he says, transfixing you with a penetrating stare, ~or are you perhaps sensible enough to listen to my story, in order to learn something valuable?~^^";
+               453: self.killz = true;
+                   self.killq = true;
+	       454: return self.qlist(b, 2,
+                                   50,
+                                   51);
+
+
+
+               461: ! Vanaf 43
+	           "~It will do no harm. Tell me.~";
+               462:
+	           print "~Good. Who knows what may come of it. Let me start with the mysterious fact that I am alive.~";
+		   Utils.press_any_key();
+		   return true;
+               463: self.killz = true;
+                   self.killq = true;
+
+               471: ! Vanaf 43
+	           "~No, I don't think so. I will search for my fate inside.~";
+               472:
+	           print "~As you wish.~^^
+		   The stone man turns around and takes off with a few beats of his black wings. Before you can utter a single word, he has disappeared into the darkness of the night.^";
+		   remove gargouille;
+		   return true;
+               473: self.killz = true;
+                   self.killq = true;
+
+               481: ! Vanaf 44
+	           "~Get it off your chest.~";
+               482:
+	           print "~Thank you. Let me start with the mysterious fact that I am alive.~";
+		   Utils.press_any_key();
+		   return true;
+               483: self.killz = true;
+                   self.killq = true;
+
+               491: ! Vanaf 44
+	           "~I don't think we can have anything in common, monster. Avaunt!~";
+               492:
+	           print "His eyes narrow to slits. ~Is that my reward? Mangy son of a bitch!~^^
+		   The stone man turns around brusquely and takes off with a few beats of his black wings. Before you can utter a single word, he has disappeared into the darkness of the night.^";
+		   remove gargouille;
+		   return true;
+               493: self.killz = true;
+                   self.killq = true;
+
+               501: ! Vanaf 45
+	           "~It is never too late to learn. Tell me about yourself.~";
+               502:
+	           print "~So you are not entirely bereft of sense. Good. My curse is that I am alive.~";
+		   Utils.press_any_key();
+		   return true;
+               503: self.killz = true;
+                   self.killq = true;
+
+               511: ! Vanaf 45
+	           "~I don't think you can teach me anything, abomination.~";
+               512:
+	           print "~And so it shall be. A fool till the end.~^^
+		   Angrily the stone man turns around and takes off with a few forceful beats of his black wings. Before you can utter a single word, he has disappeared into the darkness of the night.^";
+		   remove gargouille;
+		   return true;
+               513: self.killz = true;
+                   self.killq = true;
+
+
+               521: ! Vanaf 5
+	           "~That is the bitter wisdom we all must learn: that the naivety and the hope of our youth are illusions, which are dispelled by the daylight of our lives.~";
+               522:
+	           print "~True. And yet it is a tragedy whenever the innocence of youth is defiled by life too early.~^^";
+               523: self.killz = true;
+                   self.killq = true;
+	       524: return self.qlist(b, 3,
+                                   55,
+                                   56,
+				   57);
+
+               531: ! Vanaf 5
+	           "~Perhaps there really was hope, in the beginning. But the strength I had has ebbed away, and I have destroyed more than I can ever mend.~";
+               532:
+	           print "~And each night the spiral brings you a step further down the bottomless pit. But you cannot accept it; for if you could, why would you continue seeking a confrontation with the baron?~^^";
+               533: self.killz = true;
+                   self.killq = true;
+	       534: return self.qlist(b, 3,
+                                   58,
+                                   59,
+				   60);
+
+               541: ! Vanaf 5
+	           "~But if I cannot bend my path towards the good, perhaps it is still possible for me to end my walking.~";
+               542:
+	           print "Surprised, the gargoyle takes a step backwards.^^
+		   ~Truly? Would you do that for her? Are you strong enough for it?~^^";
+               543: self.killz = true;
+                   self.killq = true;
+	       544: return self.qlist(b, 3,
+                                   61,
+                                   62,
+				   63);
+
+
+
+               551: ! Vanaf 52
+	           "Hang your head in shame, tears in your eyes.";
+               552:
+	           print "The silence last for minutes. Then the stone man walks towards you, and puts a heavy, cold hand on your shoulder. ~It was not my intention to make your pain even greater than it already was. Forgive me.~^^";
+               553: self.killz = true;
+                   self.killq = true;
+	       554: return self.qlist(b, 2,
+                                   64,
+                                   65);
+
+               561: ! Vanaf 52
+	           "~I hate myself for it, every day.~";
+               562:
+	           print "~On the contrary. You hate yourself every night. By day, you always succeed wonderfully in banishing the thoughts of it from your mind, and live as if nothing is the matter,~ the gargoyle answers accusingly.^^";
+               563: self.killz = true;
+                   self.killq = true;
+	       564: return self.qlist(b, 2,
+                                   68,
+                                   69);
+
+               571: ! Vanaf 52
+	           "~But am I guilty? Weak, yes, I confess - but I have never wanted to do evil, nor have I ever consciously chosen to hurt someone. Surely that means I cannot be guilty?~";
+               572:
+	           print "~And weakness cannot be a source of guilt?~^^";
+               573: self.killz = true;
+                   self.killq = true;
+	       574: return self.qlist(b, 3,
+                                   71,
+                                   72,
+				   73);
+
+
+               581: ! Vanaf 53
+	           "~You are right. Although I often despair, deep inside I have not abandoned hope. I refuse to accept that the future holds naught but darkness.~";
+               582:
+	           print "~Good. Hope can make the difference. But hope alone is not enough: at the crucial moment, you will also have to act.~^^";
+               583: self.killz = true;
+                   self.killq = true;
+	       584: return self.qlist(b, 3,
+                                   19,
+                                   20,
+				   21);
+
+               591: ! Vanaf 53
+	           "~It is a senseless repetition of moves. I know how it will end. But I cannot but confront him, because it is only when I reach the castle that I remember the repetition.~";
+               592:
+	           print "~Of course. Your forgetfulness "; style bold; print "is"; style roman; print " the baron. How could you possibly remember him before you enter his domain to attack him?~^^";
+               593: self.killz = true;
+                   self.killq = true;
+	       594: return self.qlist(b, 2,
+                                   74,
+                                   75);
+
+               601: ! Vanaf 53
+	           "~The confrontation is my punishment. I cannot avoid it, nor do I wish to.~";
+               602:
+	           print "~Much wisdom is in that, and much foolishness. Do you deserve the pain? I will not deny it. But doesn't this story contain all too much pain already, without you looking to increase it? Punishment and guilt lose their sharp edges here.~^^";
+               603: self.killz = true;
+                   self.killq = true;
+	       604: return self.qlist(b, 2,
+                                   78,
+                                   79);
+
+
+               611: ! Vanaf 54
+	           "~I have to be strong enough for it. I cannot see another way out.~";
+               612:
+	           print "~Then all I can do is bid you farewell, and hope that it is a solution.~^^
+		   A sad smile appears on the gargoyle's face. ~Will you allow me to tell you my life's tragic tale? You are the only person I ever talk to, and this appears to be the final opportunity.~^^";
+               613: self.killz = true;
+                   self.killq = true;
+	       614: return self.qlist(b, 2,
+                                   80,
+                                   81);
+
+               621: ! Vanaf 54
+	           "~No. I have decided to do it before, but I never dared to actually execute it. I am too weak even to die.~";
+               622:
+	           print "~Then the plot will repeat and repeat itself as the wheel of time turns its eternal rounds.~ Despairingly, he shakes his head.^^
+		   ~My life too is an eternal repetition, and eternal guilt,~ he continues. ~I would like to share it with a companion in misfortune.~^^";
+               623: self.killz = true;
+                   self.killq = true;
+	       624: return self.qlist(b, 2,
+                                   82,
+                                   83);
+
+               631: ! Vanaf 54
+	           "~Yes. The decision has been made. This is the last night of my life, and the last night of my hell.~";
+               632:
+	            print "~Then all I can do is bid you farewell, and hope that it is a solution.~^^
+		   A sad smile appears on the gargoyle's face. ~Will you allow me to tell you my life's tragic tale? You are the only person I ever talked to, and this appears to be the final opportunity.~^^";
+               633: self.killz = true;
+                   self.killq = true;
+	       634: return self.qlist(b, 2,
+                                   80,
+                                   81);
+
+
+
+               641: ! Vanaf 55 en 69, 73
+	           "Dry your tears. ~It doesn't matter.~";
+               642:
+	           print "~But it does matter. Your condition is hard enough without my accusations. Perhaps...~ The gargoyle hesitates for a moment, then makes a decision. ~Perhaps it is good if I tell you about my curse, so you can see that I am the very last person who is allowed to reprove you.~^^";
+               643: self.killz = true;
+                   self.killq = true;
+	       644: return self.qlist(b, 2,
+                                   66,
+                                   67);
+
+               651: ! Vanaf 55 en 69, 73
+	           "~I earned it.~";
+               652:
+	           print "~Perhaps, perhaps not. Who can say? But what you have earned, I too have earned, and I had no right to punish you. Shall I tell you about my curse? Then you will understand that I have at least as much guilt as you do.~^^";
+               653: self.killz = true;
+                   self.killq = true;
+	       654: return self.qlist(b, 2,
+                                   66,
+                                   67);
+
+	       661: ! Vanaf 64 en 65, 72, 76, 77, 78
+	           "~Yes, do so.~ \[With a weak smile\] ~Sorrow is softened by sharing, isn't it?~";
+               662:
+	           print "The gargoyle smiles back at you, which looks comical on his misshapen head. ~Indeed it is. And the heart of my sorrow is that I am alive.~";
+		   Utils.press_any_key();
+		   return true;
+               663: self.killz = true;
+                   self.killq = true;
+
+               671: ! Vanaf 64 en 65 en 69, 72, 71, 74, 76, 77, 78, 79
+	           "~I think my own problems are quite enough for me.~";
+               672:
+	           print "~Indeed. Forget what I said. I will have to deal with my own grief.~^^
+		   Without looking up again, the stone man turns around and takes off with a few forceful beats of his black wings. He quickly disappears into the darkness of the night.^";
+		   remove gargouille;
+		   return true;
+               673: self.killz = true;
+                   self.killq = true;
+
+               681: ! Vanaf 56
+	           "Look down in shame. ~You are right.~";
+               682:
+	           print "The silence last for minutes. Then the stone man walks towards you, and puts a heavy, cold hand on your shoulder. ~It was not my intention to make your pain even greater than it already was. Forgive me.~^^";
+               683: self.killz = true;
+                   self.killq = true;
+	       684: return self.qlist(b, 2,
+                                   64,
+                                   65);
+
+               691: ! Vanaf 56
+	           "Look at him unflinchingly. ~Don't presume to judge me, devil.~";
+               692:
+	           print "The gargoyle takes a step backwards in shock, an expression of shame on his face.^^
+		   ~I am sorry,~ he says, with difficulty. ~You have enough troubles without my accusations. Perhaps...~ The gargoyle hesitates for a moment, then makes a decision. ~Perhaps it is good if I tell you about my curse, so you can see that I am the very last person who is allowed to reprove you.~^^";
+               693: self.killz = true;
+                   self.killq = true;
+	       694: return self.qlist(b, 2,
+                                   70,
+                                   67);
+
+	       701: ! Vanaf 69, 71, 74, 79
+	           "~Do so. I am curious.~";
+               702:
+	           print "~Good. But I have to warn you, it is a complicated story. The essential point is that I am alive.~";
+		   Utils.press_any_key();
+		   return true;
+               703: self.killz = true;
+                   self.killq = true;
+
+
+               711: ! Vanaf 57
+	           "~No, it cannot.~";
+               712:
+	           print "~If you say so. And what do I know about guilt? Every day I commit the worst of crimes, and yet my remorse is not strong enough to stop me. Shall I tell you about my curse? Perhaps it will amuse you.~^^";
+               713: self.killz = true;
+                   self.killq = true;
+	       714: return self.qlist(b, 2,
+                                   70,
+                                   67);
+
+               721: ! Vanaf 57
+	           "\[Reluctantly\] ~Yes, it can.~";
+               722:
+	           print "~It is courageous of you to admit it. But I feel ashamed; I have no right to attack you like this. Perhaps it is good if I tell you about my curse, so you can see that I am the very last person who is allowed to reprove you.~^^";
+               723: self.killz = true;
+                   self.killq = true;
+	       724: return self.qlist(b, 2,
+                                   66,
+                                   67);
+
+               731: ! Vanaf 57
+	           "Look away and remain silent.";
+               732:
+	           print "A minute goes by, in a silence that becomes more painful with every heartbeat. Then the gargoyle shatters the stillness.^^
+		   ~I should be ashamed. I have no right to attack you in this way.~^^";
+               733: self.killz = true;
+                   self.killq = true;
+	       734: return self.qlist(b, 2,
+                                   64,
+                                   65);
+
+               741: ! Vanaf 59
+	           "~How can I ever fight my own forgetfulness?~";
+               742:
+	           print "~I do not know. You will have to find that out for yourself.~^^
+		   He takes a look over his shoulder, at the imposing castle.^^
+		   ~But perhaps I can help you by telling you something of my own struggle. It is, after all, only a reflection of yours.~";
+               743: self.killz = true;
+                   self.killq = true;
+	       744: return self.qlist(b, 2,
+                                   70,
+                                   67);
+
+               751: ! Vanaf 59
+	           "~Is...is the baron a part of me?~";
+               752:
+	           print "The gargoyle nods, silently.^^";
+               753: self.killz = true;
+                   self.killq = true;
+	       754: return self.qlist(b, 2,
+                                   76,
+                                   77);
+
+               761: ! Vanaf 75
+	           "~And are you a part of me too?~";
+               762:
+	           print "~Yes. All of this is your dream. Or perhaps not a dream, but certainly a play staged by your mind.~^^
+		   You remain silent for some time.^^
+		   ~Perhaps that knowledge can help you. The curse that rests on me, too, is only a reflection of your struggle. Let me tell you about it, perhaps it will give you insight.~^^";
+               763: self.killz = true;
+                   self.killq = true;
+	       764: return self.qlist(b, 2,
+                                   66,
+                                   67);
+
+               771: ! Vanaf 75
+	           "~How can I ever fight a part of myself?~";
+               772:
+	           print "~I do not know. You will have to find that out for yourself.~^^
+		   He takes a look over his shoulder, at the imposing castle.^^
+		   ~But perhaps I can help you by telling you something of my own struggle. It is, after all, only a reflection of yours.~";
+               773: self.killz = true;
+                   self.killq = true;
+	       774: return self.qlist(b, 2,
+                                   66,
+                                   67);
+
+               781: ! Vanaf 60
+	           "~So do wisdom and foolishness. I carry the pain. That is enough, there is no need to judge it.~";
+               782:
+	           print "~You are right. The pain speaks for itself; forgive me my questions. And then, who am I to speak about justice and injustice? Perhaps it is good if I tell you about my curse, so you can see that I am the very last person who is allowed to reprove you.~^^";
+               783: self.killz = true;
+                   self.killq = true;
+	       784: return self.qlist(b, 2,
+                                   66,
+                                   67);
+
+               791: ! Vanaf 60
+	           "~Let it be foolishness--that it perhaps my punishment, to be foolish. I am certainly not wise.~";
+               792:
+	           print "~I am sorry, my questions are indeed nonsensical. All I can do is wish you luck on the remainder of your quest. Unless...~ For a moment the gargoyle hesitates. ~Unless you are interested in hearing the story of my struggle?~^^";
+               793: self.killz = true;
+                   self.killq = true;
+	       794: return self.qlist(b, 2,
+                                   70,
+                                   67);
+
+	       801: ! Vanaf 61 en 63
+	           "~Tell me. I will take your secret with me to the grave.~";
+               802:
+	           print "~My thanks. This really does mean a lot to me. Well, perhaps you have wondered how it is possible that a gargoyle is alive?--that is where my story starts.~";
+		   Utils.press_any_key();
+		   return true;
+               803: self.killz = true;
+                   self.killq = true;
+
+               811: ! Vanaf 61 en 63
+	           "~I am walking towards my death, and you come to tire me with stories about yourself?~";
+               812:
+	           print "The gargoyle looks pained, but answers courteously: ~I am sorry. I should not have mentioned it.~^^
+		   Without looking up again, the stone man turns around and takes off with a few forceful beats of his black wings. He quickly disappears into the darkness of the night.^";
+		   remove gargouille;
+		   return true;
+               813: self.killz = true;
+                   self.killq = true;
+
+	       821: ! Vanaf 62
+	           "\[Wryly\] ~What a pair we are! Come, tell me about your troubles.~";
+               822:
+	           print "~Be thanked. This really does mean a lot to me. Well, perhaps you have wondered how it is possible that a gargoyle is alive?--that is where my story starts.~";
+		   Utils.press_any_key();
+		   return true;
+               823: self.killz = true;
+                   self.killq = true;
+
+               831: ! Vanaf 62
+	           "~I am sorry, but I am too tired to listen and I am too tired to think. I go on, towards my doom.~";
+               832:
+	           print "The gargoyle sighs, deeply. ~So be it. I assume that we will meet again.~^^
+		   Without looking up again, the stone man turns around and takes off with a few forceful beats of his black wings. He quickly disappears into the darkness of the night.^";
+		   remove gargouille;
+		   return true;
+               833: self.killz = true;
+                   self.killq = true;
+
+
+	    }
+	 ],
+   has ;
+
+Object gar_stage3
+ class Character,
+  with afloop 0,
+       quip [a b;
+             switch (a) {
+	       12: self.afloop == 1;
+	           "^~I am made of cold hard stone, and I should be passive, immobile and without feeling. But I am not: I speak, I move, I think, and I feel pleasure and displeasure constantly tumbling over each other. I love life too much to remain as rigid as a statue. Each night I awake, and each night I have to make the choice between suppressing the life in me and remaining a statue, or spreading my wings and flying away.~^";
+               13: self.qtype = 0;
+	            self.qqon  = true;
+                    self.killz = true;
+                    self.killq = true;
+               14: return self.qlist(b, 3,
+                                   2,
+                                   3,
+                                   4);
+
+               21: ! Vanaf 1
+                   "Listen to him silently.";
+               22:
+                   print "~But although I say that there is a choice, in truth this is hardly the case. The lust for life is so strong that all the good intentions of the night before are burnt from my mind. When I feel the warm blood coursing through my veins I lose all restraint, and I jump from the battlements towards a new night.~^^";
+               23: self.killz = true;
+                   self.killq = true;
+               24: return self.qlist(b, 3,
+                                   5,
+                                   6,
+                                   7);
+               31: ! Vanaf 1
+                   "~I cannot fault you for preferring life over the lifelessness of stone.~";
+               32:
+                   print "~Wait with your judgement until you have heard the entire story. Besides, 'preferring' hardly plays a role. The lust for life is so strong that all the good intentions of the night before are burnt from my mind. When I feel the warm blood coursing through my veins I lose all restraint, and I jump from the battlements towards a new night.~^^";
+               33: self.killz = true;
+                   self.killq = true;
+               34: return self.qlist(b, 3,
+                                   5,
+                                   8,
+                                   7);
+               41: ! Vanaf 1
+                   "~It is unnatural. Stone was not meant to move; and truly gargoyles were not meant to talk and feel. You should choose to remain a statue.~";
+               42:
+                   print "~If only it were so easy! Choice hardly comes into it. The lust for life is so strong that all the good intentions of the night before are burnt from my mind. When I feel the warm blood coursing through my veins I lose all restraint, and I jump from the battlements towards a new night.~^^";
+               43: self.killz = true;
+                   self.killq = true;
+               44: return self.qlist(b, 3,
+                                   5,
+                                   6,
+                                   9);
+
+               51: ! Vanaf 2, 3 en 4
+                   "Listen to him silently.";
+               52:
+                   print "~First I simply enjoy the wind past my wings, the rain on my face, the ability to think and experience, the opportunity of moving my muscles. In ecstasy I fly above the world. The forests go by below me, and in the distance I see hills and mountains. It is delightful!^^
+		   ~But soon I remember what I have to do. To keep from returning to stone forever at the end of the night, to ensure that I can taste this divine life again next night, I have to enter the house of a mortal and consume his or her joy. I land next to a bed, put my claw on the sleeping person, and feel how all the positive emotions are pulled from the human and are incorporated into my own body.~^^";
+               53: self.killz = true;
+                   self.killq = true;
+               54: return self.qlist(b, 3,
+                                   10,
+                                   11,
+                                   12,
+				   13);
+               61: ! Vanaf 2 en 4
+                   "~There is always a choice. Saying that you are the slave of your lust is a cheap and dishonest attempt to escape your responsibility.~";
+               62:
+                   print "The gargoyle averts his eyes downwards, and small shudders move through his body. When he starts speaking again his voice sounds like the echo in a tomb.^^
+		   ~First I simply enjoy the wind past my wings, the rain on my face, the ability to think and experience, the opportunity of moving my muscles. In ecstasy I fly above the world. The forests go by below me, and in the distance I see hills and mountains. It is delightful!^^
+		   ~But soon I remember what I have to do. To keep from returning to stone forever at the end of the night, to ensure that I can taste this divine life again next night, I have to enter the house of a mortal and consume his or her joy. I land next to a bed, put my claw on the sleeping person, and feel how all the positive emotions are pulled from the human and are incorporated into my own body.~^^";
+               63: self.killz = true;
+                   self.killq = true;
+               64: return self.qlist(b, 3,
+                                   10,
+                                   11,
+                                   12,
+				   13);
+               71: ! Vanaf 2 en 3
+                   "~I understand. Lust can be more powerful than reason.~";
+               72:
+                   print "~Certainly! And what lust! First I simply enjoy the wind past my wings, the rain on my face, the ability to think and experience, the opportunity of moving my muscles. In ecstasy I fly above the world. The forests go by below me, and in the distance I see hills and mountains. It is delightful!^^
+		   ~But soon I remember what I have to do. To keep from returning to stone forever at the end of the night, to ensure that I can taste this divine life again next night, I have to enter the house of a mortal and consume his or her joy. I land next to a bed, put my claw on the sleeping person, and feel how all the positive emotions are pulled from the human and are incorporated into my own body.~^^";
+               73: self.killz = true;
+                   self.killq = true;
+               74: return self.qlist(b, 3,
+                                   10,
+                                   11,
+                                   12,
+				   13);
+
+               81: ! Vanaf 3
+                   "~Sounds good.~";
+               82:
+                   print "~And it is good--in the beginning. First I simply enjoy the wind past my wings, the rain on my face, the ability to think and experience, the opportunity of moving my muscles. In ecstasy I fly above the world. The forests go by below me, and in the distance I see hills and mountains. It is delightful!^^
+		   ~But soon I remember what I have to do. To keep from returning to stone forever at the end of the night, to ensure that I can taste this divine life again next night, I have to enter the house of a mortal and consume his or her joy. I land next to a bed, put my claw on the sleeping person, and feel how all the positive emotions are pulled from the human and are incorporated into my own body.~^^";
+               83: self.killz = true;
+                   self.killq = true;
+               84: return self.qlist(b, 3,
+                                   10,
+                                   11,
+                                   12,
+				   13);
+               91: ! Vanaf 4
+                   "~I'm not saying you can help it, but I disapprove of it in the strongest possible terms.~";
+               92:
+                   print "~Rightfully so. Presently it will become obvious how much disapproval it in fact deserves.^^
+		   ~First I simply enjoy the wind past my wings, the rain on my face, the ability to think and experience, the opportunity of moving my muscles. In ecstasy I fly above the world. The forests go by below me, and in the distance I see hills and mountains. It is delightful!^^
+		   ~But soon I remember what I have to do. To keep from returning to stone forever at the end of the night, to ensure that I can taste this divine life again next night, I have to enter the house of a mortal and consume his or her joy. I land next to a bed, put my claw on the sleeping person, and feel how all the positive emotions are pulled from the human and are incorporated into my own body.~^^";
+               93: self.killz = true;
+                   self.killq = true;
+               94: return self.qlist(b, 3,
+                                   10,
+                                   11,
+                                   12,
+				   13);
+
+               101: ! Vanaf 5-9
+                   "~My god, that is horrible.~";
+               102:
+                   print "~It is terrible. For many months, the person whom I have visited will know no joy, no hope, no security, no love. And as I do my deed a deep, deep hatred rises inside me, hatred for who I am and what I do. All my own joy withers and dies, and what remains is pure loathing for the monster that I am. I decide never to do it again, to resist the impulse the next night and remain a statue.^^
+		   ~But when the next night comes, I act like I have always done.~^^";
+               103: self.killz = true;
+                   self.killq = true;
+               104: return self.qlist(b, 3,
+                                   14,
+                                   15,
+                                   16);
+               111: ! Vanaf 5-9
+                   "~Horrible! How can you do something like that?~";
+               112:
+                   print "~Truly, it is terrible, and I have no excuse. All I can say is that I am too weak to resist my lust.^^
+		   ~For many months, the person whom I have visited will know no joy, no hope, no security, no love. And as I do my deed a deep, deep hatred rises inside me, hatred for who I am and what I do. All my own joy withers and dies, and what remains is pure loathing for the monster that I am. I decide never to do it again, to resist the impulse the next night and remain a statue.^^
+		   ~But when the next night comes, I act like I have always done.~^^";
+               113: self.killz = true;
+                   self.killq = true;
+               114: return self.qlist(b, 3,
+                                   14,
+                                   15,
+                                   16);
+               121: ! Vanaf 5-9
+                   "\[Threateningly\] ~Have you ever visited me, monster?~";
+               122:
+                   print "~No, I have never visited you. Only happy people can transfer their joy, their hope, their security and their love to me. Visiting you would therefore be useless.^^
+		   ~As I condemn a happy person to unhappiness in this way, a deep, deep hatred rises inside me, hatred for who I am and what I do. All my own joy withers and dies, and what remains is pure loathing for the monster that I am. I decide never to do it again, to resist the impulse the next night and remain a statue.^^
+		   ~But when the next night comes, I act like I have always done.~^^";
+               123: self.killz = true;
+                   self.killq = true;
+               124: return self.qlist(b, 3,
+                                   14,
+                                   15,
+                                   16);
+
+               131: ! Vanaf 5-9
+                   "\[Threateningly\] ~Have you ever visited my daughter, monster?~";
+               132:
+                   print "~No, I have never visited Maartje. Only happy people can transfer their joy, their hope, their security and their love to me. Visiting her would therefore be useless.^^
+		   ~As I condemn a happy person to unhappiness in this way, a deep, deep hatred rises inside me, hatred for who I am and what I do. All my own joy withers and dies, and what remains is pure loathing for the monster that I am. I decide never to do it again, to resist the impulse the next night and remain a statue.^^
+		   ~But when the next night comes, I act like I have always done.~^^";
+               133: self.killz = true;
+                   self.killq = true;
+               134: return self.qlist(b, 3,
+                                   14,
+                                   15,
+                                   16);
+
+               141: ! Vanaf 10-13
+                   "Remain silent, understanding.";
+               142:
+                   print "~What do you think,~ the gargoyle asks despairingly, ~can I ever change?~^^";
+               143: self.killz = true;
+                   self.killq = true;
+               144: return self.qlist(b, 3,
+                                   17,
+                                   18,
+                                   19);
+               151: ! Vanaf 10-13
+                   "Remain silent, incomprehending.";
+               152:
+                   print "~What do you think,~ the gargoyle asks despairingly, ~can I ever change?~^^";
+               153: self.killz = true;
+                   self.killq = true;
+               154: return self.qlist(b, 3,
+                                   17,
+                                   18,
+                                   19);
+               161: ! Vanaf 10-13
+                   "~We are more alike than I thought.~";
+               162:
+                   print "~~What do you think,~ the gargoyle asks despairingly, ~can I ever change?~^^";
+               163: self.killz = true;
+                   self.killq = true;
+               164: return self.qlist(b, 3,
+                                   17,
+                                   18,
+                                   19);
+
+               171: ! Vanaf 14-16
+                   "~No. No, I don't think so.~";
+               172:
+	           self.qoff(22); self.qoff(30); self.qoff(32);
+                   print "All strength disappears from the gargoyle's form. With his drooping wings and bent back he seems to be hewn from black tallow rather than from stone.^^
+		   ~But could you,~ he says with difficulty, ~forgive me my crimes?~^^";
+               173: self.killz = true;
+                   self.killq = true;
+               174: return self.qlist(b, 5,
+                                   20,
+                                   21,
+                                   22,
+				   23,
+				   24);
+               181: ! Vanaf 14-16
+                   "~I hope so, from the depth of my heart. But I doubt it.~";
+               182:
+	           self.qoff(26); self.qoff(28); self.qoff(31);
+                   print "He nods. ~Doubt and hope, they are my most loyal companions. Only the future will teach whether I can escape my bitter fate.^^
+		   ~But could you ever forgive me my crimes?~^^";
+               183: self.killz = true;
+                   self.killq = true;
+               184: return self.qlist(b, 5,
+                                   20,
+                                   21,
+                                   22,
+				   23,
+				   24);
+               191: ! Vanaf 14-16
+                   "~Yes. Yes, everyone can change, no matter what has happened before.~";
+               192:
+	           self.qoff(26); self.qoff(28); self.qoff(31);
+                   print "The gargoyle immediately brightens. A small smile appears on his face.^^
+		   ~Truly? Even I? Whether it is true or not, it is such a beautiful thought that I want to cherish it.^^
+		   ~But even if I can change, can my deeds ever been forgiven?~^^";
+               193: self.killz = true;
+                   self.killq = true;
+               194: return self.qlist(b, 5,
+                                   20,
+                                   21,
+                                   22,
+				   23,
+				   24);
+
+               201: ! Vanaf 17 - 19
+                   "~No. The deeds that weigh on your conscience can never be forgiven. You will always be guilty.~";
+               202:
+	           self.qoff(30);
+                   print "The stone man raises his head and emits a cry wherein so much pain resounds that you half expect the castle walls to crack and crumble. Then he lets his head fall to his chest and closes his eyes. His entire body shakes uncontrollably.^^";
+               203: self.killz = true;
+                   self.killq = true;
+               204: return self.qlist(b,   8,  25,26,27,28,29) |
+                           self.qlist(b-6,     30,31,32);
+
+               211: ! Vanaf 17 - 19
+                   "~No, I am not the person of whom you must ask forgiveness. Only your victims can forgive you.~";
+               212:
+	           self.qoff(25); self.qoff(32);
+                   print "Dispirited, the stone man nods.^^
+		   ~Most of them have been dead for decades. I will have to carry the weight of my guilt for the rest of eternity.~^^
+		   He closes his eyes. His entire body shakes uncontrollably.^^";
+               213: self.killz = true;
+                   self.killq = true;
+               214: return self.qlist(b,   8,  25,26,27,28,29) |
+                           self.qlist(b-6,     30,31,32);
+
+               221: ! Vanaf 17 - 19
+                   "~Forgiveness has to be earned. Make sure you are truly repentant and will never do it again--then you will be forgiven.~";
+               222:
+	           self.qoff(25); self.qoff(32);
+                   print
+		     "Emotionless the stone man stares at you.^^
+		     ~I am more sorry than I can express in words. But as to whether I can ever stop committing new crimes...I can only hope so.~^^";
+               223:self.killz = true;
+                   self.killq = true;
+               224: return self.qlist(b,   8,  25,26,27,28,29) |
+                           self.qlist(b-6,     30,31,32);
+
+               231: ! Vanaf 17 - 19
+                   "~Yes. I understand you. I know you have tried to fight against it. I forgive you all your crimes.~";
+               232:
+	           self.qoff(25); self.qoff(32);
+                   print "The stone man walks towards you and, to your astonishment, embraces you.^^
+		   ~Friend,~ he sobs, ~you do not know how much this means to me.~^^
+                   Then he lets go, while the tears still roll across his face.^^";
+               233: self.killz = true;
+                   self.killq = true;
+               234: return self.qlist(b,   8,  25,26,27,28,29) |
+                           self.qlist(b-6,     30,31,32);
+
+               241: ! Vanaf 17 - 19
+                   "~There is nothing to be forgiven, because there is no such thing as guilt. You have done what you had to do, the only thing you could do. It makes no sense to reproach yourself for that.~";
+               242:
+	           self.qoff(25); self.qoff(32);
+                   print "Looking into infinity, the gargoyle stares into the night.^^
+		   ~I will think about it,~ he says finally. ~I cannot quite understand your answer right now. It is a dangerous way of thinking--you are more like the baron than I had expected.~^^";
+               243: self.killz = true;
+                   self.killq = true;
+               244: return self.qlist(b,   8,  25,26,27,28,29) |
+                           self.qlist(b-6,     30,31,32);
+
+               251: ! Vanaf 20
+                   "Kill him. ~You are a monster, and it is my duty to free the world from your presence.~";
+               252:
+                   print "~But, but...~, the gargoyle starts, ";
+		   if(parent(axe) == player) {
+		      print "but your axe has already found his neck. The body immediately crumbles into a fine dust which is dispersed by the wind. Only his head rolls a small way across the drawbridge and remains there.^^";
+		      move gar_hoofd to ophaalbrug;
+		    } else {
+		      print "but then you have already grabbed his head with two arms, and you give it a sharp turn and a forceful wrench. To your amazement you easily pull it from his shoulders. His body immediately crumbles into a fine dust which is dispersed by the wind.^";
+		      move gar_hoofd to player;
+		    }
+		    self.afloop = 2;
+		    remove gargouille;
+		    return true;
+               253: self.killz = true;
+                   self.killq = true;
+
+               261: ! Vanaf 20-24
+                   "Kill him. ~You will never be able to change, and that means I cannot allow you to live.~";
+               262:
+                   print "Tears roll across his cheeks, but he kneels before you. ";
+		   if(parent(axe) == player) {
+		      print "With a single forceful blow of your axe you decapitate him. The body immediately crumbles into a fine dust which is dispersed by the wind. Only his head rolls a small way across the drawbridge and remains there.^^";
+		      move gar_hoofd to ophaalbrug;
+		    } else {
+		      print "With a single jerk you almost effortlessly pull his head from his shoulders. His body immediately crumbles into a fine dust which is dispersed by the wind.^";
+		      move gar_hoofd to player;
+		    }
+		    self.afloop = 3;
+		    remove gargouille;
+		    return true;
+               263: self.killz = true;
+                   self.killq = true;
+
+               271: ! Vanaf 20-24
+                   "Kill him. ~It will spare you so much pain if I end your existence here and now.~";
+               272:
+                   print "~You are right,~ he whispers, broken. Tears roll across his cheeks, but he kneels before you. You lean towards him and kiss him on his forehead.^^";
+		   if(parent(axe) == player) {
+		      print "Then you decapitate him with a single forceful blow of your axe. The body immediately crumbles into a fine dust which is dispersed by the wind. Only his head rolls a small way across the drawbridge and remains there.^^";
+		      move gar_hoofd to ophaalbrug;
+		    } else {
+		      print "Then you almost effortlessly pull his head from his shoulders with a single forceful jerk. His body immediately crumbles into a fine dust which is dispersed by the wind.^";
+		      move gar_hoofd to player;
+		    }
+		    self.afloop = 4;
+		    remove gargouille;
+		    return true;
+               273: self.killz = true;
+                   self.killq = true;
+
+               281: ! Vanaf 20-24
+                   "~If you remain alive, you will always be a scourge to mankind. Make an end, at this moment, to the parody of life in which you are imprisoned--it is for the best.~";
+               282:
+                   print "Astounded and in shock the gargoyle looks at you, but then, slowly, you see the insight awake in him. ~You, you are right,~ he stammers. ~I do not deserve to live. I must die. Now...now!~^^
+		   Then his claws bury into his chest, shattering ribs while black blood gushes over his arms. With his face contorted into a grimace of pain and madness he pulls his beating heart from his body and raises it into the air. He screams--inhumanly, the scream of a beast or a devil, so vehement and fierce that you put your hands over your ears and close your eyes. When the sound finally diminishes and dies out, and you open your eyes again, no trace of the gargoyle can be seen. Only his heart, now still and cold as ice, lies on the ground before you.^";
+		   self.afloop = 5;
+		   remove gargouille; move gar_hart to ophaalbrug;
+		   return true;
+               283: self.killz = true;
+                   self.killq = true;
+
+               291: ! Vanaf 20-24
+                   "~Do yourself a favour and commit suicide. As long as you live, you will only find more pain.~";
+               292:
+                   print "Astounded and in shock the gargoyle looks at you, but then, slowly, you see the insight awake in him. ~You, you are right,~ he stammers. ~Life is only a hell for me. It's better for me to end it, right now, while you are here and I may have the strength to do it!~^^
+		   Then his claws bury into his chest, shattering ribs while black blood gushes over his arms. With his face contorted into a grimace of pain and madness he pulls his beating heart from his body and raises it into the air. He screams--inhumanly, the scream of a beast or a devil, so vehement and fierce that you put your hands over your ears and close your eyes. When the sound finally diminishes and dies out, and you open your eyes again, no trace of the gargoyle can be seen. Only his heart, now still and cold as ice, lies on the ground before you.^";
+		   self.afloop = 6;
+		   remove gargouille; move gar_hart to ophaalbrug;
+		   return true;
+               293: self.killz = true;
+                   self.killq = true;
+
+               301: ! Vanaf 21-24
+                   "~Farewell, and I wish you success with you attempt to change. I shall pray that some day you will be without sin and without lust.~";
+               302:
+                   print "~I am grateful. I hope that you too will be successful in your quest, and will be able to escape from your distress.~^^
+		   The gargoyle bows deeply before you, then turns around. Several beats of his large wings, and he flies away over the trees--on his way to a new victim. Or will he be able to conquer his lust tonight?^";
+		   self.afloop = 7;
+		   remove gargouille;
+		   return true;
+               303: self.killz = true;
+                   self.killq = true;
+
+               311: ! Vanaf 20-24
+                   "~Farewell. My thoughts are with you on your endless circle of pain.~";
+               312:
+                   print "Solemnly the gargoyle bows, then turns around. Several beats of his large wings, and he flies away over the trees--on his way to a new victim.^";
+		   self.afloop = 8;
+		   remove gargouille;
+		   return true;
+               313: self.killz = true;
+                   self.killq = true;
+
+               321: ! Vanaf 20
+                   "~Farewell, and I wish you success with your attempt to change. I shall pray that some day you will be without lust and will have learnt to live with your inhuman guilt~";
+               322:
+                   print "~~I am grateful. I hope that you too will be successful in your quest, and will be able to escape from your distress.~^^
+		   The gargoyle bows deeply before you, then turns around. Several beats of his large wings, and he flies away over the trees--on his way to a new victim. Or will he be able to conquer his lust tonight?^^";
+		   self.afloop = 9;
+		   remove gargouille;
+		   return true;
+               323: self.killz = true;
+                   self.killq = true;
+
+	  }
+	],
+  has ;
