@@ -980,10 +980,8 @@ Object	Utils "(Utilities)"
 			if (metaclass(obj) == Object) {
 				switch (GetGNAOfObject(obj)) {
 					0, 6:
-						!! if (capitalized) print "Él";
-						!! else print "él";
-						if (capitalized) print "Ello";
-						else print "ello";
+						if (capitalized) print "Él";
+						else print "él";
 					1, 7:
 						if (capitalized) print "Ella";
 						else print "ella";

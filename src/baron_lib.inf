@@ -97,7 +97,7 @@ Attribute described;
 	if (Story ~= 0) {
 		previous_style = Utils.set_text_style(TEXT_STYLE_HEADER);
 		print (string) Story;
-		switch (Scene) {
+		switch (SCENE) {
 			1: print " — Escena uno";
 			2: print " — Escena dos";
 			3: print " — Escena tres";

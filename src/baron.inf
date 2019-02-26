@@ -93,10 +93,10 @@ Constant Story
 Constant Headline
 "Una historia interactiva. Escrita por Victor Gijsbers y publicada bajo la Licencia Pública General de GNU en su versión 3 (o cualquier versión posterior). La presente edición ha sido desarrollada por J. Francisco Martín.";
 
-Constant Scene 1;
-
 Constant Checking 0;
 Release 0;
+
+Constant SCENE 1;
 
 !! Descomentar para compilar la versión Web/Móvil:
 !! Constant VERSION_WEB_MOBILE;
@@ -907,9 +907,9 @@ Include "vorple-screen-effects.h";
 	ChangePlayer(Baron);
 
 	!! Establece la localidad inicial del relato:
-	switch (Scene) {
+	switch (SCENE) {
 		default:
-			location = GrutaVestibulo;
+			location = GrutaDragon;
 	}
 
 	!! Lookmode largo:
@@ -1293,6 +1293,28 @@ Extend 'cava' first
 ;
 
 !!------------------------------------------------------------------------------
+!! ##Enter
+!!------------------------------------------------------------------------------
+
+Verb	'escapa' 'huye'
+	*								-> VagueGo
+	* noun=ADirection				-> Go
+	* 'a//' noun=ADirection			-> Go
+	* 'hacia' noun=ADirection		-> Go
+	* noun							-> Enter
+	* 'a//' noun					-> Enter
+	* 'hacia' noun					-> Enter
+	* 'por' noun					-> Enter
+;
+VerboIrregular "huye" with imperativo 'huir';
+
+!!------------------------------------------------------------------------------
+!! ##Go
+!!
+!!	@see ##Enter
+!!------------------------------------------------------------------------------
+
+!!------------------------------------------------------------------------------
 !! ##Help
 !!------------------------------------------------------------------------------
 
@@ -1429,6 +1451,13 @@ Verb	'conversa' 'platica'
 	}
 	" interesad", (o) noun, " en hablar ", (contigo) player, ".";
 ];
+
+!!------------------------------------------------------------------------------
+!! ##VagueGo
+!!
+!!	@see ##Enter
+!!------------------------------------------------------------------------------
+
 
 !! FIXME
 [ CrossSub; ];

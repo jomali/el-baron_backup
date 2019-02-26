@@ -48,21 +48,73 @@
 !!
 !!------------------------------------------------------------------------------
 
-[ EndSceneOne;
-	Baron.is_blind = false;
-	Baron.is_burning = false;
-	Baron.is_running_away = false;
+[ EndSceneOne
+	previous_style obj;
+	print "^^^";
+	print (parser) "Pulsa una tecla.";
+	Utils.press_any_key();
+	Utils.erase_window();
+
+	!! Actualizaciones de estado:
 	StopDaemon(Baron);
 	StopDaemon(Dragon);
 	StopDaemon(GrutaVestibulo);
-	move Armadura to GrutaVestibulo;
-	move Casco to GrutaVestibulo;
-	move HachaGuerra to GrutaVestibulo;
+	Baron.is_blind = false;
+	Baron.is_burning = false;
+	Baron.is_running_away = false;
+	move Armadura to Limbo;
+	move Casco to Limbo;
+	move HachaGuerra to Limbo;
+
+	!! Créditos:
+	new_line;
+	VersionSub();
+	Utils.press_any_key();
+	Utils.erase_window();
+
+	!! Recapitulación de decisiones del usuario:
+	new_line;
+	print (important) "A continuación se listan las distintas decisiones y eventos que has experimentado a lo largo de la partida:";
+	new_line;
+	objectloop(obj in E1_Recapitulacion && obj has on) {
+		new_line;
+		previous_style = Utils.set_text_style(TEXT_STYLE_REVERSED);
+		print "\[ ";
+		PrintToBuffer(temp_array, INPUT_BUFFER_LEN, obj);
+		PrintCharacterArrayUpperCase(temp_array);
+		print " \]";
+		Utils.set_text_style(previous_style);
+		print " − ", (string) obj.description;
+		new_line;
+		Utils.press_any_key();
+	}
+	new_line;
+	print (important) "Las siguientes, en cambio, son distintas posibilidades que se han quedado sin explorar:";
+	new_line;
+	objectloop(obj in E1_Recapitulacion && obj hasnt on) {
+		new_line;
+		previous_style = Utils.set_text_style(TEXT_STYLE_NOTE);
+		print "\[ ";
+		PrintToBuffer(temp_array, INPUT_BUFFER_LEN, obj);
+		PrintCharacterArrayUpperCase(temp_array);
+		print " \]";
+		Utils.set_text_style(TEXT_STYLE_PARSER);
+		print " − ", (string) obj.description;
+		Utils.set_text_style(previous_style);
+		new_line;
+		Utils.press_any_key();
+	}
+	new_line;
+	print (important) "Aquí termina la demostración.";
+	new_line;
+	new_line;
+	print (parser) "Pulsa una tecla para salir.";
+	Utils.press_any_key();
+	quit;
 ];
 
 !! @Tutorial
 Object	Tutorial "(Tutorial)"
- has	scenery,
  with	hint_actions [;
 			if (~~self.hint_actions_printed) {
 				self.hint_actions_on = true;
@@ -202,8 +254,32 @@ Object	Tutorial "(Tutorial)"
 		],
 ;
 
+
+!!==============================================================================
+!!
+!!	1)	En algún lugar...
+!!
+!!------------------------------------------------------------------------------
+
+!! @Limbo
+Room	Limbo "En algún lugar..."
+ with	name_f	'babia' 'parte',
+		name_m	'limbo' 'lugar' 'sueno' 'vacio',
+		gender	G_MASCULINO,
+		adjectives 'algun' 'alguna',
+		!!------------------
+		description [;
+			print "Más allá de la barrera casi insuperable que separa la realidad de todo lo demás. Un lugar etéreo, donde la vida, la materia y la vitalidad no son necesariamente constantes; un lugar donde el tiempo y el espacio no existen tal y como los capta nuestro ser despierto...";
+			if (self hasnt visited) {
+				print " *bienvenido al mundo del sueño*.";
+			}
+			new_line;
+			return true;
+		],
+ has	male;
+
 !! @Armadura
-Item	Armadura
+Item	-> Armadura
  class	Clothes,
  has	male,
  with	short_name [;
@@ -217,10 +293,44 @@ Item	Armadura
 		gender G_MASCULINO,
 		adjectives 'acero' 'completo' 'conjunto' 'cuero',
 		!!------------------
+		before [;
+			Disrobe:
+				if (Baron.is_burning) {
+					print "El metal fundido de la armadura te perfora el cuerpo. Querrías quitártela. Arrancarte la piel. Pero no tienes cómo.";
+				} else {
+					print "No puedes quitarte la [self](armadura:1) solo; está asegurada con apretadas cintas de cuero a la espalda.";
+					if (~~self.try_to_disrobe) {
+						self.try_to_disrobe = true;
+						print " Una vez hayas derrotado al dragón y salgas de aquí podrás quitártela de encima con ayuda de tu escudero.";
+					}
+					new_line;
+					return true;
+				}
+		],
+		description [;
+			if (Baron.is_burning) {
+				print "Incluso el acero de la [self](armadura:1) se está fundiendo con el calor del fuego. Sientes las gotas de metal líquido abriéndose paso a través de tu piel como cuchillos.";
+			} else {
+				if (real_location == GrutaDragon or GrutaPasadizo) {
+					print "Por su culpa estás sudando copiosamente, pero jamás";
+				} else {
+					print "Jamás";
+				}
+				print " te enfrentarías al dragón sin un conjunto completo de [self](armadura:1). Gruesas placas de acero sobre cota de mallas, todo bien engrasado, que garantiza la mayor protección posible contra cualquier tipo de ataque físico. El conjunto está ajustado por unas cintas de cuero, a la espalda.";
+			}
+			new_line;
+			return true;
+		],
+		reset [;
+			self.try_to_disrobe = false;
+			move self to Limbo;
+		],
+ private
+		try_to_disrobe false,
 ;
 
 !! @Casco
-Item	Casco "casco"
+Item	-> Casco "casco"
  class	Clothes,
  has	male transparent,
  with	name_m 'casco' 'morrion' 'yelmo',
@@ -272,12 +382,15 @@ Item	Casco "casco"
 			new_line;
 			return true;
 		],
+		reset [;
+			move self to Limbo;
+		],
 ;
 
 !! @CascoVisera
 !! TODO - Aceptar los adjetivos abierto/cerrado contextualmente (modificando
 !! la rutina de parsing del propio objeto)
-Item	CascoVisera "visera" Casco
+Item	-> -> CascoVisera "visera"
  has	female open openable,
  with	name_f 'visera',
 		name_m 'visor',
@@ -304,39 +417,104 @@ Item	CascoVisera "visera" Casco
 			Examine:
 				<<Examine Casco>>;
 		],
+		reset [;
+			give self open;
+		],
 ;
 
-!! @GrutaFuego
-Atrezzo	GrutaFuego "fuego"
- has	male,
- with	found_in GrutaDragon GrutaPasadizo GrutaVestibulo,
-		name_f 'claridad' 'llama' 'luz',
+!! @Fuego
+Item	-> Fuego "fuego"
+ has	light male,
+ with	name_f 'claridad' 'llama' 'luz',
 		name_fp 'llamas',
 		name_m 'fuego' 'fulgor' 'resplandor',
 		name_mp 'fuegos',
 		gender G_MASCULINO,
 		adjectives 'lengua' 'lenguas',
 		!!------------------
+		!! TODO
+		reset [;
+			move self to Limbo;
+		],
 ;
 
 !! @HachaGuerra
-Item	HachaGuerra
+Item	-> HachaGuerra
  has	male,
  with	short_name [;
 			print "[](hacha:2) de guerra";
 			return true;
 		],
-		name_m 'arma' 'hacha',
+		name_m 'arma' 'hacha' 'percunos' 'perkwunos',
 		gender G_MASCULINO,
 		adjectives 'batalla' 'guerra',
 		article "tu",
 		!!------------------
+		description [;
+			print "Para esta gesta has traído el más pesado de tus hachas de guerra; *Percunos*. Pocos pueden levantar su peso, y menos aún manejarlo con tu misma velocidad y precisión mortíferas.";
+			new_line;
+			return true;
+		],
+		reset [;
+			move self to Limbo;
+		],
+;
+
+!! @E1_Recapitulacion
+Object	E1_Recapitulacion "(Escena Uno Recap.)" Limbo;
+
+!! @E1_CodigoCaballeria
+Object	-> -> E1_CodigoCaballeria "Código de caballería"
+ with	description
+			"Te has enfrentado al dragón respetando el código de honor de la orden de caballería; equipado con arma, casco y armadura, pero con el rostro descubierto para que la bestia pueda mirarte a los ojos en el momento de acabar con su vida.",
+;
+
+!! @E1_MasValePrevenir
+Object	-> -> E1_MasValePrevenir "Más vale prevenir"
+ with	description
+			"Te has enfrentado al dragón asumiendo de antemano todas las precacuciones posibles; equipado con arma, casco y armadura, y con el visor del casco cerrado para protegerte el rostro.",
+;
+
+!! @E1_Berserker
+Object	-> -> E1_Berserker "Berserker"
+ with	description
+			"Te has enfrentado al dragón sin tu casco y completamente desarmado.",
+;
+
+!! @E1_EnElSeptimoCirculo
+Object	-> -> E1_EnElSeptimoCirculo "En el séptimo círculo"
+ with	description
+			"El dragón ha escupido dos llamaradas sobre ti.",
+;
+
+!! @E1_ElHombreArdiente
+Object	-> -> E1_ElHombreArdiente "El hombre ardiente"
+ with	description
+			"Después de que el dragón haya escupido un chorro de fuego sobre ti, has ardido durante varios turnos hasta que por fin has muerto por las quemaduras.",
+;
+
+!! @E1_UnGongInfernal
+Object	-> -> E1_UnGongInfernal "Un gong infernal"
+ with	description
+			"Presa del pánico, has aporreado las puertas de bronce intentando huir del fuego del dragón pero nadie ha respondido a tu llamada.",
+;
+
+!! @E1_YEseRuido
+Object	-> -> E1_YEseRuido "¿Y ese ruido?"
+ with	description
+			"Lo último que has escuchado ha sido un desagradable crujido mientras el dragón se te comía vivo.",
+;
+
+!! @E1_ExcavandoDemasiadoProfundo
+Object	-> -> E1_ExcavandoDemasiadoProfundo "Excavando demasiado profundo"
+ with	description
+			"Has muerto al caer en un lago de magma en lo más profundo de la gruta.",
 ;
 
 
 !!==============================================================================
 !!
-!!	1)	Vestíbulo de la gruta
+!!	2)	Vestíbulo de la gruta
 !!
 !!------------------------------------------------------------------------------
 
@@ -350,6 +528,23 @@ AdjacentRoom	DirGrutaVestibulo "vestíbulo"
 		adjectives 'fresca' 'fresco' 'pequena' 'pequeno' 'rectangular',
 		!!------------------
 		adjacent_room GrutaVestibulo,
+		before [;
+			Enter:
+				if (Baron.is_burning) {
+					print "Corres desesperadamente de vuelta al [GrutaVestibulo](vestíbulo), destrozando a tu paso [los Huesos] del suelo.";
+				} else {
+					print "Regresas al [GrutaVestibulo](vestíbulo), destrozando a tu paso [los Huesos] que alfombran el suelo.";
+				}
+				new_line;
+				new_line;
+				self.AdjacentRoom::before();
+				return true;
+		],
+		description [;
+			print "El frescor relativo [del self] aguarda un poco más allá.";
+			new_line;
+			return true;
+		],
 ;
 
 !! @GrutaVestibulo
@@ -385,6 +580,9 @@ Indoors	GrutaVestibulo "Vestíbulo de la gruta"
 				new_line;
 				return true;
 		],
+		brighter [;
+			!! TODO
+		],
 		daemon [ flag;
 			!! Los ojos del Barón se acostumbran automáticamente a la oscuridad
 			!! de la gruta tras "limit_a + limit_b" turnos:
@@ -417,8 +615,9 @@ Indoors	GrutaVestibulo "Vestíbulo de la gruta"
 				move HachaGuerra to Baron;
 				give Armadura worn;
 				give Casco worn;
-				Baron.is_blind = true;
- 				StartDaemon(self);
+				!! TODO
+				!! Baron.is_blind = true;
+ 				!! StartDaemon(self);
 				print "^^^^
 				Las [GrutaPuertas](puertas:1) de bronce se cierran a tu espalda y escuchas el chirrido de pesados cerrojos deslizándose en su interior. Está bien; te puedes encargar de esto tú solo. Con el [HachaGuerra](hacha:1) en alto das un paso adelante, hacia el calor.
 				^^^^";
@@ -446,6 +645,13 @@ Character	-> Baron
  with	name_m 'personaje' 'protagonista',
 		gender G_MASCULINO,
 		!!------------------
+		!! TODO
+		reset [;
+			self.is_blind = false;
+			self.is_burning = false;
+			self.is_running_away = false;
+		],
+		!!------------------
 		is_blind false,
 		is_burning false,
 		is_running_away false,
@@ -462,8 +668,45 @@ Item	-> GrutaPuertas
 		name_fp 'puertas',
 		gender G_FEMENINO + G_PLURAL,
 		adjectives 'bronce' 'cerrada' 'cerradas',
-	!!------------------
+		!!------------------
+		before [;
+			!! TODO Touch/Pull/Push
+			Lock,
+			Unlock:
+				print "No parece haber ningún cerrojo. No en este lado.";
+				new_line;
+				return true;
+			Open:
+				print "Las [self](puertas) han sido trancadas desde el otro lado y ni siquiera el dragón podría abrirlas desde aquí. Esa es la idea. El acuerdo es que llamarás con un golpe para que te abran una vez hayas derrotado al monstruo.";
+				new_line;
+				return true;
+		],
+		description [;
+			!! TODO Barón en llamas
+			if (Baron.is_blind) {
+				print "Todo ha quedado en penumbras tras cerrarse las [self](puertas) a tu espalda.";
+			} else if (self hasnt described) {
+				print "Dos imponentes [self] bloquean la salida de la gruta. Tienen grabadas toscas formas ornamentales entre las que adviertes la [GrutaPuertasGrabado](figura:2) de un hombre que parece arder en llamas.";
+			} else {
+				print "Dos imponentes [self] bloquean la salida de la gruta. Están decoradas con el [GrutaPuertasGrabado](grabado:2) de un hombre que arde en llamas.";
+			}
+			new_line;
+			return true;
+		],
 ;
+
+   !! Object grot_deuren "bronze doors" GrutaVestibulo
+	!!       Knock: if(Baron.is_burning == 0) {
+	!!                 "Before you have even tried to kill the dragon? You are no coward.";
+	!! 	     } else {
+	!! 	        print "You run towards the doors in blind panic. The burning man in the bronze relief looks at you with laughing eyes, his ecstatic grin mocking your tortured cries. ~Enjoy the heat!~, he seems to be saying. ~You will learn to love it!~ You hit him as hard as you can with the steel glove on your right hand; a tremendous sound, harrowingly dissonant, resounds through the cave.";
+   !!
+	!! 		Utils.press_any_key();
+   !!
+	!! 		print "But the doors do not move. Nobody comes to open them. Again, screaming--the heat of the flames vaporising the blood in your veins--you hit the door with all the force you can muster; and again the harsh sound rings out, like Satan beating a gong in the depths of Hell--but again the door remains immobile. You try to knock once more, but your knees buckle, your legs fold beneath you and you hit the ground... you cannot think through the pain, the heat... you can only see darkness...";
+	!! 		EndSceneOne(); return true;
+	!! 	     }
+	!!     ],
 
 !! @GrutaPuertasGrabado
 Atrezzo	-> -> GrutaPuertasGrabado
@@ -476,7 +719,45 @@ Atrezzo	-> -> GrutaPuertasGrabado
 		name_m 'aforno' 'caballero' 'grabado' 'hombre',
 		gender G_MASCULINO,
 		adjectives 'ardiendo' 'llamas' 'un' 'una',
-	!!------------------
+		!!------------------
+		before [
+			obj;
+			Pull,
+			Push,
+			PushDir,
+			Turn:
+				obj = parent(self);
+				<<Push obj>>;
+			Take:
+				obj = parent(self);
+				<<Take obj>>;
+			Touch:
+				obj = parent(self);
+				<<Touch obj>>;
+		],
+		description [;
+			print "En lugar de la expresión de tormento que cabría esperar de un hombre ardiendo, el rostro de la figura grabada en el bronce refleja algo muy distinto: ansia; anhelo.";
+			if (Baron.is_burning) {
+				print " Horrorizado comprendes que tu propia cara debe estar mostrando exactamente lo mismo.";
+			} else {
+				print " Lejos de agonizar en las llamas la figura parece estar deleitándose en ellas.";
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! @GrutaVestibuloFuego
+Atrezzo	-> GrutaVestibuloFuego "fuego"
+ has	light male,
+ with	name_f 'claridad' 'llama' 'luz',
+		name_fp 'llamas',
+		name_m 'fuego' 'fulgor' 'resplandor',
+		name_mp 'fuegos',
+		gender G_MASCULINO,
+		adjectives 'lengua' 'lenguas',
+		!!------------------
+		!! TODO
 ;
 
 !! @Huesos
@@ -491,6 +772,17 @@ Atrezzo	-> Huesos "huesos"
 			'ennegrecido' 'ennegrecidos' 'humana' 'humanas' 'humano' 'humanos'
 			'negra' 'negras' 'negro' 'negros',
 		!!------------------
+		before [;
+			Take:
+				print "No tienes intención de cargar con recuerdos del fracaso de aquellos que vinieron aquí antes que tú.";
+				new_line;
+				return true;
+		],
+		description [;
+			print "El suelo está cubierto de esqueletos despedazados. Negros por el fuego que en algún momento consumió la carne de sus cuerpos.";
+			new_line;
+			return true;
+		],
 ;
 
 !! @Marmol
@@ -503,6 +795,9 @@ Atrezzo	-> Marmol "mármol"
 		adjectives 'negra' 'negras' 'negro' 'planchas' 'pulida' 'pulidas'
 			'pulido',
 		!!------------------
+		before [;
+			!! TODO Touch/Pull/Push
+		],
 		description [;
 			print "Tanto las paredes como el techo están cubiertos por unas placas de [self] negro muy pulido. Sus vetas forman [MarmolVetas](patrones:2) intrincados sobre la superficie.";
 			new_line;
@@ -511,7 +806,7 @@ Atrezzo	-> Marmol "mármol"
 ;
 
 !! @MarmolVetas
-Atrezzo	-> MarmolVetas "vetas"
+Atrezzo	-> -> MarmolVetas "vetas"
  has	male pluralname,
  with	name_f 'estria' 'linea' 'raya' 'veta',
 		name_fp 'estrias' 'lineas' 'rayas' 'vetas',
@@ -520,9 +815,35 @@ Atrezzo	-> MarmolVetas "vetas"
 		gender G_FEMENINO + G_PLURAL,
 		adjectives 'blanca' 'blancas' 'blanco' 'blancos' 'marmol',
 		!!------------------
+		before [
+			obj;
+			Pull,
+			Push,
+			PushDir,
+			Turn:
+				obj = parent(self);
+				<<Push obj>>;
+			Take:
+				obj = parent(self);
+				<<Take obj>>;
+			Touch:
+				obj = parent(self);
+				<<Touch obj>>;
+		],
+		description [;
+			if (self hasnt described) {
+				print "Al estudiar las líneas del mármol se apodera de ti el presentimiento de que, de algún modo, esas estrías blancas codifican un significado oculto. Como si bajo el aparente caos se hayase la respuesta a un profundo misterio. Pero al esforzarte por desentrañarlo los patrones comienzan a ondular ante tus ojos; y se retuercen y giran y se arremolinan unos con otros. Mareado, tienes que apartar la mirada.";
+			} else {
+				print "Las ondulante líneas blancas parecen retorcerse en la superficie [del Marmol]. No eres capaz de mirarlas fijamente sin marearte.";
+			}
+			new_line;
+			return true;
+		],
 ;
 
 !! @Oscuridad
+Array darknessFlagsA -> 2; ! hasta (N-1) * 8 flags
+Array darknessFlagsB -> 2; ! hasta (N-1) * 8 flags
 Atrezzo	-> Oscuridad "oscuridad"
  has	female,
  with	name_f 'negrura' 'oscuridad' 'sombra' 'tiniebla',
@@ -530,12 +851,46 @@ Atrezzo	-> Oscuridad "oscuridad"
 		gender G_FEMENINO,
 		adjectives 'temblorosa' 'temblorosas' 'titilante' 'titilantes',
 		!!------------------
+		description [;
+			if (GrutaVestibulo.brighter(self)) return true;
+			print "Las sombras dibujan formas macabras y temblorosas entre [los Huesos] del suelo.";
+			new_line;
+			return true;
+		],
+		react_before [;
+			!! TODO
+			!! if (GrutaVestibulo.state == 0 && noun == Huesos) {
+			!! 	return self.cant_see();
+			!! }
+			!! if (Baron.is_blind
+			!! 	&& noun ~= self or GrutaVestibulo or GrutaVestibuloFuego) {
+			!! 	return self.cant_see(noun);
+			!! }
+			return false;
+		],
+ private
+		cant_see [;
+			switch (Shuffle(4, darknessFlagsA)) {
+				1:	print "No puedes ver nada parecido";
+				2:	print "No puedes ver nada así";
+				3:	print "No ves nada parecido";
+				4:	print "No ves nada semejante";
+			}
+			switch (Shuffle(4, darknessFlagsB)) {
+				1:	print " entre las [self](sombras).";
+				2:	print " entre las [self](tinieblas).";
+				3:	print " en la [self](oscuridad).";
+				4:	print " en la penumbra.";
+			}
+			new_line;
+			return true;
+		],
 ;
 
 
 !!==============================================================================
 !!
-!!	2)	Un pequeño pasadizo
+!!	3)	Un pequeño pasadizo
 !!
 !!------------------------------------------------------------------------------
 
@@ -555,7 +910,7 @@ AdjacentRoom	DirGrutaPasadizo "pasadizo"
 						GrutaPasadizo.PC_is_coming_in = false;
 					GrutaVestibulo:
 						if (Baron.is_blind) {
-							print "Es más sensato aguardar a que tus pupilas se terminen de acostumbrarse a la [Oscuridad] antes de seguir adentrándote en la cueva.";
+							print "Es más sensato aguardar a que tus pupilas terminen de acostumbrarse a la [Oscuridad] antes de seguir adentrándote en la cueva.";
 							new_line;
 							return true;
 						} else if (Baron.is_burning) {
@@ -602,9 +957,9 @@ Indoors	GrutaPasadizo "Un pequeño pasadizo"
 		],
 		description [;
 			if (Baron.is_burning) {
-				print "El mundo a tu alrededor es sólo un bosquejo agónico bajo [el GrutaFuego].[if:compass_mode] [Al n_obj][else] [in_obj](Adentro)[fi]: el dragón. [if:compass_mode] [Al s_obj][else] [out_obj](Afuera)[fi]: la salida.";
+				print "El mundo a tu alrededor es sólo un bosquejo agónico bajo [el Fuego].[if:compass_mode] [Al n_obj][else] [in_obj](Adentro)[fi]: el dragón. [if:compass_mode] [Al s_obj][else] [out_obj](Afuera)[fi]: la salida.";
 			} else {
-				print "El techo del [self](corredor) es tan bajo que tienes que inclinarte para poder pasar. Una capa de [Cenizas](cenizas:2) amortigua tus pisadas. Desde [la DirGrutaDragon], en el extremo[if:compass_mode] [n_obj][fi] del [self](pasillo), la potente luz [del GrutaFuego] y oleadas de un calor infernal";
+				print "El techo del [self](corredor) es tan bajo que tienes que inclinarte para poder pasar. Una capa de [Cenizas](cenizas:2) amortigua tus pisadas. Desde [la DirGrutaDragon], en el extremo[if:compass_mode] [n_obj][fi] del [self](pasillo), la potente luz [del GrutaPasadizoFuego] y oleadas de un calor infernal";
 				if (self.PC_is_coming_in) {
 					print " te golpean en plena cara";
 				} else {
@@ -650,11 +1005,32 @@ Atrezzo	-> Cenizas "cenizas"
 		gender G_FEMENINO + G_PLURAL,
 		adjectives 'capa' 'de' 'suelo',
 		!!------------------
+		before [;
+			Take:
+				if (~~self.try_to_take) {
+					self.try_to_take = true;
+					print "Te agachas para coger un puñado de cenizas del suelo, pero están tan comprimidas que sólo consigues manchar ligeramente el guantelete con el fino polvo.";
+				} else {
+					print "Están tan comprimidas que resulta imposible.";
+				}
+				new_line;
+				return true;
+		],
+		description [;
+			print "Una gruesa capa de cenizas cubre el suelo. Están compactadas hasta tal punto que tus pies apenas dejan huella.";
+			new_line;
+			return true;
+		],
 		react_before [;
 			if (noun == d_obj) {
 				noun = self;
 			}
 		],
+		reset [;
+			self.try_to_take = false;
+		],
+ private
+		try_to_take false,
 ;
 
 Atrezzo	-> -> "huellas"
@@ -671,10 +1047,26 @@ Atrezzo	-> -> "huellas"
 		],
 ;
 
+!! @GrutaPasadizoFuego
+Atrezzo	-> GrutaPasadizoFuego "fuego"
+ has	male,
+ with	name_f 'claridad' 'llama' 'luz',
+		name_fp 'llamas',
+		name_m 'fuego' 'fulgor' 'resplandor',
+		name_mp 'fuegos',
+		gender G_MASCULINO,
+		adjectives 'lengua' 'lenguas',
+		!!------------------
+		reset [;
+			move self to GrutaPasadizo;
+		],
+		!! TODO
+;
+
 
 !!==============================================================================
 !!
-!!	2)	Guarida del dragón
+!!	4)	Guarida del dragón
 !!
 !!------------------------------------------------------------------------------
 
@@ -696,8 +1088,10 @@ AdjacentRoom	DirGrutaDragon
 			Enter:
 				if (Baron.is_running_away) {
 					!! TODO
+					!! "El estruendo procedente la gran gruta subterránea te hiela la sangre. Pero no puedes huir, no eres un cobarde. Giras sobre tus pies y regresas a la guarida de la bestia.";
 				} else if (Baron.is_burning) {
 					!! TODO
+					!! "Screaming and crying, no room in your mind for thought, you run back to the dragon's hall.";
 				} else if (self.PC_hesitates) {
 					self.PC_hesitates = false;
 					Tutorial.hint_hesitations();
@@ -707,6 +1101,7 @@ AdjacentRoom	DirGrutaDragon
 					new_line;
 					return true;
 				} else {
+					!! TODO - Marcar elecciones
 					!! Comprueba el hacha:
 					if (IndirectlyContains(player, HachaGuerra)) {
 						print "Aferrando el [HachaGuerra](hacha:1) con firmeza";
@@ -747,8 +1142,7 @@ Indoors	GrutaDragon "Enorme salón subterráneo"
 				if (noun == 0 or self) {
 					!! <<Listen Dragon>> !! TODO
 				} else if (TestScope(noun, player) && ~~noun.before()) {
-					!! TODO PRT__
-					print "El estruendo de las llamas y del propio dragón apagan cualquier otro sonido.";
+					print "El estruendo de las [](llamas) y del propio [Dragon] apagan cualquier otro sonido.";
 					new_line;
 					return true;
 				}
@@ -763,8 +1157,7 @@ Indoors	GrutaDragon "Enorme salón subterráneo"
 		],
 		cant_go [;
 			if (Baron.is_burning) {
-				!! TODO
-				return true;
+				return Grietas.PC_falls();
 			}
 			return self.Room::cant_go();
 		],
@@ -781,9 +1174,9 @@ Indoors	GrutaDragon "Enorme salón subterráneo"
 		],
 		description [;
 			if (Baron.is_burning) {
-				print "Entre la vorágine de [GrutaFuego](llamas:1) sólo aciertas a distinguir imágenes fragmentadas de la [self](cueva); [Grietas](fisuras:2) en la roca, la mancha carmesí del [Dragon], el pequeño punto de oscuridad que señala la boca [del DirGrutaPasadizo].";
+				print "Entre la vorágine de [Fuego](llamas:1) sólo aciertas a distinguir imágenes fragmentadas; [Grietas](fisuras:2) en la roca, la mancha carmesí del [Dragon], el pequeño punto de oscuridad que señala la boca [del DirGrutaPasadizo].";
 			} else {
-				print "[if:compass_mode]El pasadizo [s_obj][else][El DirGrutaPasadizo][fi] desemboca en lo que parece una amplia [self](gruta) natural, mucho mayor incluso que la sala del trono del Emperador. Desde infinidad de [Grietas](grietas:2) y [Grietas](fisuras) abiertas en la roca emergen [GrutaFuego](llamaradas:2) gigantescas. La luz aquí dentro es más brillante que el mediodía y el calor resulta insoportable.";
+				print "[if:compass_mode]El pasadizo [s_obj][else][El DirGrutaPasadizo][fi] desemboca en lo que parece una amplia [self](gruta) natural, mucho mayor incluso que la sala del trono del Emperador. Desde infinidad de [Grietas](grietas:2) y [Grietas](fisuras) abiertas en la roca emergen [GrutaDragonFuego](llamaradas:2) gigantescas. La luz aquí dentro es más brillante que el mediodía y el calor resulta insoportable.";
 			}
 			new_line;
 			return true;
@@ -806,84 +1199,96 @@ Character	-> Dragon "dragón"
 		adjectives 'carmesi' 'roja' 'rojo',
 		article "el",
 		!!------------------
+		description [;
+			!! TODO
+			self.spit_fire();
+			return true;
+		],
+ private
+		burns_PC [;
+			StartDaemon(Baron);
+			move GrutaDragonFuego to Limbo;
+			move GrutaPasadizoFuego to Limbo;
+			move GrutaVestibuloFuego to Limbo;
+			move Fuego to Baron;
+			Baron.is_burning = true;
+		],
+		spit_fire [;
+			self.burns_PC();
+			new_line;
+			print "Un inmenso chorro de [Fuego] sale escupido de la boca [del self] y te envuelve por completo antes siquiera de que puedas pensar en apartarte. El dolor lo ocupa todo de pronto. Un dolor como nunca antes lo habías sentido.";
+			new_line;
+			return true;
+		],
 ;
 
 !! @Grietas
+!! TODO - Comprobar si el Barón se había bajado el visor del casco. Si no es
+!! así, la primera llamarada del dragón lo ciega y es más fácil que tropiece y
+!! caiga dentro de una de las grietas
 Atrezzo	-> Grietas "grietas"
  has	container enterable female open ~openable pluralname,
  with	name_f 'fisura' 'grieta' 'hendedura' 'hendidura',
 		name_fp 'fisuras' 'grietas' 'hendeduras' 'hendiduras',
 		gender G_FEMENINO + G_PLURAL,
 		!!------------------
+		before [
+			intentional;
+			Enter:
+				if (Baron.is_burning) {
+					intentional = true;
+					return self.PC_falls(intentional);
+				} else {
+					print "Ahí no aguarda más que la muerte.";
+				}
+				new_line;
+				return true;
+			JumpOver:
+				<<Enter self>>;
+		],
+		description [;
+			print "Amplias grietas perforan la roca por doquier y escupen al aire unas [](llamaradas) más altas que tú mismo. Tienes que tener cuidado con dónde pones los pies para evitar precipitarte dentro de alguna por accidente.";
+			new_line;
+			return true;
+		],
+		PC_falls [ intentional;
+			if (intentional) {
+				print "Enloquecido por el dolor prefieres poner fin al sufrimiento lo antes posible de modo que saltas al interior de una de las grandes fisuras que atraviesan el suelo. Y caes. A través del fuego y del humo, caes. Las mismas llamas que te consumen iluminan las paredes perfectamente verticales de la hendidura, mucho más profunda de lo que podías imaginar. Sigues cayendo y alumbrando la oscuridad como una antorcha humana hasta que de pronto el estrecho espacio se abre en una gigantesca bóveda subterránea con un lago de magma en el fondo. Por una fracción de latido de corazón quedas fascinado ante la belleza sobrecogedora de este mundo subterráneo. Entonces impactas salvajemente contra la roca fundida. Todo tu cuerpo es abrasado y arde y tu alma queda transformada en fuego, en llamas, en calor, en luz.";
+			} else {
+				print "Echas a correr presa del pánico, cegado por el fuego y por el humo, incapaz de ver dónde pones los pies. Tropiezas y caes y vuelves a levantarte y tratas de continuar con tu carrera impelido por un terror agónico y primigenio mientras las llamas consumen tu cuerpo. Tienes que alejarte de la bestia y de su aliento mortal; tienes que alejarte del dolor. Entonces das un paso en la nada. El suelo desaparece bajo tus pies en una de las inmensas fisuras que atraviesan la gruta, y caes una vez más. Intentas aferrarte a algo desesperadamente, lo que sea, pero las paredes de la hendidura se prolongan perfectamente verticales, sin ningún saliente que pueda detener tu descenso hacia las profundidades. Caes. El aire está lleno de humo y vapores de sulfuro. Notas cómo penetran en tus pulmones con cada inspiración. Sin dejar de caer empiezas a ver un resplandor más abajo. Entonces pierdes el conocimiento, sin llegar a descubrir lo que sea que provocaba aquella luz.";
+			}
+			new_line;
+			give E1_ExcavandoDemasiadoProfundo on;
+			return EndSceneOne();
+		],
+		react_before [;
+			VagueGo:
+				if (Baron.is_burning) {
+					return self.PC_falls();
+				}
+		],
+;
+
+!! @GrutaDragonFuego
+Atrezzo	-> GrutaDragonFuego "fuego"
+ has	light male,
+ with	name_f 'claridad' 'llama' 'llamarada' 'luz',
+		name_fp 'llamas' 'llamaradas',
+		name_m 'fuego' 'fulgor' 'resplandor',
+		name_mp 'fuegos',
+		gender G_MASCULINO,
+		adjectives 'lengua' 'lenguas',
+		!!------------------
+		reset [;
+			move self to GrutaDragon;
+		],
+		!! TODO
 ;
 
 
 
-Object bijl "battle axe"
-  with description
-          "For this fight you have brought your heaviest battle axe. Few beside you could even lift it, let alone handle it with lethal speed and precision.",
-       name 'axe' 'battle' 'battle-axe' 'weapon',
-   has ;
 
 
-Object harnas "full suit of armour"
-  with description
-          [;
-	     if(Baron.is_burning == 0) "You wouldn't want to face the monster without a full suit of armour, thick plate over chainmail, generously oiled, granting optimal protection against all kinds of physical attack. The suit has been fastened with leather straps at the back.";
-	     "Even the steel of the armour is melting in the heat of the dragon's fires. White hot drops of liquid metal force their way through your skin like murderous knives.";
-	   ],
-       name 'armour' 'suit' 'of' 'full' 'straps' 'leather' 'chainmail',
-       before [;
-          Disrobe: "You can't take off the suit of armour yourself; it is secured with leather straps fastened around your back. After you have defeated the dragon, you will return through the bronze doors and your squire will help you."; ],
-   has worn clothing;
-
-
-
-[ Grot_Hal_N;
-  if(Baron.is_burning == 0) {
-       print "You try to step around the human bones, but with each step several are crushed under the combined weight of you and your armour.^";
-       return false;
-    } else {
-  "You run around aimlessly, crushing the bones of those who fared no better against the dragon than you did.";
-  }
-];
-
-   Object grot_deuren "bronze doors" GrutaVestibulo
-    class Atrezzo,
-     with name 'doors' 'bronze' 'two' 'door',
-          description "Two massive bronze doors block the cave's exit. The likeness of a burning man has been engraved on them.",
-	  before
-	    [;
-	      Open: "The doors have been bolted from the other side, and not even the dragon could open them from here. In fact, that is the entire point. You have been instructed to knock after you have defeated the dragon.";
-	      Close: "The doors are already closed.";
-	      Lock, Unlock: "There is no keyhole apparent.";
-	      Knock: if(Baron.is_burning == 0) {
-	                "Before you have even tried to kill the dragon? You are no coward.";
-		     } else {
-		        print "You run towards the doors in blind panic. The burning man in the bronze relief looks at you with laughing eyes, his ecstatic grin mocking your tortured cries. ~Enjoy the heat!~, he seems to be saying. ~You will learn to love it!~ You hit him as hard as you can with the steel glove on your right hand; a tremendous sound, harrowingly dissonant, resounds through the cave.";
-
-			Utils.press_any_key();
-
-			print "But the doors do not move. Nobody comes to open them. Again, screaming--the heat of the flames vaporising the blood in your veins--you hit the door with all the force you can muster; and again the harsh sound rings out, like Satan beating a gong in the depths of Hell--but again the door remains immobile. You try to knock once more, but your knees buckle, your legs fold beneath you and you hit the ground... you cannot think through the pain, the heat... you can only see darkness...";
-			EndSceneOne(); return true;
-		     }
-	      Attack: <<Knock self>>;
-	    ],
-      has ~open openable pluralname;
-
-
-      Object grot_man "burning man" GrutaVestibulo
-       class Atrezzo,
-        with name 'burning' 'man' 'picture' 'engraving' 'depiction',
-	     description
-	       [;
-	          if(Baron.is_burning > 0)
-		     "Instead of the pain you would expect on the face of a burning man, the graven figure's expression speaks of craving and desire. To your horror, you realise that your own face bears a similar expression.";
-
-	          "Instead of the pain you would expect on the face of a burning man, the graven figure's expression speaks of craving and desire. He does not suffer from the flames, but basks in them.";
-
-	       ],
-	 has male;
 
       Object GrutaVestibulo_vuur "fire" GrutaVestibulo
        class Atrezzo,
@@ -898,67 +1303,8 @@ Object harnas "full suit of armour"
 	     ],
 	 has ;
 
-      Object grot_marmer "marble" GrutaVestibulo
-       class Atrezzo,
-        with name 'marble' 'black' 'sheets' 'walls' 'wall' 'ceiling' 'rock' 'slab' 'slabs',
-	     description "The walls and the ceiling of the hall are covered with smooth sheets of black marble. White veins running through them form intricate patterns.",
-	 has ;
-
-         Object grot_aders "pattern" GrutaVestibulo
-	  class Atrezzo,
-	   with name 'vein' 'veins' 'pattern' 'patterns' 'lines' 'white',
-	        description "As you let your gaze dwell over the patterns, you are struck by the thought that they somehow encode a meaning, that beneath their apparent chaos lies the solution to a grave mystery. But before you can even start understanding them, the lines begin to move, to spin, to swirl--you feel dizziness overtaking you, and quickly focus your eyes elsewhere.",
-            has pluralname;
-
-   Object grot_botten "bones" GrutaVestibulo
-    class Atrezzo,
-     with name 'bones' 'bone' 'skulls' 'skull' 'remains' 'skeleton' 'skeletons' 'ground' 'floor',
-          description "The ground is covered by bones and skulls, blackened but otherwise untouched by the fire that consumed the flesh they once bore.",
-	  before [;
-	     Take: "You don't like to be reminded of the failure of those who came before you.";
-	  ],
-      has pluralname;
-
-   Object grot_schaduwen "shadows" GrutaVestibulo
-    class Atrezzo,
-     with name 'shadows' 'shadow' 'flickering',
-          description "The shadows of the bones take on macabre forms.",
-      has pluralname;
 
 
-
-[ Grot_Grot_S;
-  if(Baron.is_burning == 0) {
-       print "Bones crunch under your feet as you walk back into the vestibule.^";
-       return false;
-    } else {
-  "You frantically run back to the vestibule, bones breaking under each of your steps.";
-  }
-];
-
-[ Grot_Grot_N;
-  if(Baron.is_burning == 0) {
-       if(parent(bijl) == player) {print "Holding the axe tightly, ";} else {print "Unarmed, ";};
-       if(parent(Casco) == player && Casco hasnt open) print "the visor of your helmet closed--less honourable, but more prudent--, ";
-       if(parent(Casco) == player && Casco has open) print "the visor of your helmet opened, as behooves a man of honour, ";
-       if(parent(Casco) ~= player) print "brave and gallant, without your helmet, ";
-       print "you approach the dragon.^";
-       return false;
-    } else {
-  "Screaming and crying, no room in your mind for thought, you run back to the dragon's hall.";
-  }
-];
-
-
-   Object grot_as "thick layer of ashes" GrutaPasadizo
-    class Atrezzo,
-     with description
-              "A layer of tamped down ashes covers the ground; your feet leave hardly an impression.",
-	  name 'ash' 'layer' 'thick' 'ground' 'floor' 'ashes',
-	  before [;
-	     Take: "You bend down to the ground and scrape at the ashes with your armoured fingers, but they are compacted so tightly that almost nothing comes loose.";
-	  ],
-      has ;
 
     Object grot_fake_draak "dragon" GrutaPasadizo
       with name 'dragon',
@@ -973,12 +1319,7 @@ Object harnas "full suit of armour"
 	   ],
        has male animate scenery;
 
-      Object grot_voetstap "footprints" GrutaPasadizo
-       class Atrezzo,
-        with description
-	         "Your footprints are only just visible in the ashes.",
-             name 'footprint' 'footprints' 'impression' 'impressions' 'footsteps' 'footstep',
-         has pluralname;
+
 
       Object GrutaPasadizo_vuur "fire" GrutaPasadizo
        class Atrezzo,
@@ -996,7 +1337,6 @@ Object harnas "full suit of armour"
    Object grot_draak "dragon" GrutaDragon
      with description
              "You thought you expected the worst, but you were not prepared for this. Yes, it is large--at least thirty meters from the tip of its tail to its evil head--but you have fought large monsters before. Yes, its angry red scales gleam like hard steel and look as if no normal weapon could pierce them--but your axe is no normal weapon. But the fire in its eyes and its throat, the play of flames behind the dragon's rows of pale teeth, seems suddenly more horrifying than anything you ever saw before. This is not just another monster with fiery breath. This is not even an elemental, those mindless creatures that embody the very forces of nature. No--this is more terrifying, more intimate, more evil--something indomitable, something that will never yield and that can never be exploited, that unlike nature's laws will not yield to the desires of men--for you recognise this fire, this monster, this beast, and all men would recognise it, for it dwells within the innermost soul of all of us, and always has, and always will, and you know there is no way you can defeat it. And yet you must try.",
-	  name 'dragon' 'enormous' 'scaly' 'infernal' 'monster' 'red' 'angry' 'beast',
 	  counting 0,
 	  daemon    ! This daemon regulates the movement of the dragon, his attempts to set the player on fire
 	    [;      ! or eat him, and finally the player's possible death through burning.
@@ -1064,7 +1404,7 @@ Object harnas "full suit of armour"
                 };
 
 	      if(Baron.is_burning == 4) {
-	           print "^Melting metal penetrates your skin and commingles with your liquifying flesh. No visions, no sounds, no thoughts: only pain fills your consciousness as you fall to your knees, screaming your last scream while your vocal cords burn away. Darkness falls over you like a cool blanket.^";
+	           print "^Melting metal penetrates your skin and commingles with your liquifying flesh. No visions, no sounds, no thoughts: only pain fills your consciousness as you PC_falls to your knees, screaming your last scream while your vocal cords burn away. Darkness PC_fallss over you like a cool blanket.^";
 		   EndSceneOne();
                 };
 
@@ -1077,8 +1417,8 @@ Object harnas "full suit of armour"
 
 	       if(self.attack > 0 || Baron.is_burning > 0) {
 	         print "With heroic willpower you resist the numbing pain and charge again: the monster must die, though your life be the price. Through the flames, you see the pale malicious circles of its eyes ";
-		 if(parent(bijl) == player) print "and raise your axe to plant it right between them.";
-		 if(parent(bijl) ~= player) print "and raise your fists in order to plant them right in them, blinding the monster.";
+		 if(parent(HachaGuerra) == player) print "and raise your axe to plant it right between them.";
+		 if(parent(HachaGuerra) ~= player) print "and raise your fists in order to plant them right in them, blinding the monster.";
 		 print " But suddenly the dragon's tail swings in from the side and hits you, sending you flying through the hall in dizzying arc that ends when your head crashes into a wall.";
 		 if(Casco has worn) print " Your helmet softens the blow, and you quickly regain your senses. Unfortunately, when you open your eyes, the dragon's monstrous head is already approaching you, its mouth wide open--and once again it bathes you in deadly fire. Death comes quickly.^";
 		 if(Casco hasnt worn) print " Your skull fractures immediately, and everything goes black.^";
@@ -1087,9 +1427,9 @@ Object harnas "full suit of armour"
 	        };
 
 	       if(self.attack == 0 && Baron.is_burning == 0) {
-	          if(parent(bijl) == player) print "Raising the axe, you step towards the dragon. ~Your knell has rung,~ you inform it, surprised at your own confidence. ~It's time to die.~^^";
+	          if(parent(HachaGuerra) == player) print "Raising the axe, you step towards the dragon. ~Your knell has rung,~ you inform it, surprised at your own confidence. ~It's time to die.~^^";
 
-	          if(parent(bijl) ~= player) print "Raising you armoured fists, you step towards the dragon. ~Your knell has rung,~ you inform it, surprised at your own confidence. ~It's time to die.~^^";
+	          if(parent(HachaGuerra) ~= player) print "Raising you armoured fists, you step towards the dragon. ~Your knell has rung,~ you inform it, surprised at your own confidence. ~It's time to die.~^^";
 
 		  print "The monster looks at you impassively. You cannot help but stare at its double rows of arm-long teeth as you charge, but charge you do, screaming with justified rage. Then--as fast and sudden as lightning--a jet of fire bursts from dragon's the mouth and envelops you from head to toe. The pain is beyond comprehension.^";
 		  Baron.is_burning = 1;
@@ -1101,22 +1441,6 @@ Object harnas "full suit of armour"
       has animate scenery neuter;
 
 
-   Object grot_spleten "cracks" GrutaDragon
-    class Atrezzo,
-     with description
-              "Broad cracks run through the rock everywhere, spitting out flames bigger than men.",
-          name 'crack' 'cracks' 'fissure' 'fissures' 'cleft' 'clefts' 'crevice' 'crevices' 'broad',
-          before [;
-	     Enter:
-	        if(Baron.is_burning > 0) {
-		   print "You choose to end the pain as quickly as you can, and jump into one of the deep crevices that split the floor. Through fire and smoke you fall and fall, far longer than you had expected, until suddenly the crevice gives way to a subterranean vault spanning a lake of boiling lava. For a fraction of a heartbeat you stare in wonder at this beautiful sight--but then you fall into the lava, and your entire body melts and burns as your spirit and your soul become fire, flames, heat, light...";
-		   EndSceneOne(); return true;
-		 }
-		else {
-		  "All that awaits you there is death.";
-		};
-	   ],
-      has pluralname container open enterable;
 
    Object GrutaDragon_vuur "fire" GrutaDragon
        class Atrezzo,

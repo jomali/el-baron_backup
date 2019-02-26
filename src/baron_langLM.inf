@@ -510,6 +510,9 @@ Object	LibraryMessages
 		}
 		".";
 
+	VagueGo:
+		print_ret (parser) "Tienes que especificar en qué dirección ir.";
+
 	Verify:
 		!!	1:	Éxito.
 		!!	2:	Error en la verificación.

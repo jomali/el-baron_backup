@@ -540,7 +540,9 @@ Class	Thing
 					if (IsPluralNoun(player)) print "No verán";
 					else print "No verá";
 			}
-			" nada especial en ", (the) self, ".";
+			print " nada especial en ";
+			Utils.spanish_nominative_pronoun(self);
+			".";
 		],
 ;
 
