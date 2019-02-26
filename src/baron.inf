@@ -1460,15 +1460,15 @@ Verb	'conversa' 'platica'
 
 
 !! FIXME
-[ CrossSub; ];
-[ DoofSub; ];
-[ InviteSub; ];
-[ KnuffelSub; ];
-[ FuckSub; ];
-[ HuilSub; ];
-[ KnockSub; ];
-[ PlaySub; ];
-[ SpreekSub; ];
+!! [ CrossSub; ];
+!! [ DoofSub; ];
+!! [ InviteSub; ];
+!! [ KnuffelSub; ];
+!! [ FuckSub; ];
+!! [ HuilSub; ];
+!! [ KnockSub; ];
+!! [ PlaySub; ];
+!! [ SpreekSub; ];
 
 
 !!==============================================================================
@@ -1481,9 +1481,9 @@ Include ">baron_classes.inf";
 Include ">baron_utils.inf";
 
 Include ">baron_scene-one.inf";
-Include ">baron_scene-two.inf";
-Include ">baron_scene-three.inf";
-Include ">baron_scene-four.inf";
-Include ">baron_scene-five.inf";
-Include ">baron_scene-six.inf";
-Include ">baron_scene-seven.inf";
+!! Include ">baron_scene-two.inf";
+!! Include ">baron_scene-three.inf";
+!! Include ">baron_scene-four.inf";
+!! Include ">baron_scene-five.inf";
+!! Include ">baron_scene-six.inf";
+!! Include ">baron_scene-seven.inf";
