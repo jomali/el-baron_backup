@@ -134,18 +134,6 @@ Constant USE_SPANISH_LM;
 !! Nombre del fichero de configuración:
 Constant CONFIG_FILE_NAME "baron.params";
 
-!! Estilos de texto por defecto para las palabras destacadas:
-Constant DEFAULT_HIGHLIGHT_ST_1 -1;
-Constant DEFAULT_HIGHLIGHT_ST_2 TEXT_STYLE_NOTE;
-Constant DEFAULT_HIGHLIGHT_ST_3 TEXT_STYLE_REVERSED;
-Constant DEFAULT_HIGHLIGHT_ST_4 TEXT_STYLE_IMPORTANT;
-
-!! Estado por defecto de los hipervínculos:
-Constant DEFAULT_HYPERLINKS_STATUS_1 0;
-Constant DEFAULT_HYPERLINKS_STATUS_2 0;
-Constant DEFAULT_HYPERLINKS_STATUS_3 0;
-Constant DEFAULT_HYPERLINKS_STATUS_4 0;
-
 !! Referencias a los recursos multimedia en Máquina-Z:
 #Ifdef TARGET_ZCODE;
 Constant MUS_SOUNDTRACK 0;
@@ -285,17 +273,17 @@ Default THIRD_PERSON_FUTURE		= 9;
 !!------------------------------------------------------------------------------
 
 !! Configuración de aspecto para el estilo de texto nota:
-Constant NOTE_STYLE_FGC $E06666; ! #a21717 / #E06666
+Constant NOTE_STYLE_FGC $E06666; ! #E06666
 Constant NOTE_STYLE_BOLD 1;
 Constant NOTE_STYLE_ITALIC 0;
 
 !! Configuración de aspecto para el estilo de texto invertido:
-Constant REVERSED_STYLE_FGC $6D9EEB; ! #1d53ff / #6D9EEB
+Constant REVERSED_STYLE_FGC $6D9EEB; ! #6D9EEB
 Constant REVERSED_STYLE_BOLD 1;
 Constant REVERSED_STYLE_ITALIC 0;
 
 !! Configuración de aspecto para el estilo de texto Usuario 1:
-Constant USR1_STYLE_BGC	$202020; ! #202020
+Constant USR1_STYLE_BGC	$303030; ! #303030
 
 !! Configuración de aspecto para el estilo de texto Usuario 2:
 Constant USR2_STYLE_FGC	$606060; ! #606060
@@ -864,23 +852,31 @@ Include "vorple-screen-effects.h";
 		previous_style = Utils.set_text_style(TEXT_STYLE_HEADER);
 		print (string) Story;
 		Utils.set_text_style(previous_style);
-		print " simplemente haciendo ~clic~ con el ratón sobre las palabras ";
-		PRT__("destacadas", 0, 2);
-		print " que vayas encontrando. ¿Quieres activar esta funcionalidad?";
+		print " simplemente haciendo ~clic~ con el ratón sobre las palabras ",
+		(note) "destacadas", " que vayas encontrando. ¿Quieres activar esta
+		funcionalidad?";
 		new_line;
 		new_line;
-		print "(SÍ / NO) > ";
+		print "(Teclea: SÍ / NO) > ";
 		if (YesOrNo()) {
 			Utils.set_hyperlinks_status(1, true);
 			Utils.set_hyperlinks_status(2, true);
 			Utils.set_hyperlinks_status(3, true);
-			!! TODO - Establecer estilos adecuados
+			Utils.set_hyperlinks_status(4, true);
+			Utils.set_highlight_style(1, TEXT_STYLE_UPRIGHT);
+			Utils.set_highlight_style(2, TEXT_STYLE_USER1);
+			Utils.set_highlight_style(3, TEXT_STYLE_USER1);
+			Utils.set_highlight_style(4, TEXT_STYLE_IMPORTANT);
 			print (parser) "Hipervínculos activados.";
 		} else {
 			Utils.set_hyperlinks_status(1, false);
 			Utils.set_hyperlinks_status(2, false);
 			Utils.set_hyperlinks_status(3, false);
-			!! TODO - Establecer estilos adecuados
+			Utils.set_hyperlinks_status(4, false);
+			Utils.set_highlight_style(1, TEXT_STYLE_UPRIGHT);
+			Utils.set_highlight_style(2, TEXT_STYLE_NOTE);
+			Utils.set_highlight_style(3, TEXT_STYLE_REVERSED);
+			Utils.set_highlight_style(4, TEXT_STYLE_IMPORTANT);
 			print (parser) "Hipervínculos desactivados.";
 		}
 		new_line;
@@ -909,7 +905,7 @@ Include "vorple-screen-effects.h";
 	!! Establece la localidad inicial del relato:
 	switch (SCENE) {
 		default:
-			location = GrutaDragon;
+			location = GrutaVestibulo;
 	}
 
 	!! Lookmode largo:
@@ -1051,40 +1047,20 @@ VerboIrregular "establecer la reproducción de audio" with imperativo
 #Endif; ! TARGET_GLULX;
 
 !!------------------------------------------------------------------------------
-!! ##Configuration / ##ConfigureHyperlinks / ##ConfigureHighlightStyle
+!! ##ConfigureHighlights
 !!------------------------------------------------------------------------------
 
-#Ifdef TARGET_GLULX;
-Verb meta 'config' 'configuracion' 'enlace' 'enlaces' 'hiperenlace'
-	'hiperenlaces' 'hipervinculo' 'hipervinculos' 'resaltado' 'vinculo'
-	'vinculos'
-	*								-> Configuration
+Verb meta 'resaltado'
+	*								-> ConfigureHighlights
 ;
 
-VerboIrregular "establecer opciones de configuración" with imperativo
-	'config' 'configuracion' 'enlace' 'enlaces' 'hiperenlace' 'hiperenlaces'
-	'hipervinculo' 'hipervinculos' 'resaltado' 'vinculo' 'vinculos';
+VerboIrregular "establecer configuración de palabras resaltadas"
+ with	imperativo 'resaltado',
+;
 
-[ ConfigurationSub;
-	#Ifdef USE_HYPERLINKS;
-	ConfigureHyperlinksSub();
-	ConfigureHighlightStyleSub();
-	#Ifnot;
-	#Ifdef USE_VORPLE;
-	if (isVorpleSupported()) {
-		ConfigureHyperlinksSub();
-		ConfigureHighlightStyleSub();
-	} else {
-		<<NoSuchVerb>>;
-	}
-	#Ifnot;
-	<<NoSuchVerb>>;
-	#Endif; ! USE_VORPLE;
-	#Endif; ! USE_HYPERLINKS;
-];
-
-[ ConfigureHighlightStyleSub
-	txt done i highlight temp previous_style;
+[ ConfigureHighlightsSub
+	done highlight_code i number_of_classes previous_style temp txt;
+	number_of_classes = 4;
 	#Ifdef USE_HYPERLINKS;
 	txt = "INTRO";
 	#Ifnot;
@@ -1098,84 +1074,80 @@ VerboIrregular "establecer opciones de configuración" with imperativo
 	<<NoSuchVerb>>;
 	#Endif; ! USE_VORPLE;
 	#Endif; ! USE_HYPERLINKS;
+	!! TODO - Cambiar barra de estado
 	while (~~done) {
 		Utils.erase_window();
 		new_line;
-		print "Los nombres de los objetos interactivos presentes en la obra se
-		pueden imprimir con un estilo de texto resaltado para facilitar su
-		identificación. Introduce el número del tipo de objeto para rotar entre
-		los distintos estilos de resaltado disponibles y seleccionar aquel que
-		mejor se adecue a tus preferencias personales:";
+		print "Los nombres de los distintos objetos interactivos presentes en
+		la obra se pueden imprimir con un estilo de texto resaltado para
+		facilitar su identifición. Introduce el número de una clase de objeto
+		para rotar entre los distintos estilos de resaltado disponibles y
+		seleccionar aquel que mejor se adecue a tus preferencias personales:";
 		new_line;
 		new_line;
-		for (i = 1 : i <= 3 : i++) {
+		for (i = 1 : i <= number_of_classes : i++) {
 			switch (i) {
-				1:
-					print "1) Objetos importantes: ";
-				2:
-					print "2) Lugares hacia los que desplazarte: ";
-				3:
-					print "3) Otros objetos: ";
+				1:	print "1) Objetos importantes: ";
+				2:	print "2) Salidas y direcciones: ";
+				3:	print "3) Temas de conversación: ";
+				4:	print "4) Otros objetos: ";
 			}
-			highlight = Utils.get_highlight_style(i);
-			temp = ~~Utils.get_hyperlinks_status(i);
-			switch (highlight) {
-				TEXT_STYLE_UPRIGHT:		temp = "sin estilo";
-				TEXT_STYLE_STRESSED:	temp = "enfatizado (a)";
-				TEXT_STYLE_NOTE:		temp = "enfatizado (b)";
-				TEXT_STYLE_IMPORTANT:	temp = "destacado (a)";
-				TEXT_STYLE_HEADER:		temp = "destacado (b)";
+			highlight_code = Utils.get_highlight_style(i+1);
+			if (i == 4) highlight_code = Utils.get_highlight_style(1);
+			switch (highlight_code) {
+				TEXT_STYLE_HEADER:		temp = "enfatizado (c)";
+				TEXT_STYLE_IMPORTANT:	temp = "negrita";
 				TEXT_STYLE_MONOSPACED:	temp = "monoespaciado";
-				TEXT_STYLE_REVERSED:	temp = "invertido";
+				TEXT_STYLE_NOTE:		temp = "enfatizado (a)";
+				TEXT_STYLE_REVERSED:	temp = "enfatizado (b)";
+				TEXT_STYLE_STRESSED:	temp = "cursiva";
+				TEXT_STYLE_UPRIGHT, -1:	temp = "sin estilo";
 				TEXT_STYLE_USER1:		temp = "color de fondo";
 			}
-			PRT__(temp, 0, highlight);
+			previous_style = Utils.set_text_style(highlight_code);
+			print (string) temp;
+			Utils.set_text_style(previous_style);
 			print ".";
 			new_line;
 		}
-		new_line;
-		print "NOTA: Cuando los hipervínculos están activados hay menos
-		opciones de estilos disponibles.";
-		new_line;
 		new_line;
 		previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 		print (string) TEXT_STYLE_PARSER_PREFIX;
 		print "Pulsa @<<", (string) txt, "@>> para aceptar.";
 		print (string) TEXT_STYLE_PARSER_SUFIX;
 		Utils.set_text_style(previous_style);
-		temp = 0;
+		i = 0;
 		switch (Utils.press_any_key()) {
 			32, -6: ! INTRO/ESPACIO
 				done = true;
 			'1':
-				temp = 1;
+				i = 2;
 			'2':
-				temp = 2;
+				i = 3;
 			'3':
-				temp = 3;
+				i = 4;
+			'4':
+				i = 1;
 		}
-		if (temp > 0) {
-			switch (Utils.get_highlight_style(temp)) {
-				TEXT_STYLE_UPRIGHT:
-					highlight = TEXT_STYLE_STRESSED;
-				TEXT_STYLE_STRESSED:
-					highlight = TEXT_STYLE_NOTE;
-				TEXT_STYLE_NOTE:
-					highlight = TEXT_STYLE_IMPORTANT;
+		if (i ~= 0) {
+			highlight_code = Utils.get_highlight_style(i);
+			switch (highlight_code) {
 				TEXT_STYLE_IMPORTANT:
-					highlight = TEXT_STYLE_HEADER;
-				TEXT_STYLE_HEADER:
-					highlight = TEXT_STYLE_MONOSPACED;
+					highlight_code = TEXT_STYLE_NOTE;
 				TEXT_STYLE_MONOSPACED:
-					highlight = TEXT_STYLE_REVERSED;
+					highlight_code = TEXT_STYLE_USER1;
+				TEXT_STYLE_NOTE:
+					highlight_code = TEXT_STYLE_REVERSED;
 				TEXT_STYLE_REVERSED:
-					highlight = TEXT_STYLE_USER1;
+					highlight_code = TEXT_STYLE_MONOSPACED;
+				TEXT_STYLE_STRESSED:
+					highlight_code = TEXT_STYLE_IMPORTANT;
+				TEXT_STYLE_UPRIGHT, -1:
+					highlight_code = TEXT_STYLE_STRESSED;
 				TEXT_STYLE_USER1:
-					highlight = TEXT_STYLE_UPRIGHT;
-				default:
-					highlight = -1;
+					highlight_code = TEXT_STYLE_UPRIGHT;
 			}
-			Utils.set_highlight_style(temp, highlight);
+			Utils.set_highlight_style(i, highlight_code);
 		}
 	}
 	Utils.erase_window();
@@ -1183,8 +1155,24 @@ VerboIrregular "establecer opciones de configuración" with imperativo
 	<<Look>>;
 ];
 
+!!------------------------------------------------------------------------------
+!! ##ConfigureHyperlinks
+!!------------------------------------------------------------------------------
+
+#Ifdef TARGET_GLULX;
+Verb meta 'enlace' 'enlaces' 'hiperenlace' 'hiperenlaces' 'hipervinculo'
+	'hipervinculos' 'vinculo' 'vinculos'
+	*								-> ConfigureHyperlinks
+;
+
+VerboIrregular "establecer configuración de hipervínculos"
+ with	imperativo 'enlace' 'enlaces' 'hiperenlace' 'hiperenlaces'
+			'hipervinculo' 'hipervinculos' 'vinculo' 'vinculos',
+;
+
 [ ConfigureHyperlinksSub
-	txt done previous_style i;
+	done i number_of_classes previous_style txt;
+	number_of_classes = 4;
 	#Ifdef USE_HYPERLINKS;
 	txt = "INTRO";
 	#Ifnot;
@@ -1198,29 +1186,26 @@ VerboIrregular "establecer opciones de configuración" with imperativo
 	<<NoSuchVerb>>;
 	#Endif; ! USE_VORPLE;
 	#Endif; ! USE_HYPERLINKS;
+	!! TODO - Cambiar barra de estado
 	while (~~done) {
 		Utils.erase_window();
 		new_line;
-		previous_style = Utils.set_text_style(TEXT_STYLE_HEADER);
-		print (string) Story;
-		Utils.set_text_style(previous_style);
-		print " utiliza un sistema de hipervínculos para facilitar la
-		interacción con los objetos presentes en la obra a través del ratón.
-		Hay dos clases de hipervínculo: 1) asociado a objetos importantes en la
-		historia; 2) asociados a lugares hacia los que puedes intentar
-		desplazarte; y 3) otros objetos interactivos. Puedes activar o
-		desactivar cada tipo de hipervínculo introduciendo el número de su
-		clase:";
+		print "La obra permite interactuar con los distintos objetos presentes
+		en el mundo utilizando un sistema de hipervínculos (haciendo ~clic~ con
+		el ratón sobre los enlaces que vayan apareciendo). Existen cuatro
+		clases de hipervínculo: 1) asociado a objetos importantes en la
+		historia; 2) salidas y direcciones hacia las que puedes intentar
+		desplazarte; 3) temas de conversación; y 4) otros objetos interactivos.
+		Puedes activar o desactivar cada tipo de hipervínculo introduciendo el
+		número de su clase:";
 		new_line;
 		new_line;
-		for (i = 1 : i <= 3 : i++) {
+		for (i = 1 : i <= number_of_classes : i++) {
 			switch (i) {
-				1:
-					print "1) Objetos importantes: ";
-				2:
-					print "2) Lugares hacia los que desplazarte: ";
-				3:
-					print "3) Otros objetos: ";
+				1:	print "1) Objetos importantes: ";
+				2:	print "2) Salidas y direcciones: ";
+				3:	print "3) Temas de conversación: ";
+				4:	print "4) Otros objetos: ";
 			}
 			if (Utils.get_hyperlinks_status(i)) {
 				print "@<<activados@>>";
@@ -1237,7 +1222,8 @@ VerboIrregular "establecer opciones de configuración" with imperativo
 		print (string) TEXT_STYLE_PARSER_SUFIX;
 		Utils.set_text_style(previous_style);
 		switch (Utils.press_any_key()) {
-			32, -6:	! INTRO/ESPACIO
+			!! FIXME - Corregir los números
+			32, -6: ! INTRO/ESPACIO
 				done = true;
 			'1':
 				i = 1;
@@ -1245,6 +1231,8 @@ VerboIrregular "establecer opciones de configuración" with imperativo
 				i = 2;
 			'3':
 				i = 3;
+			'4':
+				i = 4;
 		}
 		Utils.set_hyperlinks_status(i, ~~Utils.get_hyperlinks_status(i));
 	}

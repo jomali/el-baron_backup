@@ -857,48 +857,21 @@ Object	Utils "(Utilities)"
 		!!	@returns {integer} Código numérico del estilo de texto resaltado
 		!!		que se había estado utilizando previamente para los objetos del
 		!!		tipo 'object_type'. -1 si 'object_type' no es un código válido
-		!!	@version 3.1
+		!!	@date 2019/02/27
 		!!----------------------------------------------------------------------
 		set_highlight_style [ object_type text_style
 			default_text_style result status;
 			!! Inicializaciones del método:
-			switch (object_type) {
-				1:
-					default_text_style = DEFAULT_HIGHLIGHT_ST_1;
-				2:
-					default_text_style = DEFAULT_HIGHLIGHT_ST_2;
-				3:
-					default_text_style = DEFAULT_HIGHLIGHT_ST_3;
-				4:
-					default_text_style = DEFAULT_HIGHLIGHT_ST_4;
-				default:
-					return -1;
+			if (object_type < 1 || object_type > 4) {
+				return -1;
 			}
+			default_text_style = TEXT_STYLE_UPRIGHT;
 			result = self.get_highlight_style(object_type);
 			status = self.get_hyperlinks_status(object_type);
 			!! Modifica el estilo de texto en función del estado calculado:
-			switch (text_style) {
-				TEXT_STYLE_UPRIGHT:
-					text_style = TEXT_STYLE_UPRIGHT;
-				TEXT_STYLE_STRESSED:
-					text_style = TEXT_STYLE_STRESSED;
-				TEXT_STYLE_NOTE:
-					if (status) text_style = TEXT_STYLE_IMPORTANT;
-					else text_style = TEXT_STYLE_NOTE;
-				TEXT_STYLE_IMPORTANT:
-					text_style = TEXT_STYLE_IMPORTANT;
-				TEXT_STYLE_HEADER:
-					if (status) text_style = TEXT_STYLE_MONOSPACED;
-					else text_style = TEXT_STYLE_HEADER;
-				TEXT_STYLE_MONOSPACED:
-					text_style = TEXT_STYLE_MONOSPACED;
-				TEXT_STYLE_REVERSED:
-					if (status) text_style = TEXT_STYLE_USER1;
-					else text_style = TEXT_STYLE_REVERSED;
-				TEXT_STYLE_USER1:
-					text_style = TEXT_STYLE_USER1;
-				default:
-					text_style = default_text_style;
+			if (text_style == TEXT_STYLE_NOTE or TEXT_STYLE_REVERSED
+				&& status) {
+				text_style = TEXT_STYLE_MONOSPACED;
 			}
 			!! Establece el estilo de texto y retorna el estilo previo:
 			if ((object_type-1) < (self.#highlight_styles)/WORDSIZE) {
@@ -1213,19 +1186,11 @@ Object	Utils "(Utilities)"
 		!! Navegación a través de los puntos cardinales:
 		compass_mode false,
 		!! Estilos de texto resaltado:
-		highlight_styles
-			DEFAULT_HIGHLIGHT_ST_1			! (objetos normales)
-			DEFAULT_HIGHLIGHT_ST_2			! (objetos destacados)
-			DEFAULT_HIGHLIGHT_ST_3			! (direcciones y salidas)
-			DEFAULT_HIGHLIGHT_ST_4,			! (temas de conversación)
+		highlight_styles 0 0 0 0,
 		!! Hora de la simulación:
 		hour 24,
 		!! Estados de los hipervínculos:
-		hyperlinks_status
-			DEFAULT_HYPERLINKS_STATUS_1		! (objetos normales)
-			DEFAULT_HYPERLINKS_STATUS_2		! (objetos destacados)
-			DEFAULT_HYPERLINKS_STATUS_3		! (direcciones y salidas)
-			DEFAULT_HYPERLINKS_STATUS_4,	! (temas de conversación)
+		hyperlinks_status 0 0 0 0,
 		!! Código de idioma utilizado por la obra {0 - inglés; 1 - español}:
 		language_code 1,
 		!!----------------------------------------------------------------------

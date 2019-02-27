@@ -475,8 +475,8 @@ Object	-> -> E1_Berserker "Berserker"
 			"Te has enfrentado al dragón sin tu casco y completamente desarmado.",
 ;
 
-!! @E1_SoldadoObstinado
-Object	-> -> E1_SoldadoObstinado "Soldado obstinado"
+!! @E1_GuerreroObstinado
+Object	-> -> E1_GuerreroObstinado "Guerrero obstinado"
  with	description
 			"Has cargado contra el dragón incluso a pesar de estar envuelto en llamas, después de que éste lanzase su aliento de fuego sobre ti.",
 ;
@@ -484,7 +484,7 @@ Object	-> -> E1_SoldadoObstinado "Soldado obstinado"
 !! @E1_ElHombreArdiente
 Object	-> -> E1_ElHombreArdiente "El hombre ardiente"
  with	description
-			"Después de que el dragón haya escupido un chorro de fuego sobre ti, has ardido durante varios turnos antes de morir, hasta llegar a ver cómo tu armadura empezaba a fundirse por el calor.",
+			"Has ardido durante varios turnos después de que el dragón haya escupido un chorro de fuego sobre ti, hasta llegar a ver cómo tu armadura empezaba a fundirse por el calor.",
 ;
 
 !! @E1_UnGongInfernal
@@ -658,7 +658,7 @@ Character	-> Baron "protagonista"
 					new_line;
 				} else if (self.burning_counter == (self.melting_point+1)) {
 					new_line;
-					print "El metal fundido penetra a través de tu piel y se mezcla con el grasa y el músculo licuados. No ves nada ya. No oyes nada. No piensas en nada. La experiencia del dolor es lo único que ocupa los últimos vestigios de tu consciencia. Y ni siquiera eso. *Dolor* no significa nada. *Dolor* no se acerca a describir este tormento. Caes de rodillas tratando de gritar por última vez mientras tus cuerdas vocales y tus pulmones arden. La oscuridad te cubre como una manta fría.";
+					print "El metal fundido penetra a través de tu piel y se mezcla con el grasa y el músculo licuados. No ves nada ya. No oyes nada. No piensas en nada. La experiencia del dolor es lo único que ocupa los últimos vestigios de tu consciencia. Y ni siquiera eso. *Dolor* es una palabra que no significa nada. *Dolor* no se acerca a describir este tormento. Caes de rodillas tratando de gritar por última vez mientras tus cuerdas vocales y tus pulmones arden. La oscuridad te cubre como una manta fría.";
 					new_line;
 					return EndSceneOne();
 				}
@@ -1411,7 +1411,7 @@ Character	-> Dragon "dragón"
 		life [;
 			Attack:
 				if (Baron.is_burning()) {
-					print "Con la consciencia completamente aletargada por el dolor, tu cuerpo parece actuar solo, instintivamente. Y como fuera de ti le observas recomponerse y prepararse para atacar. El monstruo debe morir, sin importar el precio. Por un momento alcanzas a ver entre las llamas los orbes maliciosos de sus ojos";
+					print "Con la consciencia completamente aletargada por el dolor tu cuerpo parece actuar solo, instintivamente. Y como fuera de ti le observas recomponerse y prepararse para atacar. El monstruo debe morir, sin importar el precio. Por un momento alcanzas a ver entre las llamas los orbes maliciosos de sus ojos";
 					if (IndirectlyContains(player, Percunos)) {
 						print " y levantas el hacha dispuesto a descargarlo directamente entre ellos";
 					} else {
@@ -1424,7 +1424,7 @@ Character	-> Dragon "dragón"
 						print ". El cráneo se fractura en el acto y todo se vuelve negro.";
 					}
 					new_line;
-					give E1_SoldadoObstinado on;
+					give E1_GuerreroObstinado on;
 					return EndSceneOne();
 				} else {
 					self.spit_fire();
