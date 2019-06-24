@@ -36,19 +36,19 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2004, Victor Gijsbers
-!!	Copyright (c) 2018, J. Francisco Martín
+!!	Copyright (c) 2019, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
 
 #Ifdef TARGET_GLULX;
 #Ifdef USE_VORPLE;
-Array _hyperlinks_temp_array buffer LEN_HUGEHUGESTR;
+Array _hyperlinks_utility_array_a buffer LEN_HUGEHUGESTR;
 #Endif; ! USE_VORPLE;
 #Endif; ! TARGET_GLULX;
 
 !!------------------------------------------------------------------------------
-!! Utils encapsula el siguiente conjunto de rutinas de utilidad —liberando con
-!! ello parte del alcance global de la aplicación—:
+!! Utils encapsula un conjunto de rutinas de utilidad con el propósito de
+!! liberar parte del alcance global de la aplicación:
 !!
 !!	<>	check_object_capacity()
 !!	<>	create_vorple_hyperlink()
@@ -56,25 +56,24 @@ Array _hyperlinks_temp_array buffer LEN_HUGEHUGESTR;
 !!	<>	fade_in_sound()
 !!	<>	fade_out_sound()
 !!	<>	get_action_verb()
-!!	<>	get_current_hour()
 !!	<>	get_grammatical_inflection()
 !!	<>	get_highlight_style()
 !!	<>	get_hyperlinks_status()
-!!	<>	get_language()
 !!	<>	get_text_style()
 !!	<>	get_top_holder()
-!!	<>	horizontal_rule()
-!!	<>	initialise_multimedia()
+!!	<>	initialise_glulx()
 !!	<>	is_compass_enabled()
 !!	<>	play_sfx()
 !!	<>	press_any_key()
+!!	<>	print_horizontal_rule();
 !!	<>	read_configuration_file()
 !!	<>	restart()
 !!	<>	set_compass_mode()
 !!	<>	set_grammatical_inflection()
 !!	<>	set_highlight_style()
 !!	<>	set_hyperlinks_status()
-!!	<>	set_language()
+!!	<>	set_status_bar_alignment()
+!!	<>	set_status_bar_contents()
 !!	<>	set_text_style()
 !!	<>	spanish_nominative_pronoun()
 !!	<>	website_hyperlink()
@@ -111,13 +110,13 @@ Object	Utils "(Utilities)"
 		create_vorple_hyperlink [ item alternative;
 			#Ifdef USE_VORPLE;
 			if (isVorpleSupported()) {
-				bp_output_stream(3, _hyperlinks_temp_array, LEN_HUGEHUGESTR);
+				bp_output_stream(3, _hyperlinks_utility_array_a, LEN_HUGEHUGESTR);
 				self.print_object_short_name(item);
 				bp_output_stream(-3);
 				if (alternative) {
-					VorpleLinkCommandText(_hyperlinks_temp_array, alternative);
+					VorpleLinkCommandText(_hyperlinks_utility_array_a, alternative);
 				} else {
-					VorpleLinkCommand(_hyperlinks_temp_array);
+					VorpleLinkCommand(_hyperlinks_utility_array_a);
 				}
 			} else {
 				if (alternative) print (string) alternative;
@@ -438,15 +437,6 @@ Object	Utils "(Utilities)"
 			}
 		],
 		!!----------------------------------------------------------------------
-		!! Retorna la hora actual.
-		!!
-		!!	@returns {integer} Hora actual en la simulación
-		!!	@version 1.0
-		!!----------------------------------------------------------------------
-		get_current_hour [;
-			return self.hour;
-		],
-		!!----------------------------------------------------------------------
 		!! Retorna el código numérico de la flexión gramatical actual utilizada
 		!! por la obra, tal y como se definen en la extensión 'SpanishLM.h':
 		!!
@@ -511,16 +501,6 @@ Object	Utils "(Utilities)"
 			return result;
 		],
 		!!----------------------------------------------------------------------
-		!! Retorna código de idioma de la obra.
-		!!
-		!!	@returns {integer} Código numérico que identifica el idioma
-		!!		utilizado por la obra: {0 - inglés; 1 - español}
-		!!	@version 1.0
-		!!----------------------------------------------------------------------
-		get_language [;
-			return self.language_code;
-		],
-		!!----------------------------------------------------------------------
 		!! Retorna el código numérico del estilo de texto utilizado actualmente
 		!! por la obra, tal y como se definen en la extensión 'textStyle.h':
 		!!
@@ -566,48 +546,80 @@ Object	Utils "(Utilities)"
 			return obj;
 		],
 		!!----------------------------------------------------------------------
-		!! Imprime una regla horizontal. Centrada en pantalla si se compila
-		!! para plataformas de escritorio, o alineada a la izquierda en otro
-		!! caso.
+		!! Rutina encargada de hacer las inicializaciones oportunas al ejecutar
+		!! la obra sobre la máquina virtual GLULX: incializar la librería
+		!! Vorple, activar la escucha de hipervínculos, inicializar los
+		!! recursos multimedia...
 		!!
 		!!	@returns {boolean} Verdadero
-		!!	@version 1.1
+		!!	@version 2019/06/18
 		!!----------------------------------------------------------------------
-		horizontal_rule [
-			previous_style;
-			previous_style = self.set_text_style(TEXT_STYLE_MONOSPACED);
-			#Ifdef VERSION_DESKTOP;
-			spaces (ScreenWidth() - 1 - 7) / 2; ! 7 -> longitud de "*  *  *"
-			#Endif; ! VERSION_DESKTOP;
-			print "*  *  *";
-			self.set_text_style(previous_style);
-			new_line;
-			return true;
-		],
-		!!----------------------------------------------------------------------
-		!! Inicializa los recursos multimedia de la aplicación.
-		!!
-		!! Al utilizar Damusix deben inicializarse los canales de audio.
-		!!
-		!! Al utilizar Vorple se inicializan las diferentes variables
-		!! Javascript con las que se gestionan los sonidos.
-		!!
-		!!	@returns {boolean} Verdadero
-		!!	@version 1.0
-		!!----------------------------------------------------------------------
-		initialise_multimedia [;
+		initialise_glulx [;
 			#Ifdef TARGET_GLULX;
 
+			!! Inicializaciones de Vorple:
+			#Ifdef USE_VORPLE;
+			VorpleInitialise();
+			#Endif; ! USE_VORPLE;
+
+			!! Activa la escucha de eventos glk para el uso de hipervínculos:
+			#Ifdef USE_HYPERLINKS;
+			ListenHyperlinkEvents();
+			#Endif; ! USE_HYPERLINKS;
+
+			!! Inicializa los recursos multimedia:
 			#Ifdef USE_DAMUSIX;
-			!!		Damusix.AsignarCanal(
-			!!			SONIDO,
-			!!			CANAL [0-9],
-			!!			VOLUMEN [0-100],
-			!!			REPETICIONES (-1 para repeticiones infinitas)
-			!!		);
-			!! Damusix.AsignarCanal(MUS_SOUNDTRACK, 0, 100, -1);
-			!! Damusix.AsignarCanal(SFX_WIND, 1, 100, -1);
+			!!	Damusix.AsignarCanal(
+			!!		SONIDO,
+			!!		CANAL [0-9],
+			!!		VOLUMEN [0-100],
+			!!		REPETICIONES (-1 para repeticiones infinitas)
+			!!	);
 			#Endif; ! USE_DAMUSIX;
+
+			!! Comprueba el soporte multimedia del intérprete:
+			#Ifdef VERSION_DESKTOP;
+			if (~~glk($0004, 6, 0)			! glk_gestalt(gestalt_Graphics, 0)
+				|| ~~glk($0004, 8, 0)		! glk_gestalt(gestalt_Sound, 0)
+				|| ~~glk($0004, 13, 0)) {	! glk_gestalt(gestalt_SoundMusic, 0)
+				new_line;
+				print (strong) "ADVERTENCIA", "^";
+				new_line;
+				print "Esta aplicación incluye contenidos audiovisuales pero tu
+				intérprete Glulx no los soporta adecuadamente. Se recomienda
+				utilizar un intérprete diferente poder experimentar la obra con
+				todos sus contenidos gráficos y de audio.^";
+				new_line;
+				new_line;
+				print (parser) "Pulsa una tecla.";
+				new_line;
+				self.press_any_key();
+				self.erase_window();
+			}
+			#Endif; ! VERSION_DESKTOP;
+
+			!! Comprueba el soporte para la librería Vorple del intérprete:
+			!! XXX - La comprobación sólo es efectiva si previamente se ha
+			!! invocado "VorpleInitialise()"
+			#Ifdef USE_VORPLE;
+			if (~~isVorpleSupported()) {
+				new_line;
+				print (strong) "ADVERTENCIA", "^";
+				new_line;
+				print "Estás a punto de iniciar una ", (stressed) "versión
+				reducida", " de la aplicación ideada para plataformas móviles
+				que no incluye contenidos audiovisuales. Si estás ejecutando la
+				obra desde una plataforma de escritorio se recomienda no
+				utilizar esta versión y utilizar en su lugar la versión
+				original.^";
+				new_line;
+				new_line;
+				print (parser) "Pulsa una tecla.";
+				new_line;
+				self.press_any_key();
+				self.erase_window();
+			}
+			#Endif; ! USE_VORPLE;
 
 			#Endif; ! TARGET_GLULX;
 			return true;
@@ -658,25 +670,60 @@ Object	Utils "(Utilities)"
  			return result;
 		],
 		!!----------------------------------------------------------------------
-		!! Espera una pulsación de tecla del usuario antes de continuar. Si se
-		!! invoca con el primer parámetro opcional activado (verdadero), la
-		!! obra continúa con su ejecución, aunque el usuario no pulse ninguna
-		!! tecla, una vez pase esa cantidad de décimas de segundo.
+		!! Espera una pulsación de tecla del usuario antes de continuar.
 		!!
-		!!	@param {integer} [delay=0] - Si se introduce un entero, la obra
-		!!		continúa tras esperar esa cantidad 'delay' de décimas de
-		!!		segundo, aunque el usuario no pulse una tecla
+		!!	@param {string} [txt=0] - Mensaje opcional. Si se especifica uno la
+		!!		rutina lo imprime con el estilo de texto reservado para
+		!!		mensajes de la aplicación seguido de un salto de línea, antes
+		!!		de iniciar la espera de pulsación de tecla
+		!!	@param {integer} [delay=0] - Si 'delay' >= 0 la obra continúa con
+		!!		la ejecución tras esperar una cantidad 'delay' de décimas de
+		!!		segundo, aún si el usuario no ha pulsado ninguna tecla
 		!!	@returns {char} Caracter introducido por el usuario
-		!!	@version 2.0
+		!!	@version 2019/03/21
 		!!----------------------------------------------------------------------
-		press_any_key [ delay
-			result;
+		press_any_key [ txt delay
+			previous_style result;
+			if (txt ~= 0 && metaclass(txt) == String) {
+				previous_style = self.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print (string) txt;
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				self.set_text_style(previous_style);
+				new_line;
+			}
 			#Ifdef USE_DAMUSIX;
 			if (Damusix.EnFade()) delay = 0;
 			#Endif; ! USE_DAMUSIX;
 			if (delay > 0) result = KeyDelay(delay);
 			else result = KeyCharPrimitive();
 			return result;
+		],
+		!!----------------------------------------------------------------------
+		!! Imprime el separador "* * *" con estilo monoespaciado y seguido de
+		!! un salto de línea. Si se compila para plataformas de escritorio se
+		!! centra en pantalla, en otro caso se alinea a la izquierda.
+		!!
+		!!	@returns {boolean} Verdadero
+		!!	@dependency arrays.h
+		!!	@version 2019/06/22
+		!!----------------------------------------------------------------------
+		print_horizontal_rule [
+			length previous_style txt;
+			length = 0;
+			txt = "* * *";
+			previous_style = self.set_text_style(TEXT_STYLE_MONOSPACED);
+			#Ifdef VERSION_DESKTOP;
+			PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, txt);
+			length = utility_array_a->(WORDSIZE-1);
+			spaces (ScreenWidth()-1-length) / 2;
+			PrintCharacterArray(utility_array_a);
+			#Ifnot; ! VERSION_WEB_MOBILE;
+			print (string) txt;
+			#Endif; ! VERSION_
+			self.set_text_style(previous_style);
+			new_line;
+			return true;
 		],
 		!!----------------------------------------------------------------------
 		!! Lee desde un fichero de texto externo los parámetros de
@@ -871,7 +918,8 @@ Object	Utils "(Utilities)"
 			!! Modifica el estilo de texto en función del estado calculado:
 			if (text_style == TEXT_STYLE_NOTE or TEXT_STYLE_REVERSED
 				&& status) {
-				text_style = TEXT_STYLE_MONOSPACED;
+				!! FIXME
+				!! text_style = TEXT_STYLE_USER1;
 			}
 			!! Establece el estilo de texto y retorna el estilo previo:
 			if ((object_type-1) < (self.#highlight_styles)/WORDSIZE) {
@@ -907,17 +955,38 @@ Object	Utils "(Utilities)"
 			return result;
 		],
 		!!----------------------------------------------------------------------
-		!! Establece el código de idioma de la obra.
+		!! Establece la alineación de los contenidos de la barra de estado.
 		!!
-		!!	@param {integer} language - Código numérico de idioma a utilizar
-		!!		por la obra: {0 - inglés; 1 - español}
-		!!	@returns {integer} Código numérico de idioma reemplazado
-		!!	@version 1.0
+		!!	@param {integer} alignment - Código numérico que representa la
+		!!		alineación: {0 - izquierda; 1 - centro; 2 - derecha}
+		!!	@returns {boolean} Verdadero si se está utilizando una barra de
+		!!		estado modificable. Falso en caso contrario
+		!!	@version 2019/06/18
 		!!----------------------------------------------------------------------
-		set_language [ language
+		set_status_bar_alignment [ alignment
 			result;
-			result = self.language_code;
-			self.language_code = language;
+			#Ifdef USE_GWINDOWS;
+			StatusBar.set_alignment(alignment);
+			result = true;
+			#Endif; ! USE_GWINDOWS;
+			return result;
+		],
+		!!----------------------------------------------------------------------
+		!! Establece los contenidos de la barra de estado.
+		!!
+		!!	@param {String} contents - Cadena de texto que se desea imprimir en
+		!!		la barra de estado. 0 si se desea imprimir el nombre de la
+		!!		localidad actual del usuario
+		!!	@returns {boolean} Verdadero si se está utilizando una barra de
+		!!		estado modificable. Falso en caso contrario
+		!!	@version 2019/06/18
+		!!----------------------------------------------------------------------
+		set_status_bar_contents [ contents
+			result;
+			#Ifdef USE_GWINDOWS;
+			StatusBar.set_contents(contents);
+			result = true;
+			#Endif; ! USE_GWINDOWS;
 			return result;
 		],
 		!!----------------------------------------------------------------------
@@ -1132,7 +1201,7 @@ Object	Utils "(Utilities)"
 				print "caretshape	2				# 0=smalldot 1=fatdot 2=thinline 3=fatline 4=block^";
 				print "linkstyle	0				# 1=show hyperlinks 0=hide hyperlinks^";
 				print "^";
-				print "moreprompt	...^";
+				print "moreprompt	…^";
 				print "morealign	1				# 0=left 1=center 2=right^";
 				print "morefont	monor^";
 				print "^";
@@ -1187,12 +1256,8 @@ Object	Utils "(Utilities)"
 		compass_mode false,
 		!! Estilos de texto resaltado:
 		highlight_styles 0 0 0 0,
-		!! Hora de la simulación:
-		hour 24,
 		!! Estados de los hipervínculos:
 		hyperlinks_status 0 0 0 0,
-		!! Código de idioma utilizado por la obra {0 - inglés; 1 - español}:
-		language_code 1,
 		!!----------------------------------------------------------------------
 		!! MÉTODOS PRIVADOS
 		!!----------------------------------------------------------------------

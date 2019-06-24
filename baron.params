@@ -1,0 +1,8 @@
+0 # Hipervínculos asociados a objetos normales {0:no, 1:si}
+0 # Hipervínculos asociados a objetos destacados {0:no, 1:si}
+0 # Hipervínculos asociados a direcciones {0:no, 1:si}
+0 # Hipervínculos asociados a temas de conversación {0:no, 1:si}
+0 # Estilo de texto de objetos normales [0-7]
+2 # Estilo de texto de objetos destacados [0-7]
+6 # Estilo de texto de direcciones [0-7]
+3 # Estilo de texto de temas de conversación [0-7]

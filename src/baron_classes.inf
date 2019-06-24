@@ -554,11 +554,11 @@ Class	Thing
 !!
 !!	@dependency arrays.h
 !!	@dependency SpanishLM.h
-!!	@version 2.0
+!!	@version 2019/06/17
 !!------------------------------------------------------------------------------
 Class	Atrezzo
  class	Thing
- has	scenery,
+ has	concealed static,
  with	before [
 			previous_style;
 			if (noun ~= self) return false;
@@ -584,8 +584,8 @@ Class	Atrezzo
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(temp_array);
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
 				print " no ", (es) self, " algo a lo que puedas trepar.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
@@ -595,8 +595,8 @@ Class	Atrezzo
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(temp_array);
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
 				print " no ", (es) self, " algo que puedas cortar.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
@@ -606,8 +606,8 @@ Class	Atrezzo
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(temp_array);
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
 				print " no ", (es) self, " algo en lo que puedas cavar.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
@@ -617,8 +617,8 @@ Class	Atrezzo
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(temp_array);
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
 				print " no ", (es) self, " algo que puedas beber.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
@@ -630,22 +630,22 @@ Class	Atrezzo
 					SECOND_PERSON_PRESENT,
 					THIRD_PERSON_PRESENT:
 						PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-						PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-						PrintCharacterArray(temp_array);
+						PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+						PrintCharacterArray(utility_array_a);
 						" está", (n) self, " ya ahí.";
 					FIRST_PERSON_PAST,
 					SECOND_PERSON_PAST,
 					THIRD_PERSON_PAST:
 						PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-						PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-						PrintCharacterArray(temp_array);
+						PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+						PrintCharacterArray(utility_array_a);
 						" estaba", (n) self, " ya allí.";
 					FIRST_PERSON_FUTURE,
 					SECOND_PERSON_FUTURE,
 					THIRD_PERSON_FUTURE:
 						PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-						PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-						PrintCharacterArray(temp_array);
+						PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+						PrintCharacterArray(utility_array_a);
 						" estará", (n) self, " ya allí.";
 				}
 			Eat,
@@ -653,8 +653,8 @@ Class	Atrezzo
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(temp_array);
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
 				print " no ", (es) self, " algo que puedas comer.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
@@ -665,8 +665,8 @@ Class	Atrezzo
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(temp_array);
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
 				print " no ", (es) self, " algo sobre lo que puedas saltar.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
@@ -681,8 +681,8 @@ Class	Atrezzo
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				print "No puedes manipular ", (el_) noun;
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, noun);
-				PrintCharacterArray(temp_array);
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, noun);
+				PrintCharacterArray(utility_array_a);
 				print " de ese modo.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
@@ -709,14 +709,12 @@ Class	Atrezzo
 !!
 !!	@dependency arrays.h
 !!	@dependency textStyles.h
-!!	@version 2.0
+!!	@version 2019/06/17
 !!------------------------------------------------------------------------------
 Class	AdjacentRoom
  class	Atrezzo
  has	open,
- with	description [;
-			return L__M(##Look, 7, self);
-		],
+ with	adjacent_room 0,
 		before [
 			obj;
 			Enter,
@@ -728,6 +726,7 @@ Class	AdjacentRoom
 					if (metaclass(self.adjacent_room) == Object) {
 						obj = self.adjacent_room;
 					}
+					new_line;
 					PlayerTo(obj);
 				} else {
 					switch (Utils.get_grammatical_inflection()) {
@@ -772,7 +771,9 @@ Class	AdjacentRoom
 				}
 				return true;
 		],
-		adjacent_room 0,
+		description [;
+			return L__M(##Look, 7, self);
+		],
 ;
 
 !!------------------------------------------------------------------------------
@@ -807,8 +808,8 @@ Class	Immaterial
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(temp_array);
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
 				print " no ", (es) self, " algo que puedas cerrar.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
@@ -819,8 +820,8 @@ Class	Immaterial
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(temp_array);
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
 				print " no ", (es) self, " algo con lo que te puedas vestir.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
@@ -831,8 +832,8 @@ Class	Immaterial
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(temp_array);
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
 				print " no ", (es) self, " algo que puedas abrir.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
@@ -842,8 +843,8 @@ Class	Immaterial
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(temp_array);
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
 				print " no ", (es) self, " algo que puedas encender.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
@@ -853,8 +854,8 @@ Class	Immaterial
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
 				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(temp_array);
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
 				print " no ", (es) self, " algo que puedas apagar.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
@@ -981,8 +982,8 @@ Class	Character
 					previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 					print (string) TEXT_STYLE_PARSER_PREFIX;
 					print "habla con ";
-					PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-					PrintCharacterArray(temp_array);
+					PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+					PrintCharacterArray(utility_array_a);
 					print (string) TEXT_STYLE_PARSER_SUFIX;
 					Utils.set_text_style(previous_style);
 					new_line;

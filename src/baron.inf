@@ -76,7 +76,7 @@
 !!	<>	Control de las extensiones utilizadas por la obra
 !!	<>	Definiciones generales
 !!	<>	Definiciones de la librería Inform
-!!	<>	Configuración de la extensión 'choiceSet'
+!!	<>	Configuración de la extensión 'choiceSets'
 !!	<>	Configuración de la interfaz gráfica con 'GWindows'
 !!	<>	Configuración de la extensión 'hyperlinks'
 !!	<>	Configuración de la librería de mensajes 'SpanishLM'
@@ -96,10 +96,8 @@ Constant Headline
 Constant Checking 0;
 Release 0;
 
-Constant SCENE 1;
-
 !! Descomentar para compilar la versión Web/Móvil:
-!! Constant VERSION_WEB_MOBILE;
+Constant VERSION_WEB_MOBILE;
 
 !!------------------------------------------------------------------------------
 !!	Control de las extensiones utilizadas por la obra
@@ -113,6 +111,8 @@ Constant VERSION_DESKTOP;
 #Ifdef VERSION_WEB_MOBILE;
 !! Utilización de la interfaz Vorple:
 Constant USE_VORPLE;
+!! Se evita que Vorple reescriba las rutinas de Inform:
+Constant VORPLE_NO_REPLACES;
 #Ifnot; ! VERSION_DESKTOP;
 !! Utilización del gestor de audio:
 Constant USE_DAMUSIX;
@@ -131,6 +131,12 @@ Constant USE_SPANISH_LM;
 !!	Definiciones generales
 !!------------------------------------------------------------------------------
 
+!! Clases de objetos interactivos:
+Constant REMARKABLE_OBJECT 2;
+Constant DIRECTION_OBJECT 3;
+Constant TOPIC_OBJECT 4;
+Constant OTHER_OBJECT 1;
+
 !! Nombre del fichero de configuración:
 Constant CONFIG_FILE_NAME "baron.params";
 
@@ -143,11 +149,6 @@ Constant SFX_WIND 1;
 #Ifndef USE_EXTENDED_LIBRARY;
 Attribute described;
 #Endif; ! USE_EXTENDED_LIBRARY;
-
-!! Se evita que Vorple reescriba las rutinas de Inform:
-#Ifdef USE_VORPLE;
-Constant VORPLE_NO_REPLACES;
-#Endif; ! USE_VORPLE;
 
 !!------------------------------------------------------------------------------
 !!	Definiciones de la librería Inform
@@ -166,7 +167,7 @@ Constant WITHOUT_DIRECTIONS;	! Se omiten las dir. por defecto de la lib.
 #Endif; ! USE_EXTENDED_LIBRARY;
 
 !!------------------------------------------------------------------------------
-!!	Configuración de la extensión 'choiceSet'
+!!	Configuración de la extensión 'choiceSets'
 !!------------------------------------------------------------------------------
 
 Constant CSET_STYLE 1;
@@ -206,9 +207,9 @@ Object	GUIConfig "(GUI Configuration)"
 		padding_C 0 0 8 0,		! (px)
 		threshold_C 660,		! (px)
 		!! Configuración por defecto D. Ancho de ventana >= threshold_D
-		graphic_width_D 0 0,	! (px)
-		margin_D 0 18,			! (%)
-		padding_D 0 0 8 0,		! (px)
+		graphic_width_D 80 80,	! (px)
+		margin_D 10 10,			! (%)
+		padding_D 40 40 40 40,		! (px)
 		threshold_D 900,		! (px)
 		!! Configuración por defecto E. Ancho de ventana >= threshold_E
 		graphic_width_E 0 0,	! (px)
@@ -226,6 +227,7 @@ Object	GUIConfig "(GUI Configuration)"
 		padding_G 0 0 8 0,		! (px)
 		threshold_G 1400,		! (px)
 ;
+#Ifnot;
 #Endif; ! USE_GWINDOWS;
 #Endif; ! TARGET_GLULX;
 
@@ -272,21 +274,37 @@ Default THIRD_PERSON_FUTURE		= 9;
 !!	Configuración de la extensión 'textStyles'
 !!------------------------------------------------------------------------------
 
-!! Configuración de aspecto para el estilo de texto nota:
+!! Configuración de aspecto para el estilo de texto HEADER:
+Constant HEADER_STYLE_BOLD 1;
+Constant HEADER_STYLE_ITALIC 0;
+
+!! Configuración de aspecto para el estilo de texto INPUT:
+Constant INPUT_STYLE_BOLD 0;
+Constant INPUT_STYLE_ITALIC 1;
+
+!! Configuración de aspecto para el estilo de texto NOTE:
 Constant NOTE_STYLE_FGC $E06666; ! #E06666
 Constant NOTE_STYLE_BOLD 1;
 Constant NOTE_STYLE_ITALIC 0;
 
-!! Configuración de aspecto para el estilo de texto invertido:
-Constant REVERSED_STYLE_FGC $6D9EEB; ! #6D9EEB
-Constant REVERSED_STYLE_BOLD 1;
+!! Configuración de aspecto para el estilo de texto QUOTE:
+Constant QUOTE_STYLE_FGC $6D9EEB; ! #6D9EEB
+Constant QUOTE_STYLE_BOLD 1;
+Constant QUOTE_STYLE_ITALIC 1;
+
+!! Configuración de aspecto para el estilo de texto REVERSED:
+Constant REVERSED_STYLE_BOLD 0;
 Constant REVERSED_STYLE_ITALIC 0;
 
-!! Configuración de aspecto para el estilo de texto Usuario 1:
+!! Configuración de aspecto para el estilo de texto USER1:
 Constant USR1_STYLE_BGC	$303030; ! #303030
+Constant USR1_STYLE_BOLD 0;
+Constant USR1_STYLE_ITALIC 0;
 
-!! Configuración de aspecto para el estilo de texto Usuario 2:
+!! Configuración de aspecto para el estilo de texto USER2:
 Constant USR2_STYLE_FGC	$606060; ! #606060
+Constant USR2_STYLE_BOLD 0;
+Constant USR2_STYLE_ITALIC 1;
 
 !! Configuración del estilo de texto de mensajes extradiegéticos:
 Constant TEXT_STYLE_PARSER TEXT_STYLE_USER2;
@@ -543,7 +561,7 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 	    !! Sugerencias de aspecto de 'textStyles':
 	    InitialiseStyleHints(winrock, wintype);
 
-		!! Sugerencias de aspecto del estilo Header:
+		!! Sugerencias de aspecto del estilo HEADER:
 		#Ifdef HEADER_STYLE_BOLD;
 		glk($00B0, 3, 3, 4, HEADER_STYLE_BOLD);
 		#Endif; ! HEADER_STYLE_BOLD
@@ -557,22 +575,21 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 		glk($00B0, 3, 3, 8, HEADER_STYLE_BGC);
 		#Endif; ! HEADER_STYLE_BGC
 
-		!! Sugerencias de aspecto del estilo Reversed:
-		glk($00B0, 3, 5, 9, 0);
-		#Ifdef REVERSED_STYLE_BOLD;
-		glk($00B0, 3, 5, 4, REVERSED_STYLE_BOLD);
-		#Endif; ! REVERSED_STYLE_BOLD
-		#Ifdef REVERSED_STYLE_ITALIC;
-		glk($00B0, 3, 5, 5, REVERSED_STYLE_ITALIC);
-		#Endif; ! REVERSED_STYLE_ITALIC
-		#Ifdef REVERSED_STYLE_FGC;
-		glk($00B0, 3, 5, 7, REVERSED_STYLE_FGC);
-		#Endif; ! REVERSED_STYLE_FGC
-		#Ifdef REVERSED_STYLE_BGC;
-		glk($00B0, 3, 5, 8, REVERSED_STYLE_BGC);
-		#Endif; ! REVERSED_STYLE_BGC
+		!! Sugerencias de aspecto del estilo INPUT:
+		#Ifdef INPUT_STYLE_BOLD;
+		glk($00B0, 3, 8, 4, INPUT_STYLE_BOLD);
+		#Endif; ! INPUT_STYLE_BOLD
+		#Ifdef INPUT_STYLE_ITALIC;
+		glk($00B0, 3, 8, 5, INPUT_STYLE_ITALIC);
+		#Endif; ! INPUT_STYLE_ITALIC
+		#Ifdef INPUT_STYLE_FGC;
+		glk($00B0, 3, 8, 7, INPUT_STYLE_FGC);
+		#Endif; ! INPUT_STYLE_FGC
+		#Ifdef INPUT_STYLE_BGC;
+		glk($00B0, 3, 8, 8, INPUT_STYLE_BGC);
+		#Endif; ! INPUT_STYLE_BGC
 
-		!! Sugerencias de aspecto del estilo Note:
+		!! Sugerencias de aspecto del estilo NOTE:
 		#Ifdef NOTE_STYLE_BOLD;
 		glk($00B0, 3, 6, 4, NOTE_STYLE_BOLD);
 		#Endif; ! NOTE_STYLE_BOLD
@@ -586,7 +603,37 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 		glk($00B0, 3, 6, 8, NOTE_STYLE_BGC);
 		#Endif; ! NOTE_STYLE_BGC
 
-		!! Sugerencias de aspecto del estilo Usuario 1:
+		!! Sugerencias de aspecto del estilo QUOTE:
+		glk($00B0, 3, 7, 6, 1); ! elimina el efecto proporcional
+		#Ifdef QUOTE_STYLE_BOLD;
+		glk($00B0, 3, 7, 4, QUOTE_STYLE_BOLD);
+		#Endif; ! QUOTE_STYLE_BOLD
+		#Ifdef QUOTE_STYLE_ITALIC;
+		glk($00B0, 3, 7, 5, QUOTE_STYLE_ITALIC);
+		#Endif; ! QUOTE_STYLE_ITALIC
+		#Ifdef QUOTE_STYLE_FGC;
+		glk($00B0, 3, 7, 7, QUOTE_STYLE_FGC);
+		#Endif; ! QUOTE_STYLE_FGC
+		#Ifdef QUOTE_STYLE_BGC;
+		glk($00B0, 3, 7, 8, QUOTE_STYLE_BGC);
+		#Endif; ! QUOTE_STYLE_BGC
+
+		!! Sugerencias de aspecto del estilo REVERSED:
+		glk($00B0, 3, 5, 9, 0); ! elimina el efecto revertido
+		#Ifdef REVERSED_STYLE_BOLD;
+		glk($00B0, 3, 5, 4, REVERSED_STYLE_BOLD);
+		#Endif; ! REVERSED_STYLE_BOLD
+		#Ifdef REVERSED_STYLE_ITALIC;
+		glk($00B0, 3, 5, 5, REVERSED_STYLE_ITALIC);
+		#Endif; ! REVERSED_STYLE_ITALIC
+		#Ifdef REVERSED_STYLE_FGC;
+		glk($00B0, 3, 5, 7, REVERSED_STYLE_FGC);
+		#Endif; ! REVERSED_STYLE_FGC
+		#Ifdef REVERSED_STYLE_BGC;
+		glk($00B0, 3, 5, 8, REVERSED_STYLE_BGC);
+		#Endif; ! REVERSED_STYLE_BGC
+
+		!! Sugerencias de aspecto del estilo USER1:
 		#Ifdef USR1_STYLE_BOLD;
 		glk($00B0, 3, 9, 4, USR1_STYLE_BOLD);
 		#Endif; ! USR1_STYLE_BOLD
@@ -600,7 +647,7 @@ Include "gwincls.h";			! GWindows: Window Class Framework
 		glk($00B0, 3, 9, 8, USR1_STYLE_BGC);
 		#Endif; ! USR1_STYLE_BGC
 
-		!! Sugerencias de aspecto del estilo Usuario 2:
+		!! Sugerencias de aspecto del estilo USER2:
 		#Ifdef USR2_STYLE_BOLD;
 		glk($00B0, 3, 10, 4, USR2_STYLE_BOLD);
 		#Endif; ! USR2_STYLE_BOLD
@@ -641,7 +688,7 @@ Include ">baron.bli";			! Recursos multimedia de la aplicación
 
 Include "arrays.h";				! Operaciones con arrays
 Include "capacities.h";			! Extensión a las reglas de capacidad
-Include "choiceSet.h";			! Sistema de selección de acciones sobre lista
+Include "choiceSets.h";			! Sistema de selección de acciones sobre lista
 Include "pPreprocessor.h";		! Preprocesador del parser
 Include "shuffle.h";			! Barajeado de números aleatorios
 
@@ -664,6 +711,7 @@ Include "vorple-screen-effects.h";
 !!	6)	Puntos de entrada de la librería Inform y del resto de extensiones
 !!
 !!------------------------------------------------------------------------------
+!!	<>	AfterPrompt()
 !!	<>	BeforeParsing()
 !!	<>	BeforeSettingTextStyle()
 !!	<>	GamePostRoutine()
@@ -675,6 +723,25 @@ Include "vorple-screen-effects.h";
 !!------------------------------------------------------------------------------
 
 !!------------------------------------------------------------------------------
+!! Punto de entrada invocado justo tras la impresión del inductor (prompt); es
+!! decir, después de que todas las impresiones en pantalla derivadas del turno
+!! actual hayan finalizado.
+!!
+!!	@returns Nada
+!!	@version 2019/06/24
+!!------------------------------------------------------------------------------
+[ AfterPrompt;
+	#Ifdef USE_VORPLE;
+	!! Simula el evento de haber dejado de pulsar una de las teclas para
+	!! resaltar palabras clave, de modo que tras cada acción ejecutada, las
+  	!! palabras clave vuelven a dejar de estar resaltadas:
+	VorpleExecuteJavaScriptCommand(BuildCommand("
+		ifjs.keyUp({ keyCode: ifjs.config.highlightKeyCodes[0] });
+	"));
+	#Endif; ! USE_VORPLE;
+];
+
+!!------------------------------------------------------------------------------
 !! Permite manipular la entrada de usuario antes de que sea analizada por la
 !! librería. Es invocada después de que el sistema haya leído la entrada de
 !! texto y haya definido ya las tablas 'buffer' y 'parser', pero aún no ha
@@ -683,6 +750,7 @@ Include "vorple-screen-effects.h";
 !! una con la otra, y puede dejar el contador de palabras en cualquier punto.
 !!
 !!	@returns Nada
+!!	@version 2019/06/18
 !!------------------------------------------------------------------------------
 [ BeforeParsing;
 	ChoiceSetManager.run();
@@ -701,6 +769,7 @@ Include "vorple-screen-effects.h";
 !!	@returns {boolean} Verdadero para interrumpir la ejecución normal de la
 !!		rutina de selección de estilo de texto. Falso para continuar
 !!		normalmente
+!!	@version 2019/06/18
 !!------------------------------------------------------------------------------
 #Ifdef TEXT_STYLES;
 [ BeforeSettingTextStyle previous_style next_style
@@ -708,12 +777,12 @@ Include "vorple-screen-effects.h";
 	#Ifdef USE_VORPLE;
 	if (isVorpleSupported()) {
 		!! Finaliza los estilos aplicados anteriormente:
-		if (previous_style == TEXT_STYLE_NOTE or TEXT_STYLE_QUOTE
-			or TEXT_STYLE_REVERSED) {
+		if (previous_style == TEXT_STYLE_REVERSED) {
 			applied_styles = 2;
 		} else if (previous_style == TEXT_STYLE_STRESSED
 			or TEXT_STYLE_IMPORTANT or TEXT_STYLE_MONOSPACED
-			or TEXT_STYLE_HEADER or TEXT_STYLE_INPUT
+			or TEXT_STYLE_NOTE or TEXT_STYLE_HEADER
+			or TEXT_STYLE_INPUT or TEXT_STYLE_QUOTE
 			or TEXT_STYLE_USER1 or TEXT_STYLE_USER2) {
 			applied_styles = 1;
 		} else { ! (previous_style == TEXT_STYLE_UPRIGHT)
@@ -738,11 +807,9 @@ Include "vorple-screen-effects.h";
 			TEXT_STYLE_HEADER:
 				VorpleStyle(STYLE_LARGE);
 			TEXT_STYLE_NOTE:
-				VorpleStyle(STYLE_EMPHASIS);
-				VorpleStyle(STYLE_STRONG);
+				VorpleStyle(STYLE_RED_LETTERS);
 			TEXT_STYLE_QUOTE:
-				VorpleStyle(STYLE_EMPHASIS);
-				VorpleStyle(STYLE_MONOSPACE);
+				VorpleStyle(STYLE_BLUE_LETTERS);
 			TEXT_STYLE_INPUT:
 				VorpleStyle(STYLE_FANTASY);
 			TEXT_STYLE_USER1:
@@ -761,90 +828,62 @@ Include "vorple-screen-effects.h";
 !!------------------------------------------------------------------------------
 !! Inicializaciones del relato. Esta rutina es obligatoria y, entre otras
 !! posibles inicializaciones, DEBE ESTABLECER LA LOCALIDAD INICIAL del usuario
-!! (o el objeto accesible ---contenedor o soporte--- en el que empieza).
+!! (o el objeto accesible —contenedor o soporte— en el que empieza).
 !!
 !!	@returns {boolean|integer} Verdadero o falso para continuar con la
 !!		ejecución normal de la aplicación, o 2 para suprimir la impresión de
 !!		los créditos, que de otra manera se imprimirían inmediatamente después
 !!		de llamar a la rutina
+!!	@version 2019/06/18
 !!------------------------------------------------------------------------------
 [ Initialise
 	previous_style;
 	Utils.erase_window();
 
 	!! Inicializaciones para la VM Glulx ---------------------------------------
+	Utils.initialise_glulx();
 
-	!! Inicializaciones Vorple:
-	#Ifdef TARGET_GLULX;
-	#Ifdef USE_VORPLE;
-	VorpleInitialise();
-	#Endif; ! USE_VORPLE;
-	#Endif; ! TARGET_GLULX;
+	!! Advertencia de contenidos -----------------------------------------------
+	new_line;
+	print (strong) "ADVERTENCIA", "^";
+	new_line;
+	print "Los contenidos de esta obra no son apropiados para un público
+	infantil. La edad recomendada por el autor a partir de la que experimentar
+	la historia son los ", (strong) "quince", " años. Se advierte, además,
+	acerca de la naturaleza violenta y moralmente reprobable de ciertos temas y
+	situaciones que se abordan en la obra y que pueden herir la sensibilidad de
+	algunos usuarios.^";
+	new_line;
+	new_line;
+	print (parser) "Pulsa una tecla.";
+	new_line;
+	Utils.press_any_key();
+	Utils.erase_window();
 
-	!! Establece la escucha de eventos glk para el uso de hipervínculos:
-	#Ifdef TARGET_GLULX;
-	#Ifdef USE_HYPERLINKS;
-	ListenHyperlinkEvents();
-	#Endif; ! USE_HYPERLINKS;
-	#Endif; ! TARGET_GLULX;
-
-	!! Inicializa los recursos multimedia:
-	Utils.initialise_multimedia();
-
-	!! Comprobaciones del intérprete -------------------------------------------
-	#Ifdef TARGET_GLULX;
-	#Ifdef VERSION_DESKTOP;
-	!!		(~~glk_gestalt(gestalt_Graphics, 0)
-	!!		|| ~~glk_gestalt(gestalt_Sound, 0)
-	!!		|| ~~glk_gestalt(gestalt_SoundMusic, 0))
-	if (~~glk($0004, 6, 0) || ~~glk($0004, 8, 0) || ~~glk($0004, 13, 0)) {
-		print (strong) "ADVERTENCIA:", " Esta aplicación incluye contenidos
-		audiovisuales pero tu intérprete Glulx no los soporta adecuadamente y
-		no podrán ser utilizados. Se recomienda utilizar un intérprete
-		diferente para poder disfrutar de todos los contenidos gráficos y de
-		audio de la aplicación.^";
-		new_line;
-		print (parser) "Pulsa una tecla para continuar.";
-		Utils.press_any_key();
-		Utils.erase_window();
-	}
-	#Ifnot; ! VERSION_WEB_MOBILE;
-	!! XXX - La siguiente comprobación sólo funciona si previamente se invoca a
-	!! "VorpleInitialise()"
-	if (~~isVorpleSupported()) {
-		print (strong) "ADVERTENCIA:", " Estas a punto de iniciar una ",
-		(stressed) "versión reducida", " de la aplicación ideada para
-		plataformas móviles. La versión original de la aplicación utiliza
-		contenidos audiovisuales pero, puesto que las plataformas móviles no
-		los soportan, han sido desactivados. Si estás ejecutando la obra desde
-		una plataforma de escritorio se recomienda no utilizar esta versión y
-		utilizar en su lugar la versión original, con todos los recursos
-		gráficos y de audio activados.^";
-		new_line;
-		print (parser) "Pulsa una tecla para continuar.";
-		Utils.press_any_key();
-		Utils.erase_window();
-	}
-	#Endif; ! VERSION_
-	#Endif; ! TARGET_GLULX;
-
-	!! Inicializaciones de la obra ---------------------------------------------
-
-	!! Comprueba ficheros de configuración:
+	!! Comprobación de los ficheros de configuración ---------------------------
 	#Ifdef TARGET_GLULX;
 	#Ifdef VERSION_DESKTOP;
-	if (Utils.write_garglk_configuration_file() == 1) {
-		print "Se acaba de escribir correctamente el fichero de
-		configuración ", (stressed) "~garglk.ini~", " en tu equipo. Es
-		necesario volver a iniciar la aplicación.";
-		new_line;
-		quit;
-	}
+	!! XXX - Permite inicializar un fichero 'garglk.ini' (descomentar):
+	!! if (Utils.write_garglk_configuration_file() == 1) {
+	!! 	print "Se acaba de escribir correctamente el fichero de
+	!! 	configuración ", (stressed) "~garglk.ini~", " en tu equipo. Es
+	!! 	necesario volver a iniciar la aplicación.";
+	!! 	new_line;
+	!! 	quit;
+	!! }
 	#Endif; ! VERSION_DESKTOP;
 	#Endif; ! TARGET_GLULX;
 
-	!! Establece la configuración de hipervínculos:
+	!! Configuración del sistema de hipervínculos ------------------------------
 	#Ifdef TARGET_GLULX;
+	Utils.set_hyperlinks_status(REMARKABLE_OBJECT, true);
+	Utils.set_hyperlinks_status(DIRECTION_OBJECT, true);
+	Utils.set_hyperlinks_status(TOPIC_OBJECT, true);
+	Utils.set_hyperlinks_status(OTHER_OBJECT, true);
+	Utils.set_highlight_style(REMARKABLE_OBJECT, TEXT_STYLE_NOTE);
+	Utils.set_highlight_style(DIRECTION_OBJECT, TEXT_STYLE_QUOTE);
+	Utils.set_highlight_style(TOPIC_OBJECT, TEXT_STYLE_NOTE);
+	Utils.set_highlight_style(OTHER_OBJECT, TEXT_STYLE_NOTE);
 	#Ifdef VERSION_DESKTOP;
 	#Ifdef CONFIG_FILE_NAME;
 	if (~~Utils.read_configuration_file(CONFIG_FILE_NAME)) {
@@ -857,26 +896,14 @@ Include "vorple-screen-effects.h";
 		funcionalidad?";
 		new_line;
 		new_line;
-		print "(Teclea: SÍ / NO) > ";
+		print (parser) "Teclea: SÍ / NO", " > ";
 		if (YesOrNo()) {
-			Utils.set_hyperlinks_status(1, true);
-			Utils.set_hyperlinks_status(2, true);
-			Utils.set_hyperlinks_status(3, true);
-			Utils.set_hyperlinks_status(4, true);
-			Utils.set_highlight_style(1, TEXT_STYLE_UPRIGHT);
-			Utils.set_highlight_style(2, TEXT_STYLE_USER1);
-			Utils.set_highlight_style(3, TEXT_STYLE_USER1);
-			Utils.set_highlight_style(4, TEXT_STYLE_IMPORTANT);
 			print (parser) "Hipervínculos activados.";
 		} else {
-			Utils.set_hyperlinks_status(1, false);
-			Utils.set_hyperlinks_status(2, false);
-			Utils.set_hyperlinks_status(3, false);
-			Utils.set_hyperlinks_status(4, false);
-			Utils.set_highlight_style(1, TEXT_STYLE_UPRIGHT);
-			Utils.set_highlight_style(2, TEXT_STYLE_NOTE);
-			Utils.set_highlight_style(3, TEXT_STYLE_REVERSED);
-			Utils.set_highlight_style(4, TEXT_STYLE_IMPORTANT);
+			Utils.set_hyperlinks_status(REMARKABLE_OBJECT, false);
+			Utils.set_hyperlinks_status(DIRECTION_OBJECT, false);
+			Utils.set_hyperlinks_status(TOPIC_OBJECT, false);
+			Utils.set_hyperlinks_status(OTHER_OBJECT, false);
 			print (parser) "Hipervínculos desactivados.";
 		}
 		new_line;
@@ -890,26 +917,29 @@ Include "vorple-screen-effects.h";
 		Utils.erase_window();
 	}
 	#Endif; ! CONFIG_FILE_NAME;
-	#Endif; ! VERSION_DESKTOP;
 	#Endif; ! TARGET_GLULX;
+
+	!! Inicializaciones de la obra ---------------------------------------------
+
+	!! Contenidos de la barra de estado centrados en pantalla:
+	Utils.set_status_bar_alignment(1); ! 0=left; 1=center; 2=right
 
 	!! Narrador en pasado y tercera persona
 	Utils.set_grammatical_inflection(SECOND_PERSON_PRESENT);
 
 	!! Establece el estilo del inventario:
+	!! FIXME
 	!! inventory_style = ENGLISH_BIT + RECURSE_BIT + FULLINV_BIT;
 
 	!! Establece el PC (player character)
 	ChangePlayer(Baron);
 
-	!! Establece la localidad inicial del relato:
-	switch (SCENE) {
-		default:
-			location = GrutaVestibulo;
-	}
-
 	!! Lookmode largo:
 	lookmode = 2;
+
+	!! Menú principal:
+	!! location = MainMenu.run(true);
+	location = DormitorioBaron;
 
 	!! Se evita la impresión inicial del banner
 	return 2;
@@ -923,6 +953,7 @@ Include "vorple-screen-effects.h";
 !!	@returns {boolean} Falso para indicar al sistema que añada todos los
 !!		objetos que suelen estar por defecto al alcance, o verdadero para
 !!		indicar que no se debe añadir nada más al alcance
+!!	@version 2019/06/18
 !!------------------------------------------------------------------------------
 [ InScope person
 	item;
@@ -944,7 +975,7 @@ Include "vorple-screen-effects.h";
 !!	@returns {boolean} Verdadero si se imprime el inductor definido en la
 !!		constante PS1 (si es que existe y está bien definido). Falso en caso
 !!		contrario
-!!	@version 1.1
+!!	@version 2019/06/18
 !!------------------------------------------------------------------------------
 #Ifdef TARGET_GLULX;
 #Ifdef USE_VORPLE;
@@ -970,6 +1001,7 @@ Include "vorple-screen-effects.h";
 !!	@returns {boolean} Verdadero para indicar al sistema que se ha imprimido la
 !!		forma modificada del verbo, o falso para continuar con la ejecución
 !!		normal y que el sistema imprima el verbo de la forma habitual
+!!	@version 2019/06/18
 !!------------------------------------------------------------------------------
 [ PrintVerb word;
 	if (word == 'no.verb') {
@@ -987,6 +1019,7 @@ Include "vorple-screen-effects.h";
 !!	@returns {boolean} Falso para permitir que el sistema continúe con la
 !!		ejecución normal e imprima un mensaje de error, o un valor de
 !!		diccionario del verbo a utilizar en lugar del verbo desconocido
+!!	@version 2019/06/18
 !!------------------------------------------------------------------------------
 [ UnknownVerb
 	obj;
@@ -1008,6 +1041,13 @@ Include "vorple-screen-effects.h";
 
 Include "SpanishG.h";			! Gramática española
 Include "SpanishEG.h";			! Gramática española extendida
+
+!! Elemento gramático que permite contemplar sólo el primer término de la
+!! entrada de usuario:
+[ Anything;
+	while (NextWordStopped() ~= -1);
+	return GPR_PREPOSITION;
+];
 
 !!------------------------------------------------------------------------------
 !! ##Audio / ##AudioOn / ##AudioOff
@@ -1050,31 +1090,21 @@ VerboIrregular "establecer la reproducción de audio" with imperativo
 !! ##ConfigureHighlights
 !!------------------------------------------------------------------------------
 
-Verb meta 'resaltado'
+#Ifdef TARGET_GLULX;
+#Ifdef VERSION_DESKTOP;
+Verb meta 'destacado' 'resaltado'
 	*								-> ConfigureHighlights
 ;
 
 VerboIrregular "establecer configuración de palabras resaltadas"
- with	imperativo 'resaltado',
+ with	imperativo 'destacado' 'resaltado',
 ;
 
 [ ConfigureHighlightsSub
 	done highlight_code i number_of_classes previous_style temp txt;
 	number_of_classes = 4;
-	#Ifdef USE_HYPERLINKS;
 	txt = "INTRO";
-	#Ifnot;
-	#Ifdef USE_VORPLE;
-	if (isVorpleSupported()) {
-		txt = "ESPACIO";
-	} else {
-		<<NoSuchVerb>>;
-	}
-	#Ifnot;
-	<<NoSuchVerb>>;
-	#Endif; ! USE_VORPLE;
-	#Endif; ! USE_HYPERLINKS;
-	!! TODO - Cambiar barra de estado
+	Utils.set_status_bar_contents("Resaltado");
 	while (~~done) {
 		Utils.erase_window();
 		new_line;
@@ -1099,7 +1129,7 @@ VerboIrregular "establecer configuración de palabras resaltadas"
 				TEXT_STYLE_IMPORTANT:	temp = "negrita";
 				TEXT_STYLE_MONOSPACED:	temp = "monoespaciado";
 				TEXT_STYLE_NOTE:		temp = "enfatizado (a)";
-				TEXT_STYLE_REVERSED:	temp = "enfatizado (b)";
+				TEXT_STYLE_QUOTE:	temp = "enfatizado (b)";
 				TEXT_STYLE_STRESSED:	temp = "cursiva";
 				TEXT_STYLE_UPRIGHT, -1:	temp = "sin estilo";
 				TEXT_STYLE_USER1:		temp = "color de fondo";
@@ -1110,6 +1140,12 @@ VerboIrregular "establecer configuración de palabras resaltadas"
 			print ".";
 			new_line;
 		}
+		new_line;
+		print "NOTA: El repertorio de estilos es más limitado cuando los
+		hipervínculos están activados. Puedes igualmente modificar su
+		configuración tecleando HIPERVÍNCULOS en la pantalla principal de la
+		aplicación.";
+		new_line;
 		new_line;
 		previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 		print (string) TEXT_STYLE_PARSER_PREFIX;
@@ -1137,8 +1173,8 @@ VerboIrregular "establecer configuración de palabras resaltadas"
 				TEXT_STYLE_MONOSPACED:
 					highlight_code = TEXT_STYLE_USER1;
 				TEXT_STYLE_NOTE:
-					highlight_code = TEXT_STYLE_REVERSED;
-				TEXT_STYLE_REVERSED:
+					highlight_code = TEXT_STYLE_QUOTE;
+				TEXT_STYLE_QUOTE:
 					highlight_code = TEXT_STYLE_MONOSPACED;
 				TEXT_STYLE_STRESSED:
 					highlight_code = TEXT_STYLE_IMPORTANT;
@@ -1152,14 +1188,26 @@ VerboIrregular "establecer configuración de palabras resaltadas"
 	}
 	Utils.erase_window();
 	Utils.write_configuration_file(CONFIG_FILE_NAME);
+	Utils.set_status_bar_contents(0);
 	<<Look>>;
 ];
+#Ifnot; ! VERSION_WEB_MOBILE;
+Verb meta 'destacado' 'resaltado'
+	* Anything						-> NoSuchVerb
+;
+
+VerboIrregular "establecer configuración de palabras resaltadas"
+ with	imperativo 'destacado' 'resaltado',
+;
+#Endif; ! VERSION_
+#Endif; ! TARGET_GLULX;
 
 !!------------------------------------------------------------------------------
 !! ##ConfigureHyperlinks
 !!------------------------------------------------------------------------------
 
 #Ifdef TARGET_GLULX;
+#Ifdef VERSION_DESKTOP;
 Verb meta 'enlace' 'enlaces' 'hiperenlace' 'hiperenlaces' 'hipervinculo'
 	'hipervinculos' 'vinculo' 'vinculos'
 	*								-> ConfigureHyperlinks
@@ -1173,20 +1221,8 @@ VerboIrregular "establecer configuración de hipervínculos"
 [ ConfigureHyperlinksSub
 	done i number_of_classes previous_style txt;
 	number_of_classes = 4;
-	#Ifdef USE_HYPERLINKS;
 	txt = "INTRO";
-	#Ifnot;
-	#Ifdef USE_VORPLE;
-	if (isVorpleSupported()) {
-		txt = "ESPACIO";
-	} else {
-		<<NoSuchVerb>>;
-	}
-	#Ifnot;
-	<<NoSuchVerb>>;
-	#Endif; ! USE_VORPLE;
-	#Endif; ! USE_HYPERLINKS;
-	!! TODO - Cambiar barra de estado
+	Utils.set_status_bar_contents("Hipervínculos");
 	while (~~done) {
 		Utils.erase_window();
 		new_line;
@@ -1222,7 +1258,6 @@ VerboIrregular "establecer configuración de hipervínculos"
 		print (string) TEXT_STYLE_PARSER_SUFIX;
 		Utils.set_text_style(previous_style);
 		switch (Utils.press_any_key()) {
-			!! FIXME - Corregir los números
 			32, -6: ! INTRO/ESPACIO
 				done = true;
 			'1':
@@ -1238,8 +1273,20 @@ VerboIrregular "establecer configuración de hipervínculos"
 	}
 	Utils.erase_window();
 	Utils.write_configuration_file(CONFIG_FILE_NAME);
+	Utils.set_status_bar_contents(0);
 	<<Look>>;
 ];
+#Ifnot; ! VERSION_WEB_MOBILE;
+Verb meta 'enlace' 'enlaces' 'hiperenlace' 'hiperenlaces' 'hipervinculo'
+	'hipervinculos' 'vinculo' 'vinculos'
+		* Anything						-> NoSuchVerb
+;
+
+VerboIrregular "establecer configuración de hipervínculos"
+ with	imperativo 'enlace' 'enlaces' 'hiperenlace' 'hiperenlaces'
+			'hipervinculo' 'hipervinculos' 'vinculo' 'vinculos',
+;
+#Endif; ! VERSION_
 #Endif; ! TARGET_GLULX;
 
 !!------------------------------------------------------------------------------
@@ -1263,8 +1310,8 @@ Verb 'no.verb'
 	!! 		previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 	!! 		print (string) TEXT_STYLE_PARSER_PREFIX;
 	!! 		print "examina / ve";
-	!! 		PrintToBuffer(temp_array, INPUT_BUFFER_LEN, self);
-	!! 		PrintCharacterArray(temp_array);
+	!! 		PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+	!! 		PrintCharacterArray(utility_array_a);
 	!! 		print (string) TEXT_STYLE_PARSER_SUFIX;
 	!! 		Utils.set_text_style(previous_style);
 	!! 		new_line;
@@ -1330,11 +1377,6 @@ Extend only 'normal' replace
 !! Permite eliminar acciones definidas automáticamente por la librería Inform.
 !! Código extraído de <http://www.firthworks.com/roger/informfaq/vv.html#6>.
 !!------------------------------------------------------------------------------
-
-[ Anything; ! Se ignora el resto de la entrada de usuario
-	while (NextWordStopped() ~= -1);
-	return GPR_PREPOSITION;
-];
 
 Extend 'nx' replace
 	* Anything						-> NoSuchVerb
@@ -1447,18 +1489,6 @@ Verb	'conversa' 'platica'
 !!------------------------------------------------------------------------------
 
 
-!! FIXME
-!! [ CrossSub; ];
-!! [ DoofSub; ];
-!! [ InviteSub; ];
-!! [ KnuffelSub; ];
-!! [ FuckSub; ];
-!! [ HuilSub; ];
-!! [ KnockSub; ];
-!! [ PlaySub; ];
-!! [ SpreekSub; ];
-
-
 !!==============================================================================
 !!
 !!	8)	Definición de atributos, clases y objetos
@@ -1466,12 +1496,15 @@ Verb	'conversa' 'platica'
 !!------------------------------------------------------------------------------
 
 Include ">baron_classes.inf";
+Include ">baron_menu.inf";
+Include ">baron_tutorial.inf";
 Include ">baron_utils.inf";
 
+Include ">baron_scene-zero.inf";
 Include ">baron_scene-one.inf";
-!! Include ">baron_scene-two.inf";
-!! Include ">baron_scene-three.inf";
-!! Include ">baron_scene-four.inf";
-!! Include ">baron_scene-five.inf";
-!! Include ">baron_scene-six.inf";
-!! Include ">baron_scene-seven.inf";
+Include ">baron_scene-two.inf";
+Include ">baron_scene-three.inf";
+Include ">baron_scene-four.inf";
+Include ">baron_scene-five.inf";
+Include ">baron_scene-six.inf";
+Include ">baron_scene-seven.inf";

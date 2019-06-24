@@ -114,7 +114,7 @@ Object	LibraryMessages
 
 	CommandsRead:
 		switch (lm_n) {
-			1:	print_ret (parser) "Reejecutando órdenes...";
+			1:	print_ret (parser) "Reejecutando órdenes…";
 			#Ifdef TARGET_GLULX;
 			2:	print_ret (parser) "Las órdenes ya están siendo relanzadas.";
 			3:	print_ret (parser) "Fallo en la reejecución de órdenes:
@@ -316,7 +316,7 @@ Object	LibraryMessages
 			51:
 				!! El usuario ha intentado una acción con objeto múltiple
 				!! (como COGE TODO). Esta acción es convertida por el parser en
-				!! una serie de actiones COGE OBJETO1, COGE OBJETO2, etc... Si
+				!! una serie de actiones COGE OBJETO1, COGE OBJETO2, etc… Si
 				!! en la ejecución de alguna de estas actiones encuentra que la
 				!! localidad del player ha cambiado, debe abortar el proceso.
 				!! Este mensaje informa de ello al usuario.
@@ -335,7 +335,7 @@ Object	LibraryMessages
 	Pronouns:
 		!! Esta acción (generada por el verbo PRONOMBRES) muestra una lista
 		!! de qué significa en ese momento para el parser cada pronombre:
-		!! -lo, -la, -los, -las...
+		!! -lo, -la, -los, -las…
 		!!
 		!!	1:	Texto introductorio.
 		!!	2:	La palabra "es".
@@ -496,7 +496,7 @@ Object	LibraryMessages
 			1:
 				print_ret (parser) "La transcripción ya estaba activada.";
 			2:
-				print_ret (parser) "Iniciando transcripción...";
+				print_ret (parser) "Iniciando transcripción…";
 			3:
 				print_ret (parser) "Error al intentar iniciar la
 				transcripción.";
