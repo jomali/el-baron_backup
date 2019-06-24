@@ -1,9 +1,12 @@
 
 # Ramas del árbol de directorios:
 /dist
+/docs
 /empaquetador
-/font
-*.wav
+/fonts
+/original
+/remove
+/src/resources
 
 # Ejecutables Máquina-Z/Glulx/Windows:
 *.z5
@@ -22,6 +25,7 @@
 *.png
 *.psd
 *.vid
+*.wav
 
 # Ficheros de documentación:
 *.aux
