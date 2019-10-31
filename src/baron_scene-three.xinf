@@ -40,21 +40,173 @@
 !!	Copyright (c) 2019, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
+!!
+!!	ÍNDICE
+!!
+!!	0)
+!!	1)	En el camino que atraviesa el bosque
+!!	2)	Las lindes del bosque
+!!
+!!------------------------------------------------------------------------------
 
 
 !!==============================================================================
 !!
-!!	1)	En el camino que atraviesa el bosque (I)
+!!	0)
 !!
 !!------------------------------------------------------------------------------
 
-!! @DirCaminoBosque1
-AdjacentRoom	DirCaminoBosque1 "camino"
+!! @BosqueCadaver
+Item	BosqueCadaver "cadáver" Limbo
  has	male,
- with	found_in CaminoBosque2,
+ with	name_f 'persona',
+		name_m 'cadaver' 'cuerpo' 'hombre' 'muerto',
 		gender G_MASCULINO,
 		!!------------------
-		adjacent_room CaminoBosque1,
+		description [;
+			print "Un cadáver medio devorado yace en el suelo. Su sangre enrrojece la nieve.";
+			new_line;
+			return true;
+		],
+;
+
+!! @BosqueNieve
+Atrezzo	BosqueNieve "nieve" Limbo
+ has	female,
+ with	found_in CaminoBosque LindesBosque,
+		name_f 'nieve',
+		gender G_FEMENINO,
+		!!------------------
+		before [;
+			Dig,
+			LookUnder:
+				if (second ~= nothing
+					&& second ~= player
+					&& IndirectlyContains(player, second)) {
+					print "Hurgas aquí y allá entre [la self] con [el second], sin encontrar nada.";
+					new_line;
+					return true;
+				}
+				print "Hurgas aquí y allá entre [la self], sin encontrar nada.";
+				new_line;
+				return true;
+			Search:
+				<<Dig self>>;
+		],
+		description [;
+			!! TODO
+			print "A veces la nieve otorga a los objetos una cualidad de cuento de hadas al posarse sobre ellos. Hoy no, no esta nieve. Esta nieve parece querer asfixiarlos y enterrarlos para siempre.";
+			new_line;
+			return true;
+		],
+		react_before [;
+			Dig:
+				if (noun == nothing || noun == location) {
+					<<Dig self second>>;
+				}
+		],
+;
+
+!! @BosqueLoba
+Item	BosqueLoba "loba" Limbo
+ has	female remarkable,
+ with	name_f 'bestia' 'loba',
+		name_fp 'bestias' 'lobas',
+		name_m 'lobo',
+		name_mp 'lobos',
+		gender G_FEMENINO,
+		!!------------------
+		before [;
+			Attack:
+				!! TODO
+				return false;
+			JumpOver:
+				!! TODO
+				return false;
+			Touch:
+				!! TODO
+				return false;
+		],
+		description [;
+			!! TODO
+			return false;
+		],
+;
+
+!! @BosqueLobezno
+Item	BosqueLobezno "lobezno" Limbo
+ has	male remarkable,
+ with	name_f 'bestia',
+		name_fp 'bestias',
+		name_m 'cachorro' 'lobezno' 'lobo',
+		name_mp 'lobos',
+		gender G_FEMENINO,
+		!!------------------
+		before [;
+			Attack:
+				!! TODO
+				return false;
+			JumpOver:
+				!! TODO
+				return false;
+			Pull,
+			Push:
+				!! TODO
+				return false;
+			Take:
+				!! TODO
+				return false;
+			Touch:
+				!! TODO
+				return false;
+		],
+		description [;
+			!! TODO
+			return false;
+		],
+;
+
+!! @BosqueLobos
+Atrezzo	BosqueLobos "lobos" Limbo
+ class	Background
+ has	male pluralname,
+ with	name_f 'loba',
+		name_fp 'lobas',
+		name_m 'lobo',
+		name_mp 'lobos',
+		gender G_MASCULINO + G_PLURAL,
+		!!------------------
+		before [;
+			Attack:
+				!! TODO
+				print "Yes--we define ourselves through action. But the wolves are still too far away, hidden between the trees, invisible to your merely human eyes. You will be ready when and if they come for you.";
+				new_line;
+				return true;
+			Listen:
+				<<Examine self>>;
+		],
+		description [;
+			!! TODO
+			print "They are close. But it might not be you they hunt.";
+			new_line;
+			return true;
+		],
+;
+
+
+!!==============================================================================
+!!
+!!	1)	En el camino que atraviesa el bosque
+!!
+!!------------------------------------------------------------------------------
+
+!! @DirCaminoBosque
+AdjacentRoom	DirCaminoBosque "camino"
+ has	male,
+ with	found_in LindesBosque,
+		gender G_MASCULINO,
+		!!------------------
+		adjacent_room CaminoBosque,
 		before [;
 			Enter:
 				self.AdjacentRoom::before();
@@ -62,30 +214,67 @@ AdjacentRoom	DirCaminoBosque1 "camino"
 		],
 ;
 
-!! @CaminoBosque1
-Outdoors	CaminoBosque1 "En el camino que atraviesa el bosque"
+!! @CaminoBosque
+Outdoors	CaminoBosque "En el camino que atraviesa el bosque"
  has	male,
- with	name_f 'antesala' 'caverna' 'cueva' 'estancia' 'gruta' 'sala',
-		name_m 'hall' 'recibidor' 'vestibulo',
+ with	name_f 'espesura',
+		name_m 'bosque',
 		gender G_MASCULINO,
-		adjectives 'fresca' 'fresco' 'pequena' 'pequeno' 'rectangular',
 		!!------------------
 		b_to [;
-			!! TODO - Trasladar a objeto pueblo:
-			!! <<Enter DirPueblo>>;
-			print "La idea de regresar puede resultar tentadora, pero es igualmente cobarde. Débil. Indigna. No… tienes que rescatar a María.";
+			<<Enter BosquePueblo>>;
+		],
+		cant_go [;
+			if (Baron.has_become_a_lycanthrope()) {
+				print "No. A la casa de piedra no se va por ahí. Tienes que seguir el [DirLindesBosque](sendero).";
+			} else {
+				print "Ya se hace difícil seguir el [DirLindesBosque](sendero) por culpa [de la BosqueNieve] y la falta de luz. Si te internas en el bosque en cualquier otra dirección lo más seguro es que acabes perdiéndote.";
+			}
 			new_line;
 			return true;
+		],
+		d_to [;
+			!! TODO - posible respuesta para otras localidades:
+			print "Hay otros caminos mucho más rápidos para bajar al infierno…";
+			new_line;
+			return true;
+		],
+		deeper_into_the_woods [;
+			return self.state > 0;
 		],
 		description [;
-			print "Los aullidos perforan el aire gélido de la noche. Durante los meses más duros del invierno la caza escasea, así que los lobos están hambrientos y son más atrevidos. No es difícil encontrárselos incluso tan cerca del pueblo. A pesar de ello continúas tu camino entre los árboles, vislumbrando apenas la senda cubierta de nieve. Hacia [f_obj].";
+			if (self.deeper_into_the_woods()) {
+				if (Baron.has_become_a_lycanthrope()) {
+					!! TODO
+					print "";
+				} else {
+					print "Allí donde la luz de la luna consigue filtrarse a través del follaje se pueden atisbar charcos congelados entre la nieve y el barro. El camino aquí es estrecho y sinuoso. Avanzas con cuidado, prestando atención a cada paso para no desviarte de la senda y perderte en el bosque. [f_obj](Adelante), siempre hacia [f_obj](adelante:OTHER_OBJECT), hacia el castillo del barón.";
+				}
+			} else {
+				print "Los aullidos perforan el aire gélido de la noche. Durante los meses más duros del invierno la caza escasea, así que los lobos están hambrientos y son más atrevidos. No es difícil encontrárselos incluso tan cerca del pueblo. A pesar de ello continúas tu camino entre los árboles, vislumbrando apenas la senda cubierta de nieve. Hacia [f_obj].";
+			}
 			new_line;
 			return true;
 		],
+		e_to [;
+			if (Utils.is_compass_enabled()
+				&& self.deeper_into_the_woods()) {
+				<<Enter BosquePueblo>>;
+			} else {
+				return self.cant_go();
+			}
+		],
 		f_to [;
-			<<Enter DirCaminoBosque2>>;
+			<<Enter DirLindesBosque>>;
+		],
+		go_deeper_into_the_woods [;
+			self.state = 1;
+			move BosqueLobos to Limbo;
+			move BosqueLoba to self;
+			return true;
 		],
 		initial [;
+			move BosqueLobos to self;
 			print "Alcanzas las lindes del bosque antes de que el campanario, ya en la distancia, llegue a repicar tres veces. Al internarte en la espesura para seguir tu camino no puedes evitar sentir como si estuvieses entrando voluntariamente en las negras fauces de un monstruo colosal. Un pensamiento que hace que te estremezcas, pero sigues caminando bajo el follaje denso de las coníferas. La luz de la luna apenas llega al suelo y acabas tropezando en varias ocasiones con ramas ocultas entre la oscuridad y la nieve, como trampas de caza. Pero sigues caminando.
 			^^
 			No has dejado de dar vueltas en tu cabeza a la empresa que tienes por delante. Aventurando posibilidades, ideando planes para entrar en el castillo del barón, imaginando vuestro enfrentamiento, cada vez más próximo. De pronto el aullido de los lobos te saca bruscamente de tus reflexiones. Notas cómo se tensan todos los músculos de tu cuerpo y los latidos del corazón se te disparan. La nieve acalla en parte los sonidos y hace difícil calcular distancias con exactitud, pero te sorprenderías si los animales estuviesen mucho más allá que a mil varas de distancia. Y no te separan menos de dos leguas del castillo todavía.
@@ -93,104 +282,241 @@ Outdoors	CaminoBosque1 "En el camino que atraviesa el bosque"
 			new_line;
 			return true;
 		],
+		ne_to [;
+			if (Utils.is_compass_enabled()
+ 				&& ~~self.deeper_into_the_woods()) {
+				<<Enter BosquePueblo>>;
+			} else {
+				return self.cant_go();
+			}
+		],
+		u_to [;
+			<<Climb BosqueArboles>>;
+		],
+		w_to [;
+			if (Utils.is_compass_enabled()) <<Enter DirLindesBosque>>;
+			else return self.cant_go();
+		],
+;
+
+!! TODO - probar Ir/Entrar/Volver
+!! @BosqueArboles
+Atrezzo	-> BosqueArboles "árboles"
+ has	male pluralname,
+ with	found_in CaminoBosque,
+		name_f 'conifera',
+		name_fp 'coniferas',
+		name_m 'arbol' 'pino' 'tronco',
+		name_mp 'arboles' 'pinos' 'troncos',
+		gender G_MASCULINO + G_PLURAL,
+		adjectives 'alta' 'altas' 'alto' 'altos' 'resbaladizo' 'resbaladizos',
+		!!------------------
+		before [;
+			Climb,
+			Enter,
+			Go,
+			GoIn:
+				if (Baron.has_become_a_lycanthrope()) {
+					print "¡No eres una ardilla!";
+				} else {
+					print "Trepar por estos pinos es difícil incluso con buena luz y cuando no tienen los troncos húmedos y resbaladizos por culpa de la nieve. Ahora es simplemente imposible.";
+				}
+				new_line;
+				return true;
+		],
+		description [;
+			!! TODO
+			print "The giants of the forest tower high above you, their branches heavy under a load of snow. As you walk on, you occasionally glimpse the moon through the trees.";
+			new_line;
+			return true;
+		],
+;
+
+!! TODO - probar Ir/Entrar/Volver
+!! @BosquePueblo
+Atrezzo	-> BosquePueblo "pueblo"
+ class	Background,
+ has	enterable male,
+ with	name_f 'casa',
+		name_m 'pueblo',
+		gender G_MASCULINO,
+		!!------------------
+		before [;
+			DefaultAction:
+				<<Enter self>>;
+			Enter:
+				print "Regresar a casa es una idea tentadora… tentadora pero cobarde. Débil. Indigna. No, tienes que rescatar a María.";
+				new_line;
+				return true;
+		],
+		description [;
+			print "Has dejado [el self] a tu espalda, oculto ya tras los primeros [BosqueArboles].";
+			new_line;
+			return true;
+		],
 ;
 
 
 !!==============================================================================
 !!
-!!	2)	En el camino que atraviesa el bosque (II)
+!!	2)	Las lindes del bosque
 !!
 !!------------------------------------------------------------------------------
 
-!! @DirCaminoBosque2
-AdjacentRoom	DirCaminoBosque2 "camino"
+!! @DirLindesBosque
+AdjacentRoom	DirLindesBosque "camino"
  has	male,
- with	found_in CaminoBosque1,
+ with	found_in CaminoBosque,
 		gender G_MASCULINO,
 		!!------------------
-		adjacent_room CaminoBosque2,
+		adjacent_room LindesBosque,
 		before [;
 			Enter:
-				self.AdjacentRoom::before();
-				return true;
+				if (CaminoBosque.deeper_into_the_woods()) {
+					move BosqueLoba to Limbo;
+					move BosqueLobezno to Limbo;
+					self.AdjacentRoom::before();
+					return true;
+				} else {
+					CaminoBosque.go_deeper_into_the_woods();
+					<<Look>>;
+				}
+		],
+		description [;
+			!! TODO
+			print "You slowly make your way along the path. It is hardly visible beneath the powdery layer of snow.";
+			new_line;
+			return true;
 		],
 ;
 
-!! @CaminoBosque2
-Outdoors	CaminoBosque2 "En el camino que atraviesa el bosque"
+!! @LindesBosque
+Outdoors	LindesBosque "Aún en el camino del bosque"
  has	male,
- with	name_f 'antesala' 'caverna' 'cueva' 'estancia' 'gruta' 'sala',
-		name_m 'hall' 'recibidor' 'vestibulo',
-		gender G_MASCULINO,
-		adjectives 'fresca' 'fresco' 'pequena' 'pequeno' 'rectangular',
+ with	gender G_MASCULINO,
 		!!------------------
 		b_to [;
-			<<Enter DirCaminoBosque1>>;
+			<<Enter CaminoBosque3Bosque>>;
 		],
-		description [;
-			print "Allí donde la luz de la luna consigue filtrarse a través del follaje se pueden atisbar charcos congelados entre la nieve y el barro. El camino aquí es estrecho y sinuoso. Avanzas con cuidado, prestando atención a cada paso para no desviarte de la senda y perderte en el bosque. [f_obj](Adelante), siempre hacia [f_obj](adelante:OTHER_OBJECT). Hacia el castillo del barón.";
-			new_line;
-			return true;
-		],
-		f_to [;
-			<<Enter DirCaminoBosque3>>;
-		],
-;
-
-
-!!==============================================================================
-!!
-!!	3)	Aún en el camino del bosque
-!!
-!!------------------------------------------------------------------------------
-
-!! @DirCaminoBosque3
-AdjacentRoom	DirCaminoBosque3 "camino"
- has	male,
- with	found_in CaminoBosque2,
-		gender G_MASCULINO,
-		!!------------------
-		adjacent_room CaminoBosque3,
 		before [;
-			Enter:
-				self.AdjacentRoom::before();
+			Listen:
+				if (Baron.has_become_a_lycanthrope()) {
+					print "Sólo puedes escuchar el rumor del viento entre las copas de los árboles. Ninguno os acercáis nunca tanto hasta los territorios del hombre malo.";
+				} else {
+					print "No se escucha nada. Tan cerca de las haciendas del barón hasta los lobos guardan silencio.";
+				}
+				new_line;
 				return true;
 		],
-;
-
-!! @CaminoBosque3
-Outdoors	CaminoBosque3 "Aún en el camino del bosque"
- has	male,
- with	name_f 'antesala' 'caverna' 'cueva' 'estancia' 'gruta' 'sala',
-		name_m 'hall' 'recibidor' 'vestibulo',
-		gender G_MASCULINO,
-		adjectives 'fresca' 'fresco' 'pequena' 'pequeno' 'rectangular',
-		!!------------------
 		d_to [;
-			<<Enter CaminoBosque3DirCastillo>>;
+			<<Enter CaminoBosque3Camino>>;
 		],
 		description [;
-			print "Tras encumbrar una leve colina atisbas finalmente el castillo del barón; una mole negra con sus tres torres inclinadas silueteadas contra el cielo estrellado. [El CaminoBosque3DirCastillo] desciende zigzagueando por el desnivel en dirección a la oscura fortaleza.";
+			if (Baron.has_become_a_lycanthrope()) {
+				print "Ves finalmente [el CaminoBosque3Castillo] del humano malvado; un cascarón blanco con tres garras gigantescas que se alzan hacia lo alto, como intentando arañar el cielo sin estrellas. [Un CaminoBosque3Camino] desciende por la colina como una culebra hacia ese lugar maldito.";
+			} else {
+				print "Atisbas finalmente [el CaminoBosque3Castillo] tras encumbrar una leve colina; una mole de piedra blanca acentuada por la oscuridad que la rodea, con sus tres torres elevándose hacia el cielo en ángulos extravagantes. [Un CaminoBosque3Camino] zigzaguea a través del desnivel en dirección a la entrada de la [CaminoBosque3Castillo](fortaleza:OTHER_OBJECT).";
+			}
+			new_line;
+			return true;
+		],
+		e_to [;
+			if (Utils.is_compass_enabled()) <<Enter CaminoBosque3Camino>>;
+			else return self.cant_go();
+		],
+		exits [;
+			print "[El CaminoBosque3Camino] desciende por la ladera hasta [el CaminoBosque3Castillo].";
 			new_line;
 			return true;
 		],
 		f_to [;
-			return self.d_to();
+			<<Enter CaminoBosque3Camino>>;
+		],
+		w_to [;
+			if (Utils.is_compass_enabled()) <<Enter CaminoBosque3Bosque>>;
+			else return self.cant_go();
 		],
 ;
 
-!! @CaminoBosque3DirCastillo
-AdjacentRoom	-> CaminoBosque3DirCastillo "camino"
+!! @CaminoBosque3Bosque
+Atrezzo	-> CaminoBosque3Bosque "bosque"
+ class	Background,
+ has	enterable male,
+ with	name_f 'arboleda',
+		name_m 'abeto' 'arbol' 'bosque' 'pino',
+		name_mp 'abetos' 'arboles' 'pinos',
+		gender G_MASCULINO,
+		!!------------------
+		before [
+			a;
+			Enter:
+				a = 1;
+				!! FIXME - condiciones
+				if (a == 1) { ! wolvin.status == 12, 15
+					print "Quizá los lobos no te dejan cruzar el bosque tan fácilmente a la vuelta… aunque ya tendrás tiempo para preocuparte por eso más tarde. Ahora no es momento de volver atrás.";
+				} else if (a == 2) { ! wolvin.status == 13
+					print "Sería una estupidez internarte de nuevo en el bosque ahora. No después de alcanzar el castillo al fin; no después de escapar a duras penas de aquella loba.";
+				} else if (a == 3) { ! wolvin.status == 25, 26
+					print "Confías en que el pequeño pueda descansar al fin sin el dolor de tener el estómago vacío. Ya ha sufrido suficiente.";
+				}
+				new_line;
+				return true;
+		],
+		description [;
+			!! TODO - descripción
+			return false;
+		],
+;
+
+!! @CaminoBosque3Camino
+AdjacentRoom	-> CaminoBosque3Camino "camino"
  has	male,
  with	name_f 'senda',
 		name_m 'camino',
 		gender G_MASCULINO,
 		adjectives 'bosque' 'castillo',
 		!!------------------
-		adjacent_room CastilloEntrada,
+		adjacent_room EntradaCastillo,
 		before [;
 			Enter:
+				print "Un copo de nieve suelto se posa con suavidad en tu mejilla. Te frontas la cara con el antebrazo y empiezas a caminar colina abajo…";
+				new_line;
+				Utils.press_any_key();
+				new_line;
 				self.AdjacentRoom::before();
 				return true;
+		],
+;
+
+!! @CaminoBosque3Castillo
+Atrezzo	-> CaminoBosque3Castillo
+ class	Background,
+ has	enterable male remarkable,
+ with	short_name [;
+			if (Baron.has_become_a_lycanthrope()) {
+				print "[](casa:REMARKABLE_OBJECT) de piedra";
+			} else {
+				print "[](castillo:REMARKABLE_OBJECT) del barón";
+			}
+			return true;
+		],
+		name_f 'casa' 'fortaleza' 'garra' 'torre',
+		name_fp 'garras' 'torres',
+		name_m 'castillo',
+		gender G_MASCULINO,
+		adjectives 'baron' 'inclinada' 'inclinadas' 'piedra',
+		!!------------------
+		before [;
+			Enter:
+				<<Enter CaminoBosque3Camino>>;
+		],
+		description [;
+			if (Baron.has_become_a_lycanthrope()) {
+				print "La casa de piedra es grande como una colina. Nunca has estado dentro —nunca has ido más allá de donde estás ahora—; no sabes qué peligros pueden aguardar en su interior.";
+			} else {
+				print "Hay un punto grotesco en su arquitectura; tiene tres grandes torres de planta circular con las dos más pequeñas, a los lados, inclinándose perceptiblemente hacia afuera. La torre central por su parte, más gruesa y alta, parece inclinarse también, mires desde donde mires, siempre en tu dirección. No se aprecia luz alguna en su interior.";
+			}
+			new_line;
+			return true;
 		],
 ;

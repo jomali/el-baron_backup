@@ -67,7 +67,7 @@ Room	Limbo "En algún lugar…"
 ;
 
 !! @Baron
-Character	-> Baron "protagonista"
+Character	Baron "protagonista" Limbo
  has	male proper,
  with	name_m 'personaje' 'protagonista',
 		gender G_MASCULINO,
@@ -87,11 +87,16 @@ Character	-> Baron "protagonista"
 					new_line;
 					print "El metal fundido penetra a través de tu piel y se mezcla con el grasa y el músculo licuados. No ves nada ya. No oyes nada. No piensas en nada. La experiencia del dolor es lo único que ocupa los últimos vestigios de tu consciencia. Y ni siquiera eso. *Dolor* es una palabra que no significa nada. *Dolor* no se acerca a describir este tormento. Caes de rodillas tratando de gritar por última vez mientras tus cuerdas vocales y tus pulmones arden. La oscuridad te cubre como una manta fría.";
 					new_line;
+					print "^^^", (parser) "Pulsa una tecla.";
+					Utils.press_any_key();
 					return EndSceneOne();
 				}
 				self.burning_counter++;
 			}
 			return true;
+		],
+		has_become_a_lycanthrope [;
+			return self.lycanthrope;
 		],
 		is_blind [;
 			return self.blind;
@@ -110,76 +115,103 @@ Character	-> Baron "protagonista"
 		is_running_away [;
 			return self.running_away;
 		],
+		reset [;
+			self.blind = false;
+			self.burning = false;
+			self.burning_counter = 0;
+			self.lycanthrope = false;
+			self.running_away = false;
+		],
+		sets_fire [ obj tool
+			fire_code;
+			!! Calcula las precondiciones para poder prender fugo a un objeto:
+			fire_code = 0;
+			if (tool == Antorcha) {
+				if (IndirectlyContains(self, Antorcha)) {
+					fire_code = 3;
+				!! TODO
+				} else if (TestScope(self, Antorcha)) {
+					print "(Primero coges la antorcha).";
+					new_line;
+					<Take Antorcha>;
+					fire_code = 3;
+				} else {
+					<<Take Antorcha>>;
+				}
+			} else if (tool) {
+				fire_code = 2;
+			} else {
+				if (IndirectlyContains(self, Antorcha)) {
+					if (Antorcha has on) {
+						fire_code = 3;
+					} else {
+						fire_code = 2;
+					}
+				}
+			}
+			!! Lleva a cabo la acción y muestra un mensaje con su resultado:
+			if (fire_code == 0) {
+				print "Necesitas fuego para hacer algo así.";
+			} else if (fire_code == 1) {
+				print "[El tool] no puede prender fuego a nada.";
+			} else if (fire_code == 2) {
+				print "Ahora que la antorcha se ha apagado ya no la puedes utilizar para prenderle fuego a nada.";
+			} else {
+				!! TODO - Si el PC está en una localidad interior, durante
+				!! algunos turnos podría permanecer en el aire el humo del
+				!! fuego, hasta disiparse finalmente
+				move obj to Limbo;
+				switch (obj) {
+					AlbumFotos:
+						print "El viejo álbum familiar arde pasto de las llamas. Compruebas con una mezcla de horror y satisfacción cómo la voracidad infinita del fuego es capaz de llevarse consigo incluso el recuerdo de una felicidad perdida.";
+					RetratoFamiliar:
+						print "Hace mucho tiempo que no queda rastro alguno de esa familia feliz de la fotografía, y ahora el fuego se encarga de destruir su recuerdo. Cuando se apagan las llamas no queda más que la sombra de una mentira.";
+				}
+			}
+			new_line;
+			return true;
+		],
 		!!------------------
 		blind false,
 		burning false,
+		lycanthrope false,
 		running_away false,
  private
 		burning_counter 0,
 ;
 
-!! @Cielo
-Atrezzo	Cielo "cielo"
- has	male,
- with	found_in [;
-			if (location ofclass Outdoors) {
-				return true;
-			}
-		],
-		name_f 'estrella',
-		name_fp 'estrellas',
-		name_m 'cielo' 'firmamento',
-		gender G_MASCULINO,
-		adjectives 'despejado' 'nocturno',
-		!!------------------
-		description [;
-			print "En la distancia cósmica las almas de los mayores guerreros del pasado arden salvajemente en eterna lucha con fuerzas desconocidas del más allá. Aquí, en la tierra, su luz lejana adorna el firmamento como hermosas velas contra terciopelo negro.";
-			new_line;
-			return true;
-		],
-;
-
-!! @Luna
-Atrezzo	Luna "luna"
- has	female light,
- with	found_in [;
-		   if (location ofclass Outdoors) {
-			   return true;
-		   }
-		],
-		name_f 'luna',
-		gender G_FEMENINO,
-		!!------------------
-		description [;
-			print "La funesta luz de la luna desdibuja los contornos de los objetos; parecen fluir entre sí, intangibles, como elementos de un sueño.";
-			new_line;
-			return true;
-		],
-;
-
-!! @Nieve
-Atrezzo	Nieve "nieve"
+!! @NieveCastillo
+Atrezzo	NieveBosque "nieve"
  has	female,
- with	found_in [;
-			if (location ofclass Outdoors) {
-				return true;
-			}
-		],
+ with	found_in Edificio EntradaCastillo PatioArmas,
 		name_f 'nieve',
 		gender G_FEMENINO,
 		!!------------------
 		before [;
-			!! TODO - Hurgar con una herramienta
 			Dig,
-			LookUnder,
-			Search:
-				print "Hurgas aquí y allá entre [la self], sin encontrar nada especial.";
+			LookUnder:
+				if (second ~= nothing
+					&& second ~= player
+					&& IndirectlyContains(player, second)) {
+					print "Hurgas aquí y allá entre [la self] con [el second], sin encontrar nada.";
+					new_line;
+					return true;
+				}
+				print "Hurgas aquí y allá entre [la self], sin encontrar nada.";
 				new_line;
 				return true;
+			Search:
+				<<Dig self>>;
 		],
 		description [;
-			print "A veces la nieve otorga a los objetos una cualidad de cuento de hadas al posarse sobre ellos. Hoy no. No esta nieve. Esta nieve parece querer asfixiarlos y enterrarlos para siempre.";
+			print "A veces la nieve otorga a los objetos una cualidad de cuento de hadas al posarse sobre ellos. Hoy no, no esta nieve. Esta nieve parece querer asfixiarlos y enterrarlos para siempre.";
 			new_line;
 			return true;
+		],
+		react_before [;
+			Dig:
+				if (noun == nothing || noun == location) {
+					<<Dig self second>>;
+				}
 		],
 ;

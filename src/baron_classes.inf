@@ -48,7 +48,7 @@
 !!	<>	Thing
 !!	<>	Thing:Atrezzo
 !!	<>	Thing:Atrezzo:AdjacentRoom
-!!	<>	Thing:Atrezzo:Immaterial
+!!	<>	Thing:Atrezzo:Background
 !!	<>	Thing:Atrezzo:Room
 !!	<>	Thing:Atrezzo:Room:Indoors
 !!	<>	Thing:Atrezzo:Room:Outdoors
@@ -78,7 +78,6 @@
 !!
 !!------------------------------------------------------------------------------
 
-
 !!------------------------------------------------------------------------------
 !! Receptacle
 !!------------------------------------------------------------------------------
@@ -89,7 +88,7 @@
 !! albergar el nuevo objeto.
 !!
 !!	@dependency SpanishLM.h
-!!	@version 1.0
+!!	@version 2019/07/15
 !!------------------------------------------------------------------------------
 Class	Receptacle
  with	before [;
@@ -242,113 +241,105 @@ Class	Receptacle
 !! acciones desde dentro de un objeto de esta clase.
 !!
 !!	@dependency AdjacentRoom
-!!	@version 1.0
+!!	@version 2019/09/15
 !!------------------------------------------------------------------------------
 Class	SmartEnterable
- with	react_before [;
-			if (parent(player) ~= self) return false;
-			!! GROUP #2: Usually work, given the right circumstances.
+ has	enterable,
+ with	react_before [
+			obj;
+			!! GROUP #2: Usually work, given the right circumstances:
 			Close,
 			Open:
-				if (noun hasnt openable) return false;
-				if (self.out_of_reach(noun)) {
+				if ((parent(player) == self)
+					&& (self.out_of_reach(noun) && noun has openable)) {
 					<Exit self>;
 					new_line;
 				}
-				return false;
-			Disrobe,
-			Wear:
-				if (noun hasnt clothing) return false;
-				<Exit self>;
-				new_line;
-				return false;
+			Disrobe:
+				if ((parent(player) == self)
+					&& (noun has clothing && noun has worn)) {
+					<Exit self>;
+					new_line;
+				}
 			Drop:
-				if (self has container) return false;
-				if ((noun == player) || (parent(noun) ~= player)) return false;
-				if (self.drop_on_object == 0) move noun to self;
-				else move noun to self.drop_on_object;
-				if (keep_silent == 0) print "Dejad", (o) noun, ".^";
-				return true;
+				if ((parent(player) == self)
+					&& (noun ~= player && IndirectlyContains(player, noun))) {
+					switch (metaclass(self.drop_on_object)) {
+						Object:
+							obj = self.drop_on_object;
+						Routine:
+							obj = self.drop_on_object();
+						default:
+							obj = self;
+					}
+					move noun to obj;
+					if (keep_silent == 0) print "Dejad", (o) noun, ".^";
+					return true;
+				}
 			Eat:
-				if (noun hasnt edible) return false;
-				if (self.out_of_reach(noun)) {
+				if ((parent(player) == self)
+					&& (self.out_of_reach(noun) && noun has edible)) {
 					<Exit self>;
 					new_line;
 				}
-				return false;
 			Empty,
 			Remove,
 			Search,
 			Take:
-				if (self.out_of_reach(noun)) {
+				if ((parent(player) == self)
+					&& (self.out_of_reach(noun))) {
 					<Exit self>;
 					new_line;
 				}
-				return false;
-			EmptyT: !! TODO - Comprobar funcionamiento
-				if (ObjectIsUntouchable(noun, 1)) return false;
-				if (self.out_of_reach(second))
-					{ <Exit self>; new_line; }
-				return false;
-			!! Enter:
-			!! Examine:
-			!! Exit:
-			!! GetOff:
-			!! Give:
+			EmptyT:
+				if (parent(player) == self) {
+					if (ObjectIsUntouchable(noun, 1)) {
+						return false;
+					}
+					if (self.out_of_reach(second)) {
+						<Exit self>;
+						new_line;
+					}
+				}
 			Go:
-				if (noun ofclass CompassDirection
-					|| noun ofclass AdjacentRoom) {
+				if ((parent(player) == self)
+					&& (noun ofclass CompassDirection
+					|| noun ofclass AdjacentRoom)) {
 					<Exit self>;
 					new_line;
 				}
-				return false;
-			!! GoIn:
 			Insert,
 			PutOn:
-				if ((second == d_obj) || (player in second)) {
-					<<Drop noun>>;
+				if (player(player) == self) {
+					if (second == d_obj) {
+						<<Drop noun>>;
+					}
+					if (self.out_of_reach(second)) {
+						<Exit self>;
+						new_line;
+					}
 				}
-				if (self.out_of_reach(second)) {
-					<Exit self>;
-					new_line;
-				}
-				return false;
-			!! Inv:
-			!! InvTall:
-			!! InvWide:
 			Lock,
 			Unlock:
-				if (noun hasnt lockable) return false;
-				if (self.out_of_reach(noun)) {
+				if ((parent(player) == self)
+					&& (self.out_of_reach(noun) && self has lockable)) {
 					<Exit self>;
 					new_line;
 				}
-				return false;
-			!! Look:
-			!! Open:		Ver ##Close
-			!! Order:
-			!! PutOn:		Ver ##Insert
-			!! Remove:		Ver ##Empty
-			!! Search:		Ver ##Empty
-			!! Show:
 			SwitchOff,
 			SwitchOn:
-				if (noun hasnt switchable) return false;
-				if (self.out_of_reach(noun)) {
+				if ((parent(player) == self)
+					&& (self.out_of_reach(noun) && self has switchable)) {
 					<Exit self>;
 					new_line;
 				}
-				return false;
-			!! SwitchOn:	Ver ##SwitchOff
-			!! Take:		Ver ##Empty
-			!! Transfer:
-			!! Unlock:		Ver ##Lock
-			!! VagueGo:
-			!! Wear:		Ver ##Disrobe
-			!! GROUP #3: Output a message and stop at the "before" stage.
-			!! Answer:
-			!! Ask:
-			!! AskFor:
+			Wear:
+				if ((parent(player) == self)
+					&& (noun has clothing && noun hasnt worn)) {
+					<Exit self>;
+					new_line;
+				}
+			!! GROUP #3: Output a message and stop at the "before" stage:
 			Attack,
 			Blow,
 			LookUnder,
@@ -356,107 +347,52 @@ Class	SmartEnterable
 			Squeeze,
 			Taste,
 			Touch:
-				if (self.out_of_reach(noun)) {
+				if ((parent(player) == self)
+					&& (self.out_of_reach(noun))) {
 					<Exit self>;
 					new_line;
 				}
-				return false;
-			!! Blow:		Ver ##Attack
-			!! Burn:
-			!! Buy:
 			Climb:
-				if (noun hasnt enterable) return false;
-				if (self.out_of_reach(noun)) {
+				if ((parent(player) == self)
+					&& (self.out_of_reach(noun) && noun has enterable)) {
 					<Exit self>;
 					new_line;
 				}
-				return false;
-			!! Consult:
-			!! Cut:
-			!! Dig:
-			!! Drink:
-			!! Fill:
 			Jump:
-				if (noun has supporter) <<Exit self>>;
-				return false;
-			!! JumpOver:
-			!! Kiss:
-			!! LetGo:
-			!! Listen:
-			!! LookUnder:	Ver ##Attack
-			!! Mild:
-			!! No:
-			!! Pray:
-			Pull,
-			Push,
-			Turn:
-				!! TODO - Comprobar mensaje al empujar objetos scenery o static
-				if (noun has scenery or static) return false;
-				if (self.out_of_reach(noun)) {
-					<Exit self>;
-					new_line;
-				}
-				return false;
-			!! Push:		Ver ##Pull
-			!! PushDir:
-			!! Receive:
-			!! Rub:
-			!! Set:
-			!! SetTo:
-			!! Sing:
-			!! Sleep:
-			!! Smell:		Ver ##Attack
-			!! Sorry:
-			!! Squeeze:	Ver ##Attack
-			!! Strong:
-			!! Swim:
-			Swing:
-				if (noun has supporter) <<Swing self>>;
-				return false;
-			!! Taste:		Ver ##Attack
-			!! Tell:
-			!! Think:
-			!! ThrowAt:
-			!! Tie:
-			!! Touch:		Ver ##Attack
-			!! Turn:		Ver ##Pull
-			!! Wait:
-			!! Wake:
-			!! WakeOther:
-			!! Wave:
-			!! WaveHands:
-			!! Yes:
-			!! CUSTOM ACTIONS
-			!! Dance:
-			GoDown:
-				if (self has supporter) <<Exit self>>;
-				return false;
-			!! GoUp:
-			!! KnockOn:
-			!! Masturbate:
-			!! Sit:
-			!! SleepWith:
-			StandUp:
-				if ((self has supporter) && (noun == nothing or self)) {
+				if ((parent(player) == self)
+					&& (noun has supporter)) {
 					<<Exit self>>;
 				}
-			TalkTo:
-				if (noun hasnt animate) return false;
-				if (self.out_of_reach(noun)) {
+			Pull,
+			Push,
+			PushDir,
+			Turn:
+				if ((parent(player) == self)
+					&& (self.out_of_reach(noun)
+					&& noun has scenery or static)) {
 					<Exit self>;
 					new_line;
 				}
-				return false;
-			!! TalkTo:
-			!! Untie:
-			!! Use:
-			!! Write:
-			!! Xyzzy:
+			Swing:
+				if ((parent(player) == self)
+					&& (self has supporter && noun == nothing)) {
+					<<Swing self>>;
+				}
+			GoDown:
+				if ((parent(player) == self)
+					&& (self has supporter && noun == nothing)) {
+					<<Exit self>>;
+				}
+			StandUp:
+				if ((parent(player) == self)
+					&& (self has supporter && noun == nothing or self)) {
+					<<Exit self>>;
+				}
 		],
-		!! Objetos al alcance desde el SmartEnterable:
-		reach_objects 0,
 		!! Objeto destino de la acción ##Drop estando en el SmartEnterable:
 		drop_on_object 0,
+		!! Objetos al alcance adicionales desde el SmartEnterable:
+		reach_objects 0,
  private
 		!! Indica si el objeto pasado como parámetro se encuentra fuera de
 		!! alcance desde el SmartEnterable. Retorna verdadero si el objeto está
@@ -488,7 +424,7 @@ Class	SmartEnterable
 			!! El objeto se encuentra fuera del alcance:
 			return true;
 		],
- has	enterable;
+;
 
 !!------------------------------------------------------------------------------
 !! Thing
@@ -500,13 +436,13 @@ Class	SmartEnterable
 !! objetos con los que modelar el mundo del relato.
 !!
 !!	@dependency SpanishLM.h
-!!	@version 1.0
+!!	@version 2019/09/20
 !!------------------------------------------------------------------------------
 Class	Thing
  with	capacity_size	-1,	! Capacidad total: en cuanto a tamaño
 		capacity_volume	-1,	! Capacidad total: en cuanto a volumen
 		capacity_weight	-1,	! Capacidad total: en cuanto a peso
-		size	0,			! Tamaño
+		size	SIZE_L,		! Tamaño
 		state	0,			! Estado
 		volume	0,			! Volumen
 		weight	0,			! Peso
@@ -549,18 +485,22 @@ Class	Thing
 !!------------------------------------------------------------------------------
 !! Thing:Atrezzo
 !!------------------------------------------------------------------------------
-!! Representa un objeto decorado dentro del modelo de mundo. Se le aplica la
-!! propiedad 'scenery' definida por la librería Inform.
+!! Representa un objeto decorado dentro del modelo de mundo. Se le aplica las
+!! propiedades 'oculto' (concealed) y 'estático' (static) definidas por la
+!! librería Inform.
 !!
 !!	@dependency arrays.h
 !!	@dependency SpanishLM.h
-!!	@version 2019/06/17
+!!	@version 2019/09/19
 !!------------------------------------------------------------------------------
 Class	Atrezzo
  class	Thing
  has	concealed static,
  with	before [
 			previous_style;
+			!! Puesto que 'Atrezzo' se utiliza como superclase para definir
+			!! localidades, la siguiente comprobación permite filtrar acciones
+			!! sin objeto realizadas dentro de la localidad:
 			if (noun ~= self) return false;
 			Attack,
 			Blow,
@@ -629,24 +569,15 @@ Class	Atrezzo
 					FIRST_PERSON_PRESENT,
 					SECOND_PERSON_PRESENT,
 					THIRD_PERSON_PRESENT:
-						PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-						PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
-						PrintCharacterArray(utility_array_a);
-						" está", (n) self, " ya ahí.";
+						"Ya está", (n) self, " ahí.";
 					FIRST_PERSON_PAST,
 					SECOND_PERSON_PAST,
 					THIRD_PERSON_PAST:
-						PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-						PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
-						PrintCharacterArray(utility_array_a);
-						" estaba", (n) self, " ya allí.";
+						"Ya estaba", (n) self, " allí.";
 					FIRST_PERSON_FUTURE,
 					SECOND_PERSON_FUTURE,
 					THIRD_PERSON_FUTURE:
-						PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-						PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
-						PrintCharacterArray(utility_array_a);
-						" estará", (n) self, " ya allí.";
+						"Ya estará", (n) self, " allí.";
 				}
 			Eat,
 			Taste:
@@ -691,9 +622,98 @@ Class	Atrezzo
 			default:
 				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
 				print (string) TEXT_STYLE_PARSER_PREFIX;
-				print "No es necesario que te preocupes por ";
-				Utils.spanish_nominative_pronoun(self);
-				print ".";
+				print "No puedes interactuar con ", (the) self, " de ese modo.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+		],
+;
+
+!!------------------------------------------------------------------------------
+!! Thing:Atrezzo:Background
+!!------------------------------------------------------------------------------
+!! Objetos de decorado con la interactividad más restringida; objetos lejanos,
+!! objetos inmateriales, objetos de menor importancia…
+!!
+!!	@dependency arrays.h
+!!	@dependency textStyles.h
+!!	@version 2019/09/19
+!!------------------------------------------------------------------------------
+Class	Background
+ class	Atrezzo
+ with	before [
+			previous_style;
+			DefaultAction,
+			Examine:
+				return false;
+			Attack,
+			Blow,
+			Enter,
+			Listen,
+			Search,
+			Smell:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "No puedes interactuar con ", (the) self, " de ese modo.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Close,
+			Lock:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
+				print " no ", (es) self, " algo que puedas cerrar.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Disrobe,
+			Wear:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
+				print " no ", (es) self, " algo con lo que te puedas vestir.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Open,
+			Unlock:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
+				print " no ", (es) self, " algo que puedas abrir.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			SwitchOn:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
+				print " no ", (es) self, " algo que puedas encender.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			SwitchOff:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
+				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+				PrintCharacterArray(utility_array_a);
+				print " no ", (es) self, " algo que puedas apagar.";
 				print (string) TEXT_STYLE_PARSER_SUFIX;
 				Utils.set_text_style(previous_style);
 				new_line;
@@ -777,108 +797,80 @@ Class	AdjacentRoom
 ;
 
 !!------------------------------------------------------------------------------
-!! Thing:Atrezzo:Immaterial
-!!------------------------------------------------------------------------------
-!! Representa un objeto inmaterial (olores, ruidos, sensaciones) con el que no
-!! se puede interactuar de ningún modo por defecto.
-!!
-!!	@version 1.0
-!!------------------------------------------------------------------------------
-Class	Immaterial
- class	Atrezzo
- with	before [
-			previous_style;
-			Attack,
-			Blow,
-			DefaultAction,
-			Enter,
-			Examine,
-			Listen,
-			Search,
-			Smell:
-				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
-				print (string) TEXT_STYLE_PARSER_PREFIX;
-				print "No ", (es) self, " algo que necesites manipular para continuar la historia.";
-				print (string) TEXT_STYLE_PARSER_SUFIX;
-				Utils.set_text_style(previous_style);
-				new_line;
-				return true;
-			Close,
-			Lock:
-				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
-				print (string) TEXT_STYLE_PARSER_PREFIX;
-				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(utility_array_a);
-				print " no ", (es) self, " algo que puedas cerrar.";
-				print (string) TEXT_STYLE_PARSER_SUFIX;
-				Utils.set_text_style(previous_style);
-				new_line;
-				return true;
-			Disrobe,
-			Wear:
-				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
-				print (string) TEXT_STYLE_PARSER_PREFIX;
-				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(utility_array_a);
-				print " no ", (es) self, " algo con lo que te puedas vestir.";
-				print (string) TEXT_STYLE_PARSER_SUFIX;
-				Utils.set_text_style(previous_style);
-				new_line;
-				return true;
-			Open,
-			Unlock:
-				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
-				print (string) TEXT_STYLE_PARSER_PREFIX;
-				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(utility_array_a);
-				print " no ", (es) self, " algo que puedas abrir.";
-				print (string) TEXT_STYLE_PARSER_SUFIX;
-				Utils.set_text_style(previous_style);
-				new_line;
-				return true;
-			SwitchOn:
-				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
-				print (string) TEXT_STYLE_PARSER_PREFIX;
-				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(utility_array_a);
-				print " no ", (es) self, " algo que puedas encender.";
-				print (string) TEXT_STYLE_PARSER_SUFIX;
-				Utils.set_text_style(previous_style);
-				new_line;
-				return true;
-			SwitchOff:
-				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
-				print (string) TEXT_STYLE_PARSER_PREFIX;
-				PrefaceByArticle(self, 1, -1, 1); ! (El/La/Los/Las)
-				PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
-				PrintCharacterArray(utility_array_a);
-				print " no ", (es) self, " algo que puedas apagar.";
-				print (string) TEXT_STYLE_PARSER_SUFIX;
-				Utils.set_text_style(previous_style);
-				new_line;
-				return true;
-		],
-;
-
-!!------------------------------------------------------------------------------
 !! Thing:Atrezzo:Room
 !!------------------------------------------------------------------------------
 !! Representa un objeto localidad dentro del modelo de mundo.
 !!
-!!	@version 2.0
+!!	@version 2019/09/19
 !!------------------------------------------------------------------------------
 Class	Room
  class	Atrezzo
  has	light,
- with	before [;
-			Examine:
-				if (noun == self) {
-					<<Look>>;
-				}
+ with	before [
+			previous_style;
+			if (noun ~= self) return false;
+			Climb:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "No ", (es) self, " algo a lo que puedas trepar.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Cut:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "No ", (es) self, " algo que puedas cortar.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+   			DefaultAction,
+   			Examine,
+   			Search:
+				<<Look>>;
+   			Dig:
+				return L__M(##Climb);
+			Drink:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "No ", (es) self, " algo que puedas beber.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Eat,
+			Taste:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "No ", (es) self, " algo que puedas comer.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Jump:
+				return L__M(##Jump);
+			JumpOver:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "No ", (es) self, " algo sobre lo que puedas saltar.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			Pull,
+			Push,
+			PushDir,
+			Take,
+			Turn,
+			Wave:
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "No ", (es) self, " algo que puedas manipular de ese modo.";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
 		],
 		cant_go [;
 			switch (Utils.get_grammatical_inflection()) {
@@ -937,15 +929,17 @@ Class	Room
 		],
 		description_verbose 0,
 		!! Por defecto la descripción breve es igual a la descripción larga:
-		description_brief [; return self.description_verbose(); ],
+		description_brief [;
+			return self.description_verbose();
+		],
 		!! Permite listar las salidas visibles:
 		exits 0,
- has	light;
+;
 
 !!------------------------------------------------------------------------------
 !! Thing:Atrezzo:Room:Indoors
 !!------------------------------------------------------------------------------
-!!	@version 1.0
+!!	@version 2019/07/15
 !!------------------------------------------------------------------------------
 Class	Indoors
  class	Room
@@ -954,7 +948,7 @@ Class	Indoors
 !!------------------------------------------------------------------------------
 !! Thing:Atrezzo:Room:Outdoors
 !!------------------------------------------------------------------------------
-!!	@version 1.0
+!!	@version 2019/07/15
 !!------------------------------------------------------------------------------
 Class	Outdoors
  class	Room
@@ -967,7 +961,7 @@ Class	Outdoors
 !!
 !!	@dependency arrays.h
 !!	@dependency textStyles.h
-!!	@version 1.0
+!!	@version 2019/07/15
 !!------------------------------------------------------------------------------
 Class	Character
  class	Thing,
@@ -990,13 +984,6 @@ Class	Character
 					<<TalkTo self>>;
 				}
 		],
-		!! FIXME - eliminar
-		killz 0,
-		killq 0,
-		qlist 0,
-		qoff 0,
-		qqon 0,
-		qtype 0,
 ;
 
 !!------------------------------------------------------------------------------
@@ -1005,7 +992,7 @@ Class	Character
 !! Representa un objeto simple dentro del modelo de mundo sobre el que
 !! inicialmente no se aplican restricciones de ningún tipo.
 !!
-!!	@version 1.0
+!!	@version 2019/07/15
 !!------------------------------------------------------------------------------
 Class	Item
  class	Thing
@@ -1019,24 +1006,25 @@ Class	Item
 !! lleve puestas prendas de una capa superior.
 !!
 !!	@dependency SpanishLM.h
-!!	@version 1.0
+!!	@version 2019/09/16
 !!------------------------------------------------------------------------------
 Class	Clothes
  class	Item
+ has	clothing,
  with	before [
 			obj i temp layer_a layer_b;
 			Disrobe,
 			Wear:
 				!! Calcula la capa de referencia del objeto:
-				for (i = 0 : i < (self.#layers)/WORDSIZE : i++) {
-					temp = self.&layers-->i;
+				for (i = 0 : i < (self.#layer)/WORDSIZE : i++) {
+					temp = self.&layer-->i;
 					if (temp > layer_a) layer_a = temp;
 				}
 				!! Comprueba las capas del resto de elementos vestidos por PJ:
 				objectloop(obj in player && obj ofclass Clothes
 					&& obj has worn && obj ~= self) {
-					for (i = 0 : i < (obj.#layers)/WORDSIZE : i++) {
-						temp = obj.&layers-->i;
+					for (i = 0 : i < (obj.#layer)/WORDSIZE : i++) {
+						temp = obj.&layer-->i;
 						if (i == 0) layer_b = temp;
 						else if (temp < layer_b) layer_b = temp;
 					}
@@ -1083,8 +1071,8 @@ Class	Clothes
 					}
 				}
 		],
-		layers 0,
- has	clothing;
+		layer 0,
+;
 
 !!------------------------------------------------------------------------------
 !! Thing:Item:HeavyItem
@@ -1093,7 +1081,7 @@ Class	Clothes
 !! propiedad 'static' definida por la librería Inform.
 !!
 !!	@dependency SpanishLM.h
-!!	@version 1.0
+!!	@version 2019/07/15
 !!------------------------------------------------------------------------------
 Class	HeavyItem
  class	Item

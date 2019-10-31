@@ -184,12 +184,12 @@ Object	MainMenu "(Main Menu)"
 						if (~~ini) PlayerTo(DormitorioBaron);
 					'3':
 						done = true;
-						result = CaminoBosque1;
-						if (~~ini) PlayerTo(CaminoBosque1);
+						result = CaminoBosque;
+						if (~~ini) PlayerTo(CaminoBosque);
 					'4':
 						done = true;
-						result = CastilloEntrada;
-						if (~~ini) PlayerTo(CastilloEntrada);
+						result = EntradaCastillo;
+						if (~~ini) PlayerTo(EntradaCastillo);
 					'5':
 						done = true;
 						result = PatioArmas;
@@ -237,11 +237,11 @@ Object	MainMenu "(Main Menu)"
 					result = DormitorioBaron;
 					if (~~ini) PlayerTo(DormitorioBaron);
 				'3':
-					result = CaminoBosque1;
-					if (~~ini) PlayerTo(CaminoBosque1);
+					result = CaminoBosque;
+					if (~~ini) PlayerTo(CaminoBosque);
 				'4':
-					result = CastilloEntrada;
-					if (~~ini) PlayerTo(CastilloEntrada);
+					result = EntradaCastillo;
+					if (~~ini) PlayerTo(EntradaCastillo);
 				'5':
 					result = PatioArmas;
 					if (~~ini) PlayerTo(PatioArmas);

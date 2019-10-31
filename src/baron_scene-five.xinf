@@ -48,11 +48,47 @@
 !!
 !!------------------------------------------------------------------------------
 
-[ EndSceneFive;
-];
+!! FIXME
+!! @CastilloNieve
+Atrezzo	CastilloNieve "nieve" Limbo
+ has	female,
+ with	found_in PatioArmas,
+		name_f 'nieve',
+		gender G_FEMENINO,
+		!!------------------
+		before [;
+			Dig,
+			LookUnder:
+				if (second ~= nothing
+					&& second ~= player
+					&& IndirectlyContains(player, second)) {
+					print "Hurgas aquí y allá entre [la self] con [el second], sin encontrar nada.";
+					new_line;
+					return true;
+				}
+				print "Hurgas aquí y allá entre [la self], sin encontrar nada.";
+				new_line;
+				return true;
+			Search:
+				<<Dig self>>;
+		],
+		description [;
+			!! TODO
+			print "A veces la nieve otorga a los objetos una cualidad de cuento de hadas al posarse sobre ellos. Hoy no, no esta nieve. Esta nieve parece querer asfixiarlos y enterrarlos para siempre.";
+			new_line;
+			return true;
+		],
+		react_before [;
+			Dig:
+				if (noun == nothing || noun == location) {
+					<<Dig self second>>;
+				}
+		],
+;
 
 !! @Paredes
 Atrezzo	Paredes "paredes" Limbo
+ class	Background,
  has	female pluralname,
  with	found_in Comedor Edificio PatioArmas Sotano,
 		name_f 'pared',
@@ -194,7 +230,7 @@ Outdoors	Edificio
 		adjectives 'semiderruido',
 		!!------------------
 		description [;
-			print "[El EdificioTejado] se ha desplomado completamente en el interior y las paredes han comenzado a desmoronarse, cubriendo el suelo con pedazos de yeso y de mampostería, tejas partidas y vigas de madera caídas que ahora ya sólo sostienen una fina capa de nieve. El [self](edificio) parece formar parte de las antiguas dependencias del servicio. El lugar en el que en el pasado los criados del barón vivieron, rieron y dónde hicieron el amor, tal vez. Ahora no es más que una vieja ruina.
+			print "[El EdificioTejado] se ha desplomado completamente en el interior y sus paredes han comenzado a desmoronarse tambien, cubriendo el suelo con pedazos de yeso y de mampostería, de tejas partidas y de vigas de madera caídas que ahora ya sólo sostienen una fina capa de nieve. El [self](edificio) parece formar parte de las antiguas dependencias del servicio. El lugar en el que en el pasado los criados del barón vivieron, rieron y dónde hicieron el amor, tal vez. Ahora no es más que una vieja ruina.
 			^^
 			A través del hueco abierto en el muro se ve [el DirPatioArmas]. Hay además [un DirComedor]";
 			!! TODO
@@ -219,7 +255,8 @@ Atrezzo	-> EdificioTejado "tejado"
 		adjectives 'caido' 'derrumbado',
 		!!------------------
 		description [;
-			print "El tejado se ha derrumbado por completo sobre el suelo del edificio y ahora la fría luz de [la Luna] se cuela libre de obstáculos.";
+			!! TODO - cielo encapotado
+			print "El tejado se ha derrumbado por completo sobre el suelo del edificio y ahora la fría luz de la luna se cuela libre de obstáculos.";
 			new_line;
 			return true;
 		],
@@ -274,13 +311,13 @@ Indoors	Comedor
 
 !! @Antorcha
 Item	-> Antorcha "antorcha"
- has	female light,
+ has	female on,
  with	name_f 'antorcha' 'tea',
 		gender G_FEMENINO,
 		adjectives 'apagada' 'encendida',
 		!!------------------
 		describe [;
-			if (self has light && self hasnt moved) {
+			if (self has on && self hasnt moved) {
 				new_line;
 				print "Sujeta a un aplique en la pared, una antorcha arde débilmente y arroja algo de luz y calor en la fría estancia.";
 				new_line;
@@ -288,7 +325,7 @@ Item	-> Antorcha "antorcha"
 			}
 		],
 		description [;
-			if (self has light) {
+			if (self has on) {
 				print "La luz amarillenta de su llama contrasta en el blanco y negro de la noche.";
 			} else {
 				print "El lienzo engrasado del extremo se ha consumido por completo. Ahora es sólo un pedazo de madera ennegrecida y fría.";

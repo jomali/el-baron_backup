@@ -93,11 +93,11 @@ Constant Story
 Constant Headline
 "Una historia interactiva. Escrita por Victor Gijsbers y publicada bajo la Licencia Pública General de GNU en su versión 3 (o cualquier versión posterior). La presente edición ha sido desarrollada por J. Francisco Martín.";
 
-Constant Checking 0;
+Constant Checking 1;
 Release 0;
 
 !! Descomentar para compilar la versión Web/Móvil:
-Constant VERSION_WEB_MOBILE;
+!! Constant VERSION_WEB_MOBILE;
 
 !!------------------------------------------------------------------------------
 !!	Control de las extensiones utilizadas por la obra
@@ -134,16 +134,20 @@ Constant USE_SPANISH_LM;
 !! Clases de objetos interactivos:
 Constant REMARKABLE_OBJECT 2;
 Constant DIRECTION_OBJECT 3;
-Constant TOPIC_OBJECT 4;
+Constant CHOICE_OBJECT 4;
 Constant OTHER_OBJECT 1;
+
+!! Tamaños relativos de los objetos:
+Constant SIZE_S 0;
+Constant SIZE_M 1;
+Constant SIZE_L 2;
 
 !! Nombre del fichero de configuración:
 Constant CONFIG_FILE_NAME "baron.params";
 
 !! Referencias a los recursos multimedia en Máquina-Z:
 #Ifdef TARGET_ZCODE;
-Constant MUS_SOUNDTRACK 0;
-Constant SFX_WIND 1;
+!! TODO
 #Endif; ! TARGET_ZCODE;
 
 #Ifndef USE_EXTENDED_LIBRARY;
@@ -171,8 +175,8 @@ Constant WITHOUT_DIRECTIONS;	! Se omiten las dir. por defecto de la lib.
 !!------------------------------------------------------------------------------
 
 Constant CSET_STYLE 1;
-Constant CSET_PREFIX "[";
-Constant CSET_SUFIX "]";
+Constant CSET_PREFIX "(";
+Constant CSET_SUFIX ").";
 Constant CSET_MSG1 "";
 Constant CSET_MSG2 "";
 Constant CSET_COMMA " / ";
@@ -750,10 +754,12 @@ Include "vorple-screen-effects.h";
 !! una con la otra, y puede dejar el contador de palabras en cualquier punto.
 !!
 !!	@returns Nada
-!!	@version 2019/06/18
+!!	@version 2019/07/15
 !!------------------------------------------------------------------------------
 [ BeforeParsing;
+	#Ifdef CHOICE_SETS;
 	ChoiceSetManager.run();
+	#Endif; ! CHOICE_SETS;
 	#Ifdef PARSING_PREPROCESSOR;
 	ParsingPreprocessor.run();
 	#Endif; ! PARSING_PREPROCESSOR;
@@ -844,6 +850,7 @@ Include "vorple-screen-effects.h";
 	Utils.initialise_glulx();
 
 	!! Advertencia de contenidos -----------------------------------------------
+	#Ifndef DEBUG;
 	new_line;
 	print (strong) "ADVERTENCIA", "^";
 	new_line;
@@ -859,6 +866,7 @@ Include "vorple-screen-effects.h";
 	new_line;
 	Utils.press_any_key();
 	Utils.erase_window();
+	#Endif; ! DEBUG;
 
 	!! Comprobación de los ficheros de configuración ---------------------------
 	#Ifdef TARGET_GLULX;
@@ -874,17 +882,24 @@ Include "vorple-screen-effects.h";
 	#Endif; ! VERSION_DESKTOP;
 	#Endif; ! TARGET_GLULX;
 
-	!! Configuración del sistema de hipervínculos ------------------------------
+	!! Configuración de los sistemas de hipervínculos y palabras destacadas ----
 	#Ifdef TARGET_GLULX;
+	!! Hipervínculos:
 	Utils.set_hyperlinks_status(REMARKABLE_OBJECT, true);
 	Utils.set_hyperlinks_status(DIRECTION_OBJECT, true);
-	Utils.set_hyperlinks_status(TOPIC_OBJECT, true);
+	Utils.set_hyperlinks_status(CHOICE_OBJECT, true);
 	Utils.set_hyperlinks_status(OTHER_OBJECT, true);
+	!! Palabras destacadas:
+	#Ifdef VERSION_WEB_MOBILE;
 	Utils.set_highlight_style(REMARKABLE_OBJECT, TEXT_STYLE_NOTE);
 	Utils.set_highlight_style(DIRECTION_OBJECT, TEXT_STYLE_QUOTE);
-	Utils.set_highlight_style(TOPIC_OBJECT, TEXT_STYLE_NOTE);
+	Utils.set_highlight_style(CHOICE_OBJECT, TEXT_STYLE_NOTE);
 	Utils.set_highlight_style(OTHER_OBJECT, TEXT_STYLE_NOTE);
-	#Ifdef VERSION_DESKTOP;
+	#Ifnot; ! VERSION_DESKTOP;
+	Utils.set_highlight_style(REMARKABLE_OBJECT, TEXT_STYLE_NOTE);
+	Utils.set_highlight_style(DIRECTION_OBJECT, TEXT_STYLE_QUOTE);
+	Utils.set_highlight_style(CHOICE_OBJECT, TEXT_STYLE_IMPORTANT);
+	Utils.set_highlight_style(OTHER_OBJECT, TEXT_STYLE_UPRIGHT);
 	#Ifdef CONFIG_FILE_NAME;
 	if (~~Utils.read_configuration_file(CONFIG_FILE_NAME)) {
 		print "Es posible experimentar ";
@@ -902,7 +917,7 @@ Include "vorple-screen-effects.h";
 		} else {
 			Utils.set_hyperlinks_status(REMARKABLE_OBJECT, false);
 			Utils.set_hyperlinks_status(DIRECTION_OBJECT, false);
-			Utils.set_hyperlinks_status(TOPIC_OBJECT, false);
+			Utils.set_hyperlinks_status(CHOICE_OBJECT, false);
 			Utils.set_hyperlinks_status(OTHER_OBJECT, false);
 			print (parser) "Hipervínculos desactivados.";
 		}
@@ -917,6 +932,7 @@ Include "vorple-screen-effects.h";
 		Utils.erase_window();
 	}
 	#Endif; ! CONFIG_FILE_NAME;
+	#Endif; ! VERSION_
 	#Endif; ! TARGET_GLULX;
 
 	!! Inicializaciones de la obra ---------------------------------------------
@@ -924,11 +940,10 @@ Include "vorple-screen-effects.h";
 	!! Contenidos de la barra de estado centrados en pantalla:
 	Utils.set_status_bar_alignment(1); ! 0=left; 1=center; 2=right
 
-	!! Narrador en pasado y tercera persona
+	!! Narrador en pasado y segunda persona
 	Utils.set_grammatical_inflection(SECOND_PERSON_PRESENT);
 
 	!! Establece el estilo del inventario:
-	!! FIXME
 	!! inventory_style = ENGLISH_BIT + RECURSE_BIT + FULLINV_BIT;
 
 	!! Establece el PC (player character)
@@ -938,8 +953,7 @@ Include "vorple-screen-effects.h";
 	lookmode = 2;
 
 	!! Menú principal:
-	!! location = MainMenu.run(true);
-	location = DormitorioBaron;
+	location = MainMenu.run(true);
 
 	!! Se evita la impresión inicial del banner
 	return 2;
@@ -1129,7 +1143,7 @@ VerboIrregular "establecer configuración de palabras resaltadas"
 				TEXT_STYLE_IMPORTANT:	temp = "negrita";
 				TEXT_STYLE_MONOSPACED:	temp = "monoespaciado";
 				TEXT_STYLE_NOTE:		temp = "enfatizado (a)";
-				TEXT_STYLE_QUOTE:	temp = "enfatizado (b)";
+				TEXT_STYLE_QUOTE:		temp = "enfatizado (b)";
 				TEXT_STYLE_STRESSED:	temp = "cursiva";
 				TEXT_STYLE_UPRIGHT, -1:	temp = "sin estilo";
 				TEXT_STYLE_USER1:		temp = "color de fondo";
@@ -1341,7 +1355,167 @@ Verb	'escapa' 'huye'
 	* 'hacia' noun					-> Enter
 	* 'por' noun					-> Enter
 ;
-VerboIrregular "huye" with imperativo 'huir';
+VerboIrregular "huir" with imperativo 'huye';
+
+!!------------------------------------------------------------------------------
+!! ##GetDressed
+!!------------------------------------------------------------------------------
+!! Simplificación de la acción ##Wear que permite no incluir un objeto
+!! objetivo. Comprueba si hay algún objeto de vestuario sin poner al alcance
+!! del PC y lanza ##Wear sobre él en caso de encontrarlo, o imprime un mensaje
+!! de error adecuado en caso contrario.
+!!------------------------------------------------------------------------------
+
+[ PresentClothes
+	held_clothes i obj result;
+	result = nothing;
+	objectloop(obj has clothing
+		&& TestScope(obj, player)) {
+		result = obj;
+		i++;
+		if (parent(obj) == player) {
+			result = obj;
+			held_clothes++;
+		}
+	}
+	if (held_clothes > 1 || (i-held_clothes) > 1) {
+		result = GPR_FAIL;
+	}
+	return result;
+];
+
+Extend	only 'viste' 'vistete' 'vestirse' 'vestirte' 'vestirme' 'visteme' first
+	* PresentClothes				-> GetDressed
+;
+
+[ GetDressedSub;
+	!! 1) No hay ningún objeto de vestuario disponible:
+	if (noun == nothing) {
+		switch (Utils.get_grammatical_inflection()) {
+			FIRST_PERSON_PRESENT:
+				if (IsPluralNoun(player)) "No tenemos qué ponernos.";
+				else "No tengo qué ponerme.";
+			SECOND_PERSON_PRESENT:
+				if (IsPluralNoun(player)) "No tenéis qué poneros.";
+				else "No tienes qué ponerte.";
+			THIRD_PERSON_PRESENT:
+				if (IsPluralNoun(player)) "No tienen qué ponerse.";
+				else "No tiene qué ponerse.";
+			FIRST_PERSON_PAST:
+				if (IsPluralNoun(player)) "No teníamos qué ponernos.";
+				else "No tenía qué ponerme.";
+			SECOND_PERSON_PAST:
+				if (IsPluralNoun(player)) "No teníais qué poneros.";
+				else "No tenías qué ponerte.";
+			THIRD_PERSON_PAST:
+				if (IsPluralNoun(player)) "No tenían qué ponerse.";
+				else "No tenía qué ponerse.";
+			FIRST_PERSON_FUTURE:
+				if (IsPluralNoun(player)) "No tendremos qué ponernos.";
+				else "No tendré qué ponerme.";
+			SECOND_PERSON_FUTURE:
+				if (IsPluralNoun(player)) "No tendréis qué poneros.";
+				else "No tendrás qué ponerte.";
+			THIRD_PERSON_FUTURE:
+				if (IsPluralNoun(player)) "No tendrán qué ponerse.";
+				else "No tendrá qué ponerse.";
+		}
+	}
+
+	!! 2) El PC ya lleva puesto el objeto de vestuario:
+	if (parent(noun) == player && noun has worn) {
+		switch (Utils.get_grammatical_inflection()) {
+			FIRST_PERSON_PRESENT:
+				if (IsPluralNoun(player)) print "Ya llevamos";
+				else print "Ya llevo";
+			SECOND_PERSON_PRESENT:
+				if (IsPluralNoun(player)) print "Ya lleváis";
+				else print "Ya llevas";
+			THIRD_PERSON_PRESENT:
+				if (IsPluralNoun(player)) print "Ya llevan";
+				else print "Ya lleva";
+			FIRST_PERSON_PAST:
+				if (IsPluralNoun(player)) print "Ya llevábamos";
+				else print "Ya llevaba";
+			SECOND_PERSON_PAST:
+				if (IsPluralNoun(player)) print "Ya llevabais";
+				else print "Ya llevabas";
+			THIRD_PERSON_PAST:
+				if (IsPluralNoun(player)) print "Ya llevaban";
+				else print "Ya llevaba";
+			FIRST_PERSON_FUTURE:
+				if (IsPluralNoun(player)) print "Ya llevaremos";
+				else print "Ya llevaré";
+			SECOND_PERSON_FUTURE:
+				if (IsPluralNoun(player)) print "Ya llevaréis";
+				else print "Ya llevarás";
+			THIRD_PERSON_FUTURE:
+				if (IsPluralNoun(player)) print "Ya llevarán";
+				else print "Ya llevará";
+		}
+		" ", (the) noun, " puest", (o) noun, ".";
+	}
+
+	!! 3) El objeto de vestuario está en posesión del PC pero no lo lleva
+	!! puesto:
+	if (parent(noun) == player && noun hasnt worn) {
+		<<Wear noun>>;
+	}
+
+	!! 4) El objeto de vestuario no está en posesión del PC:
+	if (parent(noun) ~= player) {
+		print "(Primero";
+		switch (Utils.get_grammatical_inflection()) {
+			FIRST_PERSON_PRESENT:
+				if (~~IsPluralNoun(player)) print " trato";
+				else print " tratamos";
+			SECOND_PERSON_PRESENT:
+				if (~~IsPluralNoun(player)) print " tratas";
+				else print " tratáis";
+			THIRD_PERSON_PRESENT:
+				if (~~IsPluralNoun(player)) print " trata";
+				else print " tratan";
+			FIRST_PERSON_PAST:
+				if (~~IsPluralNoun(player)) print " traté";
+				else print " tratamos";
+			SECOND_PERSON_PAST:
+				if (~~IsPluralNoun(player)) print " trataste";
+				else print " tratasteis";
+			THIRD_PERSON_PAST:
+				if (~~IsPluralNoun(player)) print " trató";
+				else print " trataron";
+			FIRST_PERSON_FUTURE:
+				if (~~IsPluralNoun(player)) print " trataré";
+				else print " trataremos";
+			SECOND_PERSON_FUTURE:
+				if (~~IsPluralNoun(player)) print " tratarás";
+				else print " trataréis";
+			THIRD_PERSON_FUTURE:
+				if (~~IsPluralNoun(player)) print " tratará";
+				else print " tratarán";
+		}
+		print " de coger ", (the) noun, ".)";
+		new_line;
+		keep_silent = true;
+		if (~~TakeSub()) {
+			keep_silent = false;
+			return true;
+		}
+		keep_silent = false;
+		<<Wear noun>>;
+	}
+];
+
+!! Extend 'ponte' first
+!! 	* clothing					-> Wear
+!! 	* 'con' clothing			-> Wear
+!! ;
+!!
+!! Extend 'viste' first
+!! 	*							-> GetDressed
+!! 	* clothing					-> Wear
+!! 	* 'con' clothing			-> Wear
+!! ;
 
 !!------------------------------------------------------------------------------
 !! ##Go

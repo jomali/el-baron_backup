@@ -265,14 +265,50 @@ Object	LibraryMessages
 				!! coma, ej: PEPE ZAFDSRGG, SALTA.
 				print_ret (parser) "Para iniciar una conversación, intenta
 				órdenes del tipo: PERSONAJE, HOLA.";
+			45:
+				!! El usuario ha nombrado un PNJ ambiguo (hay más de noun con
+				!! el mismo name cerca). El parser le pide aclaración. Este
+				!! mensaje es la primera parte de la pregunta, el resto lo pone
+				!! el parser (que es la lista de PNJs entre los que duda).
+				!! Debemos poner a 1 la variable PreguntaCualExactamente cuando
+				!! se generan este tipo de preguntas aclaratorias.
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "[¿Quién concretamente: ";
+				PreguntaCualExactamente=1;
+				ImprimirListaDudosos("o");
+				print "?";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			46:
+				!! El usuario ha nombrado un objeto ambiguo (hay más de objeto
+				!! con el mismo nombre cerca). El parser le pide aclaración.
+				!! Este mensaje es la primera parte de la pregunta, el resto lo
+				!! pone el parser (que es la lista de objetos entre los que
+				!! duda). Debemos poner a 1 la variable PreguntaCualExactamente
+				!! cuando se generan este tipo de preguntas aclaratorias.
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "¿Cuál concretamente: ";
+				PreguntaCualExactamente=1;
+				ImprimirListaDudosos("o");
+				print "?";
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+
 			47:
 				!! El usuario ha respondido "TODOS" o "AMBOS" a una pregunta
 				!! aclaratoria como la anterior, pero el verbo no admite
 				!! objetos múltiples.
-				print (parser) "Desafortunadamente sólo puedes referirte a un
+				print (parser) "Sólo puedes referirte a un
 				objeto en este caso. ¿Cuál exactamente?";
 				new_line;
 				PreguntaCualExactamente=1;
+				return true;
 			48:
 				!! El usuario ha escrito una frase u orden a NPC incompleta,
 				!! como BESA (verbo aplicado sobre NPCs normalmente). El parser
@@ -327,6 +363,10 @@ Object	LibraryMessages
 				print_ret (parser) "Comentario guardado.";
 			55:
 				print_ret (parser) "Comentario NO guardado.";
+			56:
+				return true;
+			57:
+				return true;
 		}
 
 	NotifyOff:

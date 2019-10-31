@@ -40,6 +40,832 @@
 !!	Copyright (c) 2019, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
+!!
+!!	ÍNDICE
+!!
+!!	0)
+!!	1)	Ante las puertas del castillo
+!!
+!!------------------------------------------------------------------------------
+
+
+!!==============================================================================
+!!
+!!	0)
+!!
+!!------------------------------------------------------------------------------
+
+!! @Gargola
+Character	Gargola "gárgola" Limbo
+ has	female,
+ with	name_f 'gargola',
+		name_m 'monstruo',
+		gender G_FEMENINO,
+		adjectives 'piedra' 'roca',
+		!!------------------
+		appears [
+			result;
+			result = false;
+			if (self notin EntradaCastillo) {
+				result = true;
+				move self to EntradaCastillo;
+				print "El repentino sonido de un aleteo te empuja a mirar a lo alto, hacia las almenas donde las monstruosas gárgolas se hierguen como sombras oscuras, pero no eres capaz de verlo hasta que aterriza frente a ti, a apenas unos pasos de distancia. Uno de esos demonios de roca maciza, grande como un hombre, con dos ojos negros como la tinta que te escrutan con intensidad.";
+				new_line;
+				ChoiceSetManager.start(ConversacionGargola);
+			}
+			return result;
+		],
+		description [;
+			print "Un monstruo de piedra de rasgos demoníacos, grande como un hombre, con unas enormes alas de murciélago.";
+			new_line;
+			return true;
+		],
+ private
+		msg_2 [ code;
+			switch (code) {
+				1:
+					print "—Mi objetivo está claro, y cualquiera que se interponga en mi camino para conseguirlo será destruido.";
+				2:
+					print "—No ha sido justo, y lloro por aquello que he tenido que hacer. Pero mi objetivo es demasiado importante… no puedo aceptar ningún retraso.";
+				3:
+					print "—No siempre tienes la elección de pagar el precio tú mismo, o hacer que sea otro quién lo pague por ti.";
+				4:
+					print "—¡No soy un asesino! Fue en defensa propia. No… no tenía ninguna otra alternativa.";
+				5:
+					print "—Es una niña, y era el diario de una niña. En un par de años ella misma se reirá de esas confesiones intrascendentes de juventud.";
+				6:
+					print "—En el seno de una familia unida, como parte de una comunidad pequeña y unida, nadie necesita ocultar ningún pensamiento *más íntimo*. Tu vida se basa en el amor que compartes con la gente que te rodea.";
+				7:
+					print "—Ha sido un gran sacrificio, pero desecharé sus recuerdos gustoso una y otra vez si a cambio puedo liberarla de las garras del barón.";
+				8:
+					print "—No me ha hecho feliz arrojar a *Pardo* a las fauces de ese lobo, pero María no será una niña por mucho más tiempo. Una vez haya madurado no tendrá niguna necesidad de animales de peluche. En última instancia el amor por los humanos significa infinitamente más.";
+				9:
+					print "—Ya me ocuparé de consolarla, una vez la libere. Y también yo he estado siempre ahí para ella, y siempre lo estaré. No hay nada que pueda significar ese juguete de peluche para María que no lo signifique yo mismo, con cien veces más fuerza.";
+				10:
+					print "—María no se preocupará mucho si el precio por escapar del castillo del barón haya sido sacrificar su osito de peluche. *Pardo* no sirve de nada contra el barón.";
+				11:
+					print "—Sí. Sólo un examen frío y racional puede valorar con precisión los pros y los contras de cara a tomar la decisión correcta. Aquel que se permite actuar empujado por sus emociones no conseguirá nada más que dolor.";
+				12:
+					print "—No. Pero en mi corazón arde el fuego de la ira, y eso me da fuerzas para enfrentarme al verdadero culpable, el barón, y obligarlo a través del método que sea necesario a que deje libre a mi hija. Mis emociones están lejos de yacer muertas.";
+				13:
+					print "—Todo cuanto necesita alguien para actuar es voluntad, y la voluntad no tiene nada que ver con las emociones. Una persona con férrea capacidad de decisión puede hacer cualquier cosa que sea necesaria, aún sin sentir absolutamente nada. Para el débil de caracter, incluso la más fuerte de las emociones es insuficiente para que tome la iniciativa.";
+				14:
+					print "—He hecho lo que tenía que hacer. No creo que puedas acusarme de nada.";
+				15:
+					print "—Si se lo hubiese hecho a un ser humano hubiese sido imperdonable; un crímen por el que incluso la horca hubiese sido un castigo compasivo en exceso. Pero era un simple animal. Rigen otras reglas.";
+				16:
+					print "—Soy un bastardo. Un villano, si quieres, y nada puede justificar mis crímenes. Pero la necesidad de ver sana y salva a mi hija es demasiado fuerte y no pude hacer nada para evitarlo.";
+				17:
+					print "—No ha sido cobardía sino inteligencia. La gente inteligente evita los problemas que no puede solucionar y se concentra en aquellos que si puede hacerlo.";
+				18:
+					print "—Si, soy un cobarde. Pero espero encontrar el coraje y las fuerzas necesarias para continuar adelante cuanto realmente sea necesario. Eso es todo cuanto puedo hacer; rendirme sin intentarlo no es una opción.";
+				19:
+					print "—Normalmente no soy una persona valiente. Es cierto. Pero mi odio por el barón es tal que en ningún modo me dejaré amedrentar por él.";
+				23:
+					print "—Siempre que sea posible, uno debe intentar rehuir el sufrimiento. Pero a veces las emociones son demasiado fuertes y no es sino humano estallar en lágrimas y simplemente experimentar la tristeza.";
+				24:
+					print "—Los humanos no podemos hacer nada contra el sufrimiento. Sólo aceptarlo y expresar nuestra tristeza. Es una locura creer que la tragedia de la vida puede transmutarse de algún modo en una comedia.";
+				25:
+					print "—Si, siempre tenemos que buscar la felicidad y asegurarnos de no quedarnos bloqueados por la tristeza. Siempre hay un hálito de esperanza. Por eso estoy aquí; porque creo que aún hay esperanza.";
+				26:
+					print "—He hecho lo que tenía que hacer. Y con eso habrá de bastar. Estoy convencido de que no se podía pedir más de mi y mi conciencia está limpia.";
+				27:
+					print "—Mis malas acciones no pueden ser perdonadas. No ha sido suficiente. Nunca será suficiente. Seré culpable para siempre.";
+				28:
+					print "—Todo puede ser perdonado, mientras uno se arrepienta de verdad. Al examinar lo que he hecho siento remordimientos, desde luego, profundos y tenaces. Espero poder llegar a ser perdonado.";
+				29:
+					print "—No, lo muerte no es una salida fácil. Es la más terrorífica. He hecho el mayor sacrificio posible, y si tuviera que volver a hacerlo, lo repetiría si ninguna duda.";
+				30:
+					print "—Si, estoy preparado para pagar el precio que sea oportuno. No temo a la muerte, y no temo al sufrimiento. Aceptaré cualquier cosa que sea puesta sobre mis hombros.";
+				31:
+					print "—No, nadie puede esperar que tenga que padrecer ningún sufrimiento por ayudar a otro. Esa elección es demasiado dura.";
+				32:
+					print "—No lo sé. Porque sí, soy indeciso. Pero espero encontrar la valentía y la fuerza necesarias para continuar adelante cuando sea realmente necesario. Eso es todo cuanto puedo hacer; no puedo rendirme antes de intentarlo.";
+				33:
+					print "—Te equivocas. Puedo actuar cuando sea necesario. En esta ocasión decidí aguardar y ver qué ocurriría, pero de haberlo deseado podría haber hecho muchas otras cosas.";
+				34:
+					print "—Ya he tomado mi decisión: voy a salvar a mi hija. Y haré todo cuanto sea necesario para conseguirlo. No necesito saber nada más. No hay ningúna otra decisión posible. Sólo cabe continuar hacia adelante y hacer aquello que sea necesario para lograr mi objetivo.";
+			}
+			new_line;
+			return true;
+		],
+		msg_3 [ code;
+			switch (code) {
+				2:
+					print "—Te equivocas. Esta es la primera vez que vengo aquí.";
+				3:
+					print "—Así que has vuelto a olvidarlo todo —en el sonido sobrenaturalmente bajo de la voz del monstruo se puede oir cansancio y lástima—. Vienes aquí todas las noches, hablo contigo todas las noches, todas las noches pierdes el enfrentaiento y siempre regresas a la noche siguiente, lleno de nuevo de una valentía ingenua. Si sigues cerrando los ojos a tus propias acciones, ¡nunca podrás vencerte a ti mismo!";
+				4:
+					print "—¿De nuevo? ¿Quieres decir que ya he estado aquí, que ya he irrumpido en el castillo del barón antes?";
+				5:
+					print "—Así que has vuelto a olvidarlo todo —en el sonido sobrenaturalmente bajo de la voz del monstruo se puede oir cansancio y lástima—. Vienes aquí todas las noches, hablo contigo todas las noches, todas las noches pierdes el enfrentaiento y siempre regresas a la noche siguiente, lleno de nuevo de una valentía ingenua. Si sigues cerrando los ojos a tus propias acciones, ¿cómo podrás nunca vencerte a ti mismo?";
+				6:
+					print "—Una y otra y otra vez, por toda la eternidad si hace falta, hasta que sea capaz de ponerle fin. Siempre queda una posibilidad.";
+				7:
+					print "—Eso dices todas las noches —el monstruo se inclina hacia ti, poniendo su cara a la altura de la tuya y acercándola mucho—. ¿Pero es acaso cierto que siempre exista una posibilidad? ¿Cómo estás tan seguro de no estar condenado a vivir en un bucle eterno de sufrimiento, como yo?";
+				8:
+					print "—No, no puedo cambiar. Bien sabes que lo he intentado. Pero el círculo del destino es demasiado férreo: estoy condenado a repetir el mismo camino por toda la eternidad, y con cada vuelta pinto mi alma de un tono cada vez más profundo de negro.";
+				9:
+					print "—Y con cada vuelta transformas la alegría de los que te rodean en cenizas —añade la gárgola. Suena cansada, infinitamente cansada—. Recuerdo la primera vez que viniste aquí, convencido de tu propia bondad y tu sentido de la justicia. Te llevó mucho tiempo aprender a reconocer el abismo oscuro de tu alma. Y mucho más aún hasta que perdiste la esperanza de cerrar ese abismo.";
+				10:
+					print "(Con firmeza) —¡Silencio, demonio! Estoy aquí por vez primera, y no podrás atenuar mi coraje con tus mentiras.";
+				11:
+					print "—Como quieras —inclina respetuosamente la enorme cabeza de piedra con un crujido sordo—. Dudo que tengas éxito, pero quién sabe… la vida guarda sorpresas. No deseo detenerte. Tan sólo… ¿permites tan sólo que te haga una pregunta sobre mi propio problema?";
+				12:
+					print "(Con pánico) —No… no, te equivocas… ¡o intentas confundirme acaso! Nunca he estado aquí antes, y después de esta noche no será necesario que regrese jamás.";
+				13:
+					print "—Si es eso lo que quieres creer —te parece ver una mueca de desprecio en su rostro oscuro—. Dudo que tengas éxito, pero quién sabe… la vida guarda sorpresas. No deseo detenerte, ¿pero quizá estés dispuesto a tomarte un momento para escuchar mi problema?";
+				14:
+					print "Intentas recordar si realmente has estado aquí antes.";
+				15:
+					print "Cierras los ojos y comienzas a rebuscar en las profundidades de tu mente. Surgen imágenes: de un dragón y de una muerte abrasadora tras otra; de la loba —cómo la matas, la asustas, la calmas, cómo aúllas junto a ella y cómo la alimentas con tu propia carne y la das de beber tu sangre…—; las imágenes se funden entre sí, se desdibujan en una vorágine, pierden cualquier coherencia… ves la gárgola, oyes fragmentos confusos de conversaciones que has tenido con ella, a veces amigables y consoladoras, pero otros agresivos y condenatorios. Y entonces, en lo alto de una interminable escalera en espiral, te ves entrando en la sala del trono del barón. Se gira hacia tí y ves… no ves nada. No hay más imágenes. Nunca has visto su rostro, o quizá tus recuerdos han sido borrados.";
+				16:
+					print "—No tengo tiempo para ti o para tu no-vida, criatura. Me espera mi hija.";
+				17:
+					print "—Por supuesto. Como ya he dicho, no deseo detenerte.
+					^^
+					Se gira y emprende el vuelo con varios golpes de sus enormes alas de piedra. La ves elevarse en círculos antes de desaparecer en la oscuridad de la noche.";
+				18:
+					print "—Puedo dedicarte unos momentos. Suelta lo que tengas que decirme.";
+				19:
+					print "—Te lo agradezco. Primero explicaré cómo es que he cobrado vida.";
+				20:
+					print "(Mientes) —No puedo recordar nada de eso. Es la primera vez que estoy aquí.";
+				21:
+					print "—Como quieras —es evidente que no cree tus palabras—. Dudo que tengas éxito, pero quién sabe… la vida guarda sorpresas. No deseo detenerte, ¿pero quizá me permitas hacerte una pregunta sobre mi propio problema?";
+				22:
+					print "—Pero, ¿cómo es posible? Por Dios, ¿cómo puede ser que me lance a esta batalla cada noche?";
+				23:
+					print "—Porque nunca alcanzas una victoria que cuente realmente. Desafortunadamente —levanta los brazos en un gesto de disculpa—, desafortunadamente no alcanzo a conocer los detalles de tu lucha con mayor profundidad que lo que conoces tú mismo. Pero puedo hablarte de la mía propia, y quizá encuentres alguna lección útil en ella.";
+				24:
+					print "—Dios, ahora veo todo con claridad. Noche tras noche tras noche… ¿no es posible detener el círculo? ¿Estoy condenado a repetir el mismo camino por toda la eternidad?";
+				25:
+					print "—Eso es exactamente lo que acabo de preguntarte —la gárgola suspira, emitiendo un sonido que resulta sorprendentemente humano—. No puedo darte la respuesta, porque desconozco contra qué estás luchando. No sé qué poder te ata a este camino interminable. Pero quizá pueda ayudarte de otra manera contándote la historia de mi propia condena eterna. Es posible que encuentres alguna lección útil en ella.";
+				26:
+					print "—Bien, háblame de tu pesar. Tengo la sensación de que somos llamas gemelas.";
+				27:
+					print "—Gracias. Primero intentaré explicarte cómo es que he cobrado vida.";
+				28:
+					print "—Lo lamento profundamente, pero tengo que rescatar a mi hija. Regresaré en otro momento para hablar contigo.";
+				29:
+					print "La gárgola estalla en una sonora carcajada. —¡No tengo la más mínima duda! Buena suerte, y hasta la próxima vez. Y la próxima después de esa, y la próxima, y la próxima. Y así sucesivamente por el resto de nuestra maldita eternidad.
+					^^
+					Se gira y emprende el vuelo con varios golpes de sus enormes alas de piedra. La ves elevarse en círculos antes de desaparecer en la oscuridad de la noche.";
+				30:
+					print "—No sé nada, pero aún me queda un hueco para el optimismo. Sólo cuando haya perdido toda esperanza seré un verdadero prisionero de mis actos.";
+				31:
+					print "—Mantén entonces tu esperanza, pero recuerda que la esperanza por sí sola no es suficiente. En el momento más difícil, deberás actuar.";
+				32:
+					print "—Porque después de todo, en el fondo, he seguido siendo humano. Siempre he seguido luchando contra mi destino. He emprendido este viaje a cada noche; sin perder nunca mi valor. Llegará el momento en que podré vencerme a mí mismo. Quizá no hoy, quizá no este año, pero un día lo conseguiré.";
+				33:
+					print "—Humano, si. Quizá demasiado humano. ¿Pero quién soy yo para juzgar? Mientras sigas luchando hay esperanza. Sólo espero que tengas claro contra quién luchas.";
+				34:
+					print "—¡Silencio! No intentes contagiarme con tu pesimismo. ¡Siempre hay una posibilidad de que algo me libere!";
+				35:
+					print "—¡Tu maldita pasividad! —la gárgola escupe cada palabra como si fuesen lo más amargo que haya entrado nunca en su boca—. Insensato, mientras esperas a que *suceda algo* en lugar de encarar activamente la situación, mientras sigas comportándote siempre del mismo modo, nada cambiará. ¿Es que no lo entiendes?";
+				36:
+					print "—Es cierto, y también tienes razón cuando señalas que mis fracasos han llegado siempre en el punto en el que las intenciones tienen que transformarse en acción. Pero creo que esta noche es diferente a las otras noches. Esta noche podré actuar. Siento que podré hacerlo.";
+				37:
+					print "—Entonces te deseo el éxito. ¡Que tu perseverancia sea finalmente recompensada! Pero quiero pedirte algo, en esta noche que es diferente a todas las demás noches: ¿podrías escuchar mi historia y darme tu consejo?";
+				38:
+					print "—Ese es el problema; en el momento crucial no soy lo suficientemente fuerte como para actuar. Pero espero que un día sea capaz de encontrar la fortaleza para hacer lo que debo hacer.";
+				39:
+					print "—¿Y dónde —continúa anhelantemente la gárgola—, dónde crees que aguarda esa fortaleza?";
+				40:
+					print "—Ya he hecho demasiado, y las cosas no han hecho otra cosa que empeorar cada vez más. A veces pienso que la solución pasa por resignarse, por la pasividad; ser lo suficientemente fuerte como para no hacer nada.";
+				41:
+					print "La gárgola considera lo que has dicho durante un momento.
+					^^
+					—Sabias palabras —dice finalmente—. Si bien sospecho que la propia pasividad es también una especie de acción en sí misma.";
+				42:
+					print "—Por supuesto. Aunque no sé si mi consejo te podrá servir de algo.";
+				43:
+					print "—Tal vez más de lo que puedas imaginar. Mi problema parte del hecho de que estoy viva.";
+				44:
+					print "—Lo siento pero he de rescatar a mi hija. No puedo dejar pasar esta oportunidad.";
+				45:
+					print "—Por supuesto. Disculpa que te haya molestado —su voz suena pesimista y triste.
+					^^
+					La gárgola te mira fijamente a los ojos una última vez, después se da la vuelta y emprende el vuelo con varios aleteos de sus negras alas. Desaparece en la oscuridad de la noche antes de que puedas decir nada más.";
+				46:
+					print "—En mi odio.";
+				47:
+					print "—En mi amor.";
+				48:
+					print "—En mi autodesprecio.";
+				49:
+					print "—En mi resignación.";
+				50:
+					print "—En mi vergüenza.";
+				51:
+					print "La gárgola piensa en silencio durante un momento, y después asiente con la cabeza.
+					^^
+					—Bien, te deseo suerte. Y espero que puedas encontrar allí esa fortaleza que necesitas. Antes de que continúes con tu empresa quiero hacerte una petición; yo también necesito encontrar fuerzas, pero no sé dónde buscarlas. ¿Podrías tal vez prestarme consejo?";
+				52:
+					print "—Lo siento pero he de rescatar a mi hija. Tendrás que encontrar fuerzas por tí misma.";
+				53:
+					print "—La pasividad es la forma de actuar más difícil, porque el amor que sentimos siempre nos empuja a realizar grandes obras.";
+				54:
+					print "—La pasividad es la forma de actuar más difícil, porque nuestra lujuria siempre nos empuja a realizar grandes obras.";
+				55:
+					print "—La pasividad no es ninguna forma de actuar, y por eso es tan difícil. La resignación es la última virtud de los sabios.";
+				56:
+					print "—Cierto. Puedo ver que has acumulado un gran conocimiento sobre la vida —el ser de piedra vacila por un momento, antes de añadir—: ¿me permites explicarte sobre mi propia maldición y sacar provecho de tus consejos?";
+				57:
+					print "—Lo siento, pero la sabiduría no se puede enseñar.";
+				58:
+					print "—He de enfrentarme al barón.";
+				59:
+					print "—¿En serio? —la ironía transpira tras su pregunta—. Bueno, adelante en ese caso. Enfréntate a él con tu fuerza y con tu ira. No te detendré por más tiempo, a menos que quieras conocer la historia de mi propia aflicción.";
+				60:
+					print "—He de enfrentarme a mí mismo.";
+				61:
+					print "—Muy cierto. Los idiotas creen que esa es la más fácil de las luchas; los sabios, sin embargo, saben que es la más dura —la gárgola te mira con curiosidad—. Yo también lucho contra mí misma. ¿Te gustaría escuchar mi historia?";
+				62:
+					print "—He de enfrentarme a la indiferencia del mundo.";
+				63:
+					print "—Muy cierto. Y una respuesta que revela una gran perspicacia. Pocas luchas son más difíciles, y ciertamente pocas son más cruciales que esa. Todo cuanto me queda por hacer es desearte suerte. A menos que… —vacila por un instante—. A menos que estés interesado en escuchar la historia de mi propia lucha.";
+				64:
+					print "—Adelante. Creo que puedo aprender mucho de ello.";
+				65:
+					print "—En efecto, puede resultar educativo. A la vez que trágico. Empieza con el hecho de que estoy viva.";
+				66:
+					print "—No puedo entretenerme con algo así. Tengo un combate por delante.";
+				67:
+					print "—Por supuesto. Disculpa, no tenía intención de interrumpirte —su voz ha perdido toda su potencia y es lánguida de pronto—.
+					^^
+					Entonces la gárgola se da la vuelta y emprende el vuelo con varios aleteos de sus negras alas. Desaparece por completo en la oscuridad de la noche antes de que puedas pronunciar una sola palabra.";
+				68:
+					print "—Adelante. Que nadie diga que soy indiferente.";
+				69:
+					print "—Esto me ayuda más de lo que puedas imaginar. Permíteme comenzar con el hecho misterioso de estar viva.";
+				70:
+					print "—No tengo tiempo para algo así. Tengo que salvar a mi hija.";
+				71:
+					print "—Desde luego. Perdona, no tenía intención de interrumpirte —su voz es sombría.
+					^^
+					Entonces la gárgola se da la vuelta y emprende el vuelo con varios aleteos de sus negras alas. Desaparece por completo en la oscuridad de la noche antes de que puedas pronunciar una sola palabra.";
+				72:
+					print "\[Débilmente\] —No soy lo suficientemente fuerte como para salvarla. Nuestra liberación tendrá que venir de algún otro sitio…";
+				73:
+					print "—Entonces lloro por tu destino —y, de hecho, la gárgola parece quitarse dos lágrimas de la mejilla antes de continuar—. ¿Permites que te hable de la maldición que recae sobre mi propia espalda? Tal vez en mi historia puedas encontrar ese *otro sitio* que necesitas para liberarte.";
+				74:
+					print "\[Con firmeza\] —¡Por supuesto! ¡Eso es lo que quiero decir! Resolveré el problema aunque sea lo último que haga.";
+				75:
+					print "—Bien. Espero que en esta ocasión no se quede tan sólo en palabras airadas.
+					^^
+					Se da la vuelta, dispuesta a marcharse, pero entonces parece reconsiderarlo y se vuelve de nuevo hacia tí. —Aún me gustaría preguntarte algo. Eres la única persona capaz de entender la tragedia de mi propia existencia. ¿Permites que te hable de la maldición que recaeo sobre mi?";
+				76:
+					print "—¿Pasividad? He venido hasta la misma guarida del león para enfrentarme al barón y salvar a mi hija, ¿y tú me reprochas ser pasivo?";
+				77:
+					print "—¿El barón? ¡El barón! —los aullidos de burla de la criatura te perforan los oídos—. No has aprendido nada en las cientos de vueltas que has dado caminando en círculos. ¡Absolutamente nada! ¡Espabila! Tu condena aguarda más allá de aquellas puertas, exactamente igual que todas las noches. O acaso —aventura, traspasándote con una mirada penetrante—… ¿Acaso seas lo suficientemente sensato como para escuchar mi historia? Quizá aprendas algo valioso de una vez.";
+				78:
+					print "—No puede hacer ningún daño, supongo. Adelante.";
+				79:
+					print "—Bien, quién sabe lo que pueda resultar por intentarlo. Permíteme empezar con el misterioso hecho de que estoy viva.";
+				80:
+					print "—No, creo que no. Prefiero entrar en el castillo y encarar mi destino.";
+				81:
+					print "—…como desees.
+					^^
+					El ser de piedra se da la vuelta y emprende el vuelo con varios aleteos de sus alas negras. Desaparece en la oscuridad de la noche antes de que puedas pronunciar una sola palabra.";
+				82:
+					print "—Adelante. Sácatelo de encima.";
+				83:
+					print "—Te lo agradezco. Permíteme comenzar con el misterioso hecho de que estoy viva.";
+				84:
+					print "—Es imposible que tú y yo tengamos nada en común, monstruo. ¡Aparta de mi camino!";
+				85:
+					print "Sus ojos negros se entrecierran hasta no ser más que un par de rendijas en la roca: —¿Esa es mi recompensa? ¡Hijo de puta sarnoso!
+					^^
+					El ser se da la vuelta bruscamente y emprende el vuelo con un movimiento elegante de sus alas negras. Desaparece en la oscuridad de la noche antes de que puedas pronunciar una palabra.";
+				86:
+					print "—Supongo que nunca es demasiado tarde para aprender algo. Cuéntame tu historia.";
+				87:
+					print "—Así que, después de todo, aún queda algún sentido dentro de esa cabeza. Bien… Mi maldición es que estoy viva.";
+				88:
+					print "—No creo que puedas enseñarme nada, abominación.";
+				89:
+					print "—Un tonto hasta el final… Bien, como prefieras.
+					^^
+					El ser de piedra se da la vuelta y despega del suelo con un potente empujón de sus alas negras. Desaparece en la oscuridad de la noche antes de que puedas pronunciar palabra.";
+				90:
+					print "—Esa es la amarga sabiduría que todos debemos aspirar a alcanzar; que la ingenuidad y las esperanzas de nuestra juventud no son más que ilusiones que se disipan con la luz del día de nuestras vidas…";
+				91:
+					print "—Cierto. Y sin embargo es una tragedia cuando la inocencia de la juventud se contamina con las experiencias de la vida demasiado pronto.";
+				92:
+					print "—Tal vez había esperanza al principio, pero la fuerza que tenía entonces se ha desvanecido y a estas alturas ya he destruído más de lo que jamás podré reparar.";
+				93:
+					print "—Y en cada noche la espiral te lleva un poco más abajo en ese pozo sin fondo. Pero no puedes aceptar algo así. No, porque si lo hubieses hecho, ¿por qué ibas a seguir buscando un enfrentamiento con el barón?";
+				94:
+					print "—Pero si no puedo redirigir mi camino hacia el bien, tal vez aún esté en mi mano el dejar de caminar por él.";
+				95:
+					print "Sorprendida, la gárgola da un paso atrás.
+					^^
+					—¿De verdad? ¿Harías eso por ella? ¿Eres realmente tan fuerte como para hacer algo así?";
+				96:
+					print "Inclinas la cabeza avergonzado mientras las lágrimas acuden a tus ojos.";
+				97:
+					print "Durante un largo rato todo queda en profundo silencio. Entonces el ser de piedra camina hacia ti y te pone una pesada y fría mano sobre el hombro.
+					^^
+					—No era mi intención hacer tu dolor aún más grande de lo que era. Perdóname.";
+				98:
+					print "—Me odio por ello todos los días.";
+				99:
+					print "—Al contrario. Te odias a ti mismo todas las noches. De día siempre logras de algún modo desterrar los pensamientos de tu mente y vives como si no hubiese ningún problema —responde la gárgola acusadoramente.";
+				100:
+					print "—Pero, ¿soy culpable? Débil sí, lo confienso; pero nunca he pretendido hacer mal alguno, ni he escogido conscientemente herir a nadie. Sin duda eso significa que no puedo ser culpable, ¿no es así?";
+				101:
+					print "—¿Y la debilidad no puede ser una fuente de culpa?";
+				102:
+					print "—Tienes razón. Aunque a menudo caigo en la desesperación, en el fondo no he abandonado la esperanza aún. Me niego a aceptar que el futuro no albergue más que oscuridad.";
+				103:
+					print "—Bien. La esperanza puede marcar la diferencia. Pero la esperanza por sí sola no es suficiente; cuando llegue el momento crucial tendrás que actuar también.";
+				104:
+					print "—Se trata de una repetición de movimientos sin sentido. Sé cómo va a terminar, pero no puedo evitar enfrentarme a él, porque sólo cuando llego hasta su castillo recuerdo que estoy en un bucle.";
+				105:
+					print "—Desde luego. Tu olvido **es** el barón. ¿Cómo podrías recordarlo sin llegar a entrar en su territorio para enfrentarte a él?";
+				106:
+					print "—El enfrentamiento es mi castigo y no puedo evitarlo. Ni lo deseo tampoco.";
+				107:
+					print "—Hay mucha sabiduría encerrada tras esas palabras, y una gran estupidez al mismo tiempo. ¿Mereces el dolor? No lo negaré. ¿Pero acaso no cuenta esta historia ya con demasiado sufrimiento? El castigo y la culpa no tienen bordes tan afilados en este punto.";
+				108:
+					print "—He de ser lo suficientemente fuerte para ello. No veo ninguna otra salida.";
+				109:
+					print "—Entonces todo cuanto puedo hacer es despedirme de ti, y confiar que esta sea una solución.
+					^^
+					Una sonrisa triste se asienta en el rostro pétreo de la gárgola. —¿Me permites que te cuente la trágica historia de mi vida? Eres la única persona con la que he hablado nunca, y esta parece ser la última oportunidad para contarlo.";
+				110:
+					print "—No. Ya en el pasado me decidí a ello pero nunca me he atrevido a hacerlo. Soy demasiado débil incluso para morir.";
+				111:
+					print "—Entonces la trama se repetirá, una y otra vez, mientras la rueda del tiempo gira eternamente —sacude la cabeza con desesperación—. Mi vida es también una repetición eterna dominada por un eterno sentimiento de culpa. Me gustaría poder compartirlo con un compañero en el infortunio.";
+				112:
+					print "—Sí, la decisión está tomada; esta es la última noche de mi vida. La última noche de mi infierno.";
+				113:
+					print "—Entonces todo cuanto puedo hacer es despedirme de ti, y confiar que esta sea una solución.
+					^^
+					Una sonrisa triste se asienta en el rostro pétreo de la gárgola. —¿Me permites que te cuente la trágica historia de mi vida? Eres la única persona con la que he hablado nunca, y esta parece ser la última oportunidad para contarlo.";
+				114:
+					print "Te secas las lágrimas. —No importa.";
+				115:
+					print "—Pero sí tiene importancia. Tu situación ya es bastante difícil sin mis acusaciones. Quizá… —la gárgola vacila por un momento antes de tomar una decisión—. Quizá sea buena idea si te hablo de mi maldición. Podrás ver que soy el último ser que debería poder reprenderte.";
+				116:
+					print "—Es lo que merezco.";
+				117:
+					print "—Quizás, o quizás no. ¿Quién puede afirmarlo? Pero sea lo que sea que merezcas yo lo merezco de igual modo y no tengo ningún derecho de castigarte. ¿Quieres que te hable de mi maldición? Es posible que así entiendas por qué tengo tanta culpa al menos como tú.";
+				118:
+					print "—Sí, hazlo —sonríes débilmente—. La tristeza es menos aguda cuando se comparte, ¿no es verdad?";
+				119:
+					print "El ser te devuelve una sonrisa que parece fuera de lugar en su cabeza deforme. —Así es. Y el núcleo de mi dolor es que estoy viva.";
+				120:
+					print "—Creo que ya tengo suficiente con mis propios problemas.";
+				121:
+					print "—Desde luego. Olvida lo que he dicho. Tendré que lidiar yo misma con mi dolor.
+					^^
+					Con la vista perdida entre los tablones del suelo, el ser de piedra se da la vuelta y emprende el vuelo con un potente empujón de sus alas negras. Desaparece rápidamente en la oscuridad de la noche.";
+				122:
+					print "Miras hacia abajo, avergonzado. —Tienes razón.";
+				123:
+					print "Durante un largo rato todo queda en profundo silencio. Entonces el ser de piedra camina hacia ti y te pone una pesada y fría mano sobre el hombro.
+					^^
+					—No era mi intención ahondar aún más en tu dolor. Perdóname.";
+				124:
+					print "Lo miras fijamente. —No te atrevas a juzgarme, demonio.";
+				125:
+					print "La gárgola da un paso atrás en estado de shock, con la vergüenza reflejada en el rostro.
+					^^
+					—Disculpa —dice entrecortadamente—. Ya tienes problemas suficientes sin mis acusaciones. Quizá… —vacila un momento, antes de tomar una decisión—. Quizá sea oportuno si te hablo de mi maldición. Podrás comprobar que no soy quién para reprenderte.";
+				126:
+					print "—Hazlo. Tengo curiosidad.";
+				127:
+					print "—Bien. Pero he de advertirte de que se trata de una historia complicada; su punto esencial es que estoy viva.";
+				128:
+					print "—No.";
+				129:
+					print "—Si tú lo dices… ¿qué sabré yo acerca de la culpa? Cada día cometo el peor de los crímenes y, sin embargo, mi remordimiento no es lo suficientemente agudo como para detenerme. ¿Quieres que te hable de mi maldición? Puede que lo encuentres divertido…";
+				130:
+					print "—Sí —dices sin ninguna convicción—. Puede…";
+				131:
+					print "—Tienes mucho valor para admitir algo así. Pero me siento avergonzada; no tengo ningún derecho para atacarte de este manera. Tal vez sea oportuno si te hablo de mi maldición. Verás que no soy precisamente quién para reprenderte de este modo.";
+				132:
+					print "Apartas la vista guardando silencio.";
+				133:
+					!! TODO - Gestionar nevada
+					print "Algunos copos de nieve aislado se posan suavemente sobre la cabeza y los hombros de piedra del ser que tienes frente a tí. El silencio se hace más agudo y doloroso a cada latido de corazón. Entonces la gárgola rompe la quietud:
+					^^
+					—Debería estar avergonzada. No tengo derecho a atacarte de esta manera.";
+				134:
+					print "—¿Cómo luchar contra mi propio olvido?";
+				135:
+					print "—No lo sé. Tendrás que averiguarlo por ti mismo.
+					^^
+					—Pero tal vez pueda ayudarte si te cuento algo de mi propia lucha —echa un vistazo por encima del hombro, hacia los muros imponentes del castillo—. Después de todo, no es más que un reflejo de la tuya…";
+				136:
+					print "—¿Es acaso…? ¿Forma el barón parte de mí?";
+				137:
+					print "La gárgola asiente en silencio.";
+				138:
+					print "—¿Y tú? ¿También tú formas parte de mí?";
+				139:
+					print "—Sí. Estás soñando y todo esto forma parte del sueño. O tal vez no sea exactamente un sueño, pero sí una fantasía creada por tu mente.
+					^^
+					Permaneces en silencio por un tiempo, estudiando el rostro de la criatura.
+					^^
+					—Confío en que saberlo pueda ayudarte en la empresa que tienes por delante. La maldición que recae sobre mis propios hombros también es reflejo de tu propia lucha. Deja que te cuente sobre ella, quizá puedas aprender alguna otra cosa útil.";
+				140:
+					print "—¿Cómo podré luchar con una parte de mí mismo?";
+				141:
+					! 135
+					print "—No lo sé. Tendrás que averiguarlo por ti mismo.
+					^^
+					—Pero tal vez pueda ayudarte si te cuento algo de mi propia lucha —echa un vistazo por encima del hombro, hacia los muros imponentes del castillo—. Después de todo, no es más que un reflejo de la tuya…";
+				142:
+					print "—Así actúan la sabiduría y la estupidez. Cargo con mi dolor. Eso es suficiente, no hay por qué juzgarlo.";
+				143:
+					print "—Cierto. El dolor habla por sí mismo; perdona mis preguntas. Después de todo, ¿quién soy yo para hablar de justicia e injusticia? Tal vez sea bueno si te hablo de mi maldición para que veas que no soy quién para reprenderte de este modo.";
+				144:
+					print "—Que sea una estupidez… tal vez ese es precisamente mi castigo: ser un estúpido. Desde luego sabio no soy.";
+				145:
+					print "—Disculpa, mis preguntas resultan absurdas. Todo cuanto puedo hacer es desearte suerte en el camino que aún te queda por delante. A menos que… —vacila por un momento—. A menos que te interese escuchar la historia de mi lucha.";
+				146:
+					print "—Cuéntame. Me llevaré tu secreto a la tumba.";
+				147:
+					print "—Te doy las gracias. Esto significa mucho para mí. En fin, tal vez te hayas preguntado cómo es posible que una gárgola esté viva… es ahí donde comienza mi historia.";
+				148:
+					print "—Camino hacia mi muerte, ¿y tú pretendes agotarme con cuentos sobre tu vida?";
+				149:
+					print "La gárgola parece dolorida pero responde cortesmente: —Lo lamento. No debí mencionarlo.
+					^^
+					Sin levantar la vista se da la vuelta y emprende el vuelo con un potente empujón de sus alas negras. Desaparece rápidamente en la oscuridad de la noche.";
+				150:
+					print "—¡Vaya una pareja estamos hechos! —dices con mordacidad—. Adelante, háblame de tus problemas.";
+				151:
+					print "—Te lo agradezco, significa mucho para mí. Quizá te hayas preguntado cómo es posible que una gárgola esté viva… ahí precisamente es donde comienza mi historia.";
+				152:
+					print "—Lo siento, pero estoy demasiado cansado para escuchar nada… demasiado cansado para pensar. Tengo que seguir adelante, hacia mi destino.";
+				153:
+					print "La gárgola suspira profundamente. —Que así sea. Supongo que nos volveremos a ver.
+					^^
+					Sin levantar la vista e nuevo, el ser de piedra se da la vuelta y emprende el vuelo con un potente empujón de sus alas negras. Desaparece rápidamente en la oscuridad de la noche.";
+			}
+			new_line;
+			return true;
+		],
+		msg_4 [ code;
+			switch (code) {
+				1:
+					print "—Estoy hecha de piedra dura y fría y debería ser pasiva, inmóvil, carente de sentimientos. Pero no lo soy. Hablo, me muevo, pienso y siento constantemente cómo el placer y el disgusto se imponen el uno sobre el otro. Amo demasiado la vida como para permanecer rígida como una estatua, así que despierto cada noche, y cada noche tengo que elegir entre acallar la vida que hay en mí y permanecer como una estatua, o extender mis alas y volar lejos.";
+				2:
+					print "La escuchas en silencio.";
+				3:
+					print "—Pero aunque afirmo que hay una opción, no es así en realidad. El deseo de vivir es tan fuerte que cualquier otra intención diferente en la noche anterior arde en mi mente. Cuando siento la sangre caliente corriendo por mis venas pierdo el control y salto desde las almenas hacia la noche naciente.";
+				4:
+					print "—No te puedo culpar por preferir la vida a la existencia inerte de la piedra.";
+				5:
+					print "—Ahórrate juicios hasta escuchar toda la historia. Además, *preferir* apenas tiene cabida aquí. El deseo de vivir es tan potente que todas las buenas intenciones en contra en la noche anterior arden en mi mente. Cuando siento la sangre caliente corriendo por mis venas pierdo el control y salto desde las almenas hacia la noche naciente.";
+				6:
+					print "—Es innatural. La piedra no está destinada a moverse y, desde luego, las gárgolas no están destinadas a hablar y a sentir. Deberías elegir permanecer como una estatua.";
+				7:
+					print "—¡Si fuera tan sencillo! La elección apenas es tal. El deseo de vivir es tan potente que todas las buenas intenciones de la noche anterior por permanecer como estatua arden en mi mente. Cuando siento la sangre caliente corriendo por mis venas pierdo el control y salto de las almenas hacia la noche naciente.";
+				8:
+					print "Escuchas en silencio.";
+				9:
+					print "—Primero simplemente me limito a disfrutar del viento que pasa por mis alas, de la lluvia en mi cara, de la capacidad de pensar y de experimentar, de la oportunidad de mover mis músculos. Vuelo sobre el mundo en éxtasis. Los bosques pasan por debajo de mí, veo colinas y montañas a lo lejos. ¡Resulta apasionante!
+					^^
+					—Pero pronto recuerdo lo que tengo que hacer para no volver por siempre a la cárcel de piedra al final de la noche, para asegurarme de poder saborear esta vida milagrosa de nuevo a la noche siguiente. He de entrar en la casa de un mortal y consumir su alegría. Aterrizo junto a una cama, coloco mi garra sobre la persona que duerme, y siento cómo todas sus emociones positivas son extraídas de ese ser humano y se incorporan a mi propio cuerpo.";
+				10:
+					print "—Siempre hay una opción. Afirmar que eres esclava de tu lujuria es un intento barato y deshonesto de escapar a tu responsabilidad.";
+				11:
+					print "La gárgola mira al suelo y pequeños temblores sacuden todo su cuerpo de piedra. Cuando empieza a hablar de nuevo su voz parece un débil eco de ultratumba.";
+					!! -> 9
+				12:
+					print "—Te entiendo. La lujuria puede ser más poderosa que la razón.";
+				13:
+					print "—¡Así es! ¡Y qué lujuria!";
+					!! -> 9
+				14:
+					print "—Suena bien.";
+				15:
+					print "—Y está bien. Al principio.";
+					!! -> 9
+				16:
+					print "—No digo que puedas hacer nada por evitarlo, pero lo desapruebo en los términos más rotundos posibles.";
+				17:
+					print "—Y tienes razón al hacerlo. Ahora mismo verás hasta qué punto me merezco tu desaprobación.";
+					!! -> 9
+				18:
+					print "—Dios mío… eso es horrible.";
+				19:
+					print "—Sí, es terrible. Durante muchos meses la persona a la que he visitado no conocerá ninguna alegría, ninguna esperanza, ninguna seguridad, ningún amor. Y mientras hago mi obra, ";
+					print "un profundo, profundo odio se erige dentro de mí. Odio por lo que soy y por lo que hago. Toda mi alegría se marchita y muere y lo que queda es puro odio por el monstruo que soy. Decido no volver a hacerlo, resistir el impulso de la noche siguiente y seguir siendo una estatua… pero entonces llega la noche siguiente, y hago lo que siempre he hecho.";
+				20:
+					print "—¡Es horrible! ¿Cómo puedes hacer algo así?";
+				21:
+					print "—Es cierto; es terrible. Y no tengo excusa. Todo cuanto puedo decir es que soy demasiado débil como para resistirme a la lujuria. Durante muchos meses la persona a la que he visitado no conocerá ninguna alegría, ninguna esperanza, ninguna seguridad, ningún amor. Y mientras hago mi obra, ";
+					!! -> 19
+				22:
+					print "Tus palabras surgen lentamente y con tono amenazador: —¿Me has visitado alguna vez, monstruo?";
+				23:
+					print "—No, nunca lo he hecho. Sólo una persona feliz puede transferirme su alegría, su esperanza, su seguridad, su amor. Visitarte a tí sería inútil. Mientras condeno a la desdicha a esa persona ";
+					!! -> 19
+				24:
+					print "Tus palabras surgen lentamente y con tono amenazador: —¿Has visitado a mi hija alguna vez, monstruo?";
+				25:
+					print "—No, nunca he visitado a María. Sólo una persona feliz puede transferirme su alegría, su esperanza, su seguridad, su amor. Visitarla a ella sería inútil. Mientras condeno a la desdicha a esa persona ";
+					!! -> 19
+				26:
+					print "Permaneces en silencio, comprensivo.";
+				27:
+					print "—¿Qué piensas —pregunta la gárgola desesperadamente—? ¿Podré cambiar algún día?";
+				28:
+					print "Permaneces en silencio, sin comprender nada.";
+				29:
+					print "—¿Qué piensas —pregunta la gárgola desesperadamente—? ¿Podré cambiar algún día?";
+				30:
+					print "—Nos parecemos más de lo que pensaba.";
+				31:
+					print "—¿Qué piensas —pregunta la gárgola desesperadamente—? ¿Podré cambiar algún día?";
+				32:
+					print "—No. No lo creo.";
+				33:
+					print "Toda la fuerza de gárgola se esfuma de golpe; sus alas caídas y la espalda encorvada. Parece estar tallada en sebo negro en lugar de piedra.
+					^^
+					—Podrías… —empieza con dificultad—. ¿Podrías perdonarme por mis crímenes?";
+				34:
+					print "—Eso espero, desde lo más profundo de mi corazón. Pero lo dudo.";
+				35:
+					print "Asiente con la cabeza. —Duda y esperanza. Esos son mis compañeros más leales. Sólo el futuró mostrará si puedo escapar de mi amargo destino… Pero, ¿podrías al menos perdonarme alguna vez por mis crímenes?";
+				36:
+					print "—Sí. Sí, todo el mundo puede cambiar, independientemente de lo que haya ocurrido en el pasado.";
+				37:
+					print "La gárgola parece iluminarse de pronto. Una pequeña sonrisa aparece en su rostro.
+					^^
+					—¿De verdad? ¿Incluso yo? Sea cierto o no, es una idea tan bella que pienso atesorarla… aún si puedo cambiar, ¿podrán mis acciones ser perdonadas alguna vez?";
+				38:
+					print "—No. Las obras que pesan de ese modo sobre tu conciencia nunca podrán ser perdonadas. Siempre serás culpable.";
+				39:
+					print "El ser de piedra levanta la cabeza y emite un sollozo que resuena con tanto dolor que por un momento esperas que las paredes del castillo se desmoronen. Después deja que la cabeza se desplome hacia adelante y cierra los ojos. Todo su cuerpo temblando incontrolablemente.";
+				40:
+					print "—No. No soy yo a quien debes pedir pedrón. Sólo tus víctimas pueden perdonarte.";
+				41:
+					print "Desanimado, el ser de piedra asiente con la cabeza.
+					^^
+					—La mayoría de ellos llevan décadas muertos. Tendré que cargar con el peso de mi culpa por el resto de la eternidad.
+					^^
+					Cierra los ojos. Todo su cuerpo temblando incontrolablemente.";
+				42:
+					print "—El perdón hay que ganárselo. Asegúrate de estar verdaderamente arrepentida y de no volver a hacerlo nunca más; entonces serás perdonada.";
+				43:
+					print "El ser de piedra te observa fijamente sin reflejar emoción alguna.
+					^^
+					—Lo lamento más de lo que puedo expresar con palabras. Pero en cuanto a si alguna vez podré dejar de cometer nuevos crímenes… sólo puedo confiar en que así sea.";
+				44:
+					print "—Sí, te entiendo. Sé que has intentado luchar contra ello. Te perdono por todos tus crímenes.";
+				45:
+					print "El ser de piedra camina hacia ti y, para tu asombro, te abraza. —Amigo —solloza—, no sabes cuánto significa esto para mí.
+					^^
+					Las lágrimas recorren su rostro cuando te suelta.";
+				46:
+					print "—No hay nada que perdonar puesto que no existe nada tal como la culpa. Has hecho lo que tenías que hacer, lo único que podías hacer. Los reproches no tienen sentido ante algo así.";
+				47:
+					print "La mirada de de la gárgola se pierde en el infinito.
+					^^
+					—Pensaré en tus palabras —dice finalmente—. No soy capaz de entender tu respuesta aún. Es una forma peligrosa de pensar; te parece más al barón de lo que pensaba.";
+				48:
+					print "Una idea se forma en tu mente: ~mátala~.
+					^^
+					—Eres un monstruo y es mi deber liberar al mundo de tu presencia.";
+				49:
+					print "—Pero, pero… —empieza la gárgola, intentando echarse hacia atrás";
+					!! TODO
+					if (true) {
+						print ", pero tu hacha encuentra su cuello antes de que pueda alejarse de ti. El cuerpo se desmorona inmediatamente transformado en un polvo fino que se dispersa en la gélida brisa. Sólo su cabeza permanece intacta. Cae sobre los tablones del puente con un golpe sordo y rueda un momento antes de detenerse.";
+					} else {
+						print ", pero la agarras del cuello antes de que pueda alejarse de ti y retuerces con violencia. Para tu asombro, el cuello cede con gran facilidad. De pronto te ecuentras con la cabeza de la criatura en las manos mientras que e resto del cuerpo se desmorona en un polvo fino y negro que se dispersa en la gélida brisa.";
+					}
+				50:
+					print "Una idea se forma en tu mente: ~mátala~.
+					^^
+					—Nunca podrás cambiar, y eso significa que no puedo permitirte vivir.";
+				51:
+					print "Las lágrimas comienzan a correr por las mejillas de la gárgola, pero se arrodilla ante ti en total sumisión";
+					!! TODO
+					if (true) {
+						print ". La decapitas con un solo tajo certero. El cuerpo se desmorona inmediatamente transformado en un polvo fino que se dispersa en la gélida brisa. Sólo su cabeza permanece intacta. Cae sobre los tablones del puente con un golpe sordo y rueda un momento antes de detenerse.";
+					} else {
+						print ". Abrazas su cuello con tus brazos y de un solo tirón, casi sin esfuerzo, arrancas completamente la cabeza de los hombros. Su cuerpo se desmorona inmediatamente transformado en un polvo fino que se dispersa en la gélida brisa.";
+					}
+				52:
+					print "Una idea se forma en tu mente: ~mátala~.
+					^^
+					—Podrás ahorrarte mucho dolor si acabo con tu existencia aquí y ahora.";
+				53:
+					print "—Tienes razón —susurra con la voz rota. Las lágrimas comienzan a correr por las mejillas de la gárgola, pero se arrodilla ante ti en total sumisión. Te inclinas hacia ella y la besas en la frente. Después ";
+					!! -> 51
+				54:
+					print "—Si sigues con vida serás siempre un azote para la humanidad. Ponle fin aquí y ahora. Pon fin a la parodia de vida en la que estás encarcelada… es lo mejor.";
+				55:
+					print "La gárgola te mira conmocionada pero después, lentamente, ves en su mirada cómo empieza a aceptar la idea.
+					^^
+					—Sí… tienes razón… —tartamudea—. No merezco vivir. Esto tiene que acabar ahora… ¡ahora!
+					^^
+					Y entonces entierra las garras en su pecho, rompiendo costillas mientras la sangre empieza a brotar negra entre sus brazos. Con el rostro contorsionado por el dolor y la locura arranca su corazón aún palpitante del cuerpo y lo eleva en el aire, aullando de forma inhumana. El bramido de un demonio, tan brutal y feroz que tienes que taparte los oídos con las manos y cerrar los ojos. Cuando el sonido se apaga por fin abres los ojos de nuevo ya no hay ningún rastro de la gárgola. Sólo su corazón, inerte y frío como el hielo, yace en el suelo ante ti.";
+				56:
+					print "—Hazte un favor y suicídate. Mientras vivas sólo hallarás dolor.";
+				57:
+					print "La gárgola te mira conmocionada pero después, lentamente, ves en su mirada cómo empieza a aceptar la idea.
+					^^
+					—Sí… tienes razón… —tartamudea—. Esta vida es un infierno. Lo mejor será ponerle fin aquí y ahora, mientras estés conmigo. Sola no seré capaz de encontrar las fuerzas suficientes para hacerlo…";
+					!! -> 55
+				58:
+					print "—Adiós. Espero que tengas éxito en tu intento por cambiar. Rezaré porque un día puedas vivir libre de pecado… libre de esa lujuria.";
+				59:
+					print "—Estoy en verdad agradecida. Yo también te deseo éxito en tu empresa. Ojalá puedas librarte de la angustia que te consume.
+					^^
+					La gárgola se inclina ante ti en un gesto de respeto y se da la vuelta. Emprende el vuelo con un potente empujón de sus grandes alas de piedra y desaparece más allá de las copas de los abetos; en su camino hacia una nueva víctima. ¿O será capaz de dominar su lujuria esta noche?";
+				60:
+					print "—Adiós. Mis pensamientos están contigo. Comparto tu condena, amiga.";
+				61:
+					print "—La gárgola se inclina ante ti solemnemente. Después se da la vuelta y emprende el vuelo con un potente empujón de sus grandes alas de piedra hasta desaparecer más allá de las copas de los abetos; camino hacia una nueva víctima.";
+				62:
+					print "—Adiós. Espero que tengas éxito en tu intento por cambiar. Rezare porque un día puedas dominar tu lujuria y aprender a vivir con ese peso inhumano de la culpa.";
+				63:
+					!! 59
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! @ConversacionGargola
+ChoiceSet	ConversacionGargola "(Conversación con Gárgola)"
+ with	fixed false,
+		initial_action [
+			code;
+			new_line;
+			print "Tras un instante, la gárgola empieza a hablar con una voz como de roca quebrándose:";
+			new_line;
+			new_line;
+			!! TODO - Implementar todas las comprobaciones de acciones del
+			!! usuario durante la escena anterior
+			if (code == 1) { ! FIXME
+				self.state = 1;
+				print "—A menudo la violencia es el camino más rápido hasta tu objetivo, pero requiere un precio elevado y son otros quienes tienen que pagarlo. Dime, ¿es justo exigirles algo así?";
+			} else if (code == 2) { ! FIXME
+				self.state = 2;
+				print "—El miedo y la tensión son malos consejeros. La sabiduría llega con la serenidad. Pero si siempre contienes tus emociones de ese modo, ¿serás capaz de actuar cuando llegue el momento de hacerlo?";
+			} else if (code == 3) { ! FIXME
+				self.state = 3;
+				print "—Has asumido el rol de protector, y sólo cuando ella ha depositado su confianza en ti has revelado tus verdaderas intenciones. Dime, ¿no hace eso que tu crímen resulte mil veces más horrendo?";
+			} else if (code == 4) { ! FIXME
+				self.state = 4;
+				print "—Huyes en cuanto se presentan problemas y sólo regresas una vez que han desaparecido. Dime, ¿cómo podría nunca alguien tan cobarde como tú llevar a cabo la tarea que se te ha presentado?";
+			} else if (code == 5) { ! FIXME
+				self.state = 5;
+				print "—Compartir la tristeza es bueno y humano. Pero dime, ¿acaso crees tener derecho a regodearte en la autocompasión cuando está en tu mano deshacerte de tanto sufrimiento?";
+			} else if (code == 6) { ! FIXME
+				self.state = 6;
+				print "—Tus esfuerzos por aliviar el sufrimiento que tú mismo has creado son nobles pero, ¿son suficientes?";
+			} else if (DiarioMaria.is_destroyed()) {
+				self.state = 7;
+				print "—Para llegar hasta ella has tenido que violar sus pensamientos más íntimos. Dime, ¿no tiene derecho a vivir su vida sin tus intromisiones?";
+			} else if (Peluche.is_destroyed()) {
+				self.state = 8;
+				print "—Para llegar hasta ella acabas de sacrificar la única cosa que podría consolarla. ¿Estás seguro de poder ofrecerla algo mejor que *Pardo*, que siempre ha estado ahí para ella?";
+			} else if (Baron.has_become_a_lycanthrope()) {
+				!! TODO - Transformar en humano
+				print "—Hoy te presentas con la forma de un lobo. Interesante —antes de continuar, [la self] traza con sus garras un intrincado patrón en el aire y sientes cómo tu cuerpo se transforma repentinamente—";
+				!! TODO - Comprobaciones adicionales
+				if (true) {
+					self.state = 9;
+					print ". Tu actuación te ennoblece, pero la muerte es siempre una salida fácil. Dime, ¿la habrías ayudado de la misma manera de tener que vivir luego con el dolor?";
+				} else {
+					self.state = 10;
+					print ". Es tu indecisión quien siempre acaba determinando hasta dónde llegas. Dime, ¿cómo puedes tener siquiera esperanza alguna de salvarla si todo cuanto sabes hacer es permanecer impasible, lleno de una ira estéril?";
+				}
+			} else {
+				self.state = 0;
+				self.add_choice(CG0001);
+				self.add_choice(CG0002);
+				self.add_choice(CG0003);
+				print "—Realmente requiere una gran perseverancia no desviarse nunca del camino que se ha elegido transitar. Pero contéstame a algo: ";
+				self.question(self.state);
+			}
+			new_line;
+			return true;
+		],
+		inter_action [;
+			print "Dime, ";
+			self.question(self.state);
+			new_line;
+			return true;
+		],
+		question [ code;
+			switch (code) {
+				1:
+					print "¿es justo exigir a otros que paguen el precio por tu violencia?";
+				2:
+					print "¿serás capaz de actuar cuando llegue el momento de hacerlo?";
+				3:
+					print "¿traicionar su confianza así no hace que tu crímen resulte más despreciable?";
+				4:
+					print "¿cómo podría nunca alguien tan cobarde como tú llevar a cabo la empresa que se te ha puesto delante?";
+				5:
+					print "¿acaso crees tener derecho a regodearte en la autocompasión cuando está en tu mano deshacerte de tanto sufrimiento?";
+				6:
+					print "¿es suficiente tu esfuerzo por aliviar el sufrimiento que tú mismo has generado?";
+				7:
+					print "¿no tiene ella derecho a vivir su vida sin que te entrometas?";
+				8:
+					print "¿estás seguro de poder ofrecerla algo mejor que su juguete favorito?";
+				9:
+					print "¿la habrías ayudado del mismo modo de tener que vivir luego con el dolor?";
+				10:
+					print "¿cómo puedes tener siquiera esperanza alguna de salvarla si todo cuanto sabes hacer es permanecer impasible?";
+				11:
+					new_line;
+					print "[La Gargola] te mira atentamente como si estuviera considerando tu respuesta. Al final asiente una vez con la cabeza.
+					^^
+					—Regresas aquí de nuevo —continúa—, para fracasar una vez más… ";
+					self.question(12);
+
+				12:
+					print "¿aún crees que esto puede acabar de una forma diferente?";
+				default:
+					print "¿no estarás andando en círculos si decides no enfrentarte a los retos que se te presentan delante?";
+			}
+			return true;
+		],
+		state 0,
+;
+
+!! @CG0001
+ChoiceSetItem	CG0001
+ with	entry [;
+			print "Es lo más ";
+			PRT__("cómodo", 0, CHOICE_OBJECT);
+			return true;
+		],
+		keys 'comodo' 'mas',
+		!!------------------
+		append_choice_set true,
+		final_choice false,
+		reaction [;
+			ConversacionGargola.state = 12;
+			print "—¿Por qué querría enfrentarme a ningún desafío cuando tu vida puede ser más agradable? ¿Qué hay de malo en caminar en círculos mientras el trayecto sea cómodo y fácil de llevar?";
+			new_line;
+			ConversacionGargola.question(11);
+			new_line;
+			return true;
+		],
+		relatives CG0002 CG0003,
+;
+
+!! @CG0002
+ChoiceSetItem	CG0002
+ with	entry [;
+			print "Voy a ";
+			PRT__("salvar", 0, CHOICE_OBJECT);
+			print " a mi hija";
+			return true;
+		],
+		keys 'salvar' 'a' 'mi' 'hija' 'maria',
+		!!------------------
+		append_choice_set true,
+		final_choice false,
+		reaction [;
+			ConversacionGargola.state = 12;
+			print "—Mi objetivo está bien determinado y el camino para conseguirlo es claro. Estoy aquí para recuperar a mi hija, y si es necesario no voy a rehusar ningúna confrontación con el barón.";
+			new_line;
+			ConversacionGargola.question(11);
+			new_line;
+			return true;
+		],
+		relatives CG0001 CG0003,
+;
+
+!! @CG0003
+ChoiceSetItem	CG0003
+ with	entry [;
+			print "Me mantengo ";
+			PRT__("fiel", 0, CHOICE_OBJECT);
+			print " a mi mismo";
+			return true;
+		],
+		keys 'mantengo' 'fiel' 'a' 'mi' 'mismo',
+		!!------------------
+		append_choice_set true,
+		final_choice false,
+		reaction [;
+			ConversacionGargola.state = 12;
+			print "—Lo más importante es mantenerse fiel a uno mismo, y asegurarte de que ninguna fuerza externa te aparte del camino que tu espíritu ha decidido que sigas. Eso es lo importante. Aunque el camino sea en círculos.";
+			new_line;
+			ConversacionGargola.question(11);
+			new_line;
+			return true;
+		],
+		relatives CG0001 CG0002,
+;
 
 
 !!==============================================================================
@@ -48,37 +874,289 @@
 !!
 !!------------------------------------------------------------------------------
 
-!! @CastilloEntrada
-Outdoors	CastilloEntrada "Ante las puertas del castillo"
- has	male,
- with	name_f 'fortaleza',
-		name_m 'castillo',
-		gender G_MASCULINO,
-		adjectives 'baron',
+!! @EntradaCastillo
+Outdoors	EntradaCastillo "Ante las puertas del castillo"
+ has	female,
+ with	gender G_FEMENINO,
 		!!------------------
+		b_to [;
+			print "Es demasiado tarde para volverse atrás.";
+			new_line;
+			return true;
+		],
 		description [;
-			print "El puente levadizo está tendido sobre el profundo foso seco que rodea el castillo, permitiendo el paso hasta la imponente casa del guarda que protege [la DirCastilloEntrada]. Adviertes que sus puertas se encuentran abiertas de par en par. Desde tu posición, en el extremo del puente, las tres torres parecen elevarse retadoras hacia los cielos. Hordas de gárgolas encumbran las cornisas y te devuelven la mirada con desprecio.";
+			print "[El EntradaCastilloPuente] está tendido sobre el ancho [EntradaCastilloFoso] que rodea el [EntradaCastilloCastillo](castillo) y deja el paso completamente libre hasta [las EntradaCastilloPuertas] abiertas del otro lado. Más allá, las tres torres blancas se recortan torcidas contra el cielo negro. Hordas de [EntradaCastilloGargolas] encumbran las almenas y parecen devolverte la mirada con profundo desprecio.";
+			new_line;
+			return true;
+		],
+		exits [;
+			print "[Las EntradaCastilloPuertas] está[n EntradaCastilloPuertas] abiert[o EntradaCastilloPuertas] frente a ti.";
 			new_line;
 			return true;
 		],
 		f_to [;
-			<<Enter DirCastilloEntrada>>;
+			<<Enter EntradaCastilloPuertas>>;
+		],
+		n_to [;
+			if (Utils.is_compass_enabled()) <<Enter EntradaCastilloPuertas>>;
+			else return self.cant_go();
+		],
+		w_to [;
+			if (Utils.is_compass_enabled()) return self.b_to();
+			else return self.cant_go();
 		],
 ;
 
-!! @DirCastilloEntrada
-AdjacentRoom	-> DirCastilloEntrada "entrada"
+!! @EntradaCastilloBosque
+Atrezzo	-> EntradaCastilloBosque "bosque"
+ class	Background,
+ has	enterable male,
+ with	name_m 'arbol' 'bosque',
+		name_mp 'arboles',
+		gender G_MASCULINO,
+		!!------------------
+		before [;
+			Enter:
+				print "Adentrarte en el bosque no te acercará al barón.";
+				new_line;
+				return true;
+		],
+		description [;
+			print "El bosque que rodea el castillo está en completo silencio. Ni un solo árbol crece a distancia de tiro de piedra de las murallas, como si las propias plantas temiesen al barón.";
+			new_line;
+			return true;
+		],
+;
+
+!! @EntradaCastilloCastillo
+Atrezzo	-> EntradaCastilloCastillo
+ class	Background,
+ has	enterable male,
+ with	short_name [;
+			print "[](castillo) del barón";
+			return true;
+		],
+		name_f 'fortaleza',
+		name_m 'castillo',
+		gender G_MASCULINO,
+		adjectives 'baron',
+		!!------------------
+		before [;
+			Climb:
+				print "Aún a plena luz del día, con un equipo de escalada y sin ningún enemigo defendiendo el castillo, sería una locura intentar escalar estas murallas.";
+				new_line;
+				return true;
+			Enter:
+				<<Enter EntradaCastilloPuertas>>;
+		],
+		description [;
+			print "Casi como en un cuento de hadas, el castillo blanco se levanta de la nieve. Una enorme puerta vigila la única entrada. Dos torres más pequeñas, a la izquierda y a la derecha de la puerta, se inclinan espantosamente hacia delante, como si pudieran caer en cualquier momento. Pero es la torre central la que verdaderamente inspira asombro: decenas de metros de altura, siempre parece inclinarse hacia ti sin importar dónde estés, lista para aplastarte tan pronto como tenga la oportunidad. Gárgolas negras adornan las paredes en todas partes.";
+			new_line;
+			return true;
+		],
+;
+
+!! @EntradaCastilloFoso
+Atrezzo	-> EntradaCastilloFoso "foso"
+ class	Background,
+ has	enterable male remarkable,
+ with	name_m 'foso',
+		gender G_MASCULINO,
+		!!------------------
+		before [;
+			Enter,
+			Jump:
+				print "Precipitarte a la oscuridad helada del fondo del foso no te acercará al barón.";
+				new_line;
+				return true;
+			JumpOver:
+				print "El foso es con mucho demasiado ancho como para cruzarlo de un salto. Afortunadamente [el EntradaCastilloPuente] está tendido, como si estuvieran esperándote.";
+				new_line;
+				return true;
+			Receive,
+			ThrownAt:
+				print "Dejas caer [el noun] a las oscuras profundidades del foso.";
+				!! FIXME - Determinar peso
+				if (true) {
+					print " Escuchas el golpe contra el hielo, un crujido sordo y el sonido del agua salpicando. Pero no puedes ver absolutamente nada.";
+				} else {
+					print " Escuchas el débil golpe contra el hielo, apenas un momento después de perder de vista [el noun] entre las sombras.";
+				}
+				new_line;
+				return true;
+		],
+		description [;
+			print "El foso debe tener unas quince varas de ancho. Las sombras de la noche te impiden estimar su profundidad. Es una suerte que [el EntradaCastilloPuente] se encuentre tendido, de otra forma no sabes si hubieses podido cruzar el foso. Probablemente el agua del fondo esté cubierto por una capa de hielo, pero es imposible saber si esa capa sería lo suficientemente ancha como para soportar tu peso.";
+			new_line;
+			return true;
+		],
+;
+
+!! @EntradaCastilloGargolas
+Atrezzo	-> EntradaCastilloGargolas "gárgolas"
+ class	Background,
+ has	female pluralname remarkable,
+ with	name_fp 'estatuas' 'gargolas',
+		name_mp 'monstruos',
+		gender G_FEMENINO + G_PLURAL,
+		adjectives 'piedra',
+		!!------------------
+		before [;
+			Climb:
+				print "Incluso las que se encuentran a menor altura están demasiado altas como para poder utilizarlas como punto de apoyo para escalar los muros.";
+				new_line;
+				return true;
+		],
+		description [;
+			print "Diablos y otros seres demoníacos, humanos con el rostro deformado, criaturas fantásticas, ángeles, esqueletos, murciélagos monstruosos… toda una colección de gárgolas observa fijamente desde lo alto de los muros del castillo. Construidas en piedra negra, contrastan pronunciadamente con la mampostería blanca de las paredes. El viento y la lluvia ha erosionado durante largos años los detalles de muchas de ellas, hasta el punto de eliminar rasgos casi por completo.";
+			new_line;
+			return true;
+		],
+;
+
+!! @EntradaCastilloNieve
+Atrezzo	-> EntradaCastilloNieve "nieve"
+ class	Background,
  has	female,
- with	name_f 'entrada',
+ with	name_f 'nevada' 'nieve',
 		gender G_FEMENINO,
-		adjectives 'castillo',
+		adjectives 'blanca' 'copo' 'copos',
+		!!------------------
+		description [;
+			print "Una gruesa capa de nieve lo cubre todo.";
+			new_line;
+			return true;
+		],
+;
+
+!! @EntradaCastilloParedes
+Atrezzo	-> EntradaCastilloParedes "paredes"
+ class	Background,
+ has	female pluralname,
+ with	name_f 'pared',
+		name_fp 'paredes',
+		name_m 'muro',
+		name_mp 'muros',
+		gender G_FEMENINO + G_PLURAL,
+		adjectives 'blanca' 'blancas' 'blanco' 'blancos',
+		!!------------------
+		before [;
+			Climb:
+				<<Climb EntradaCastilloCastillo>>;
+		],
+		description [;
+			print "Los muros del castillo son gruesos y altos, y no se puede encontrar ni la más mínima grieta entre sus piedras. Las almenas están adornadas con merlones, que se exhiben en el cielo lleno de estrellas.";
+			new_line;
+			return true;
+		],
+;
+
+!! @EntradaCastilloPuente
+Atrezzo	-> EntradaCastilloPuente
+ has	male,
+ with	short_name [;
+			print "[](puente) levadizo";
+			return true;
+		],
+		name_f 'pasarela' 'plataforma',
+		name_m 'puente',
+		gender G_MASCULINO,
+		adjectives 'levadizo',
+		!!------------------
+		before [;
+			Close:
+				print "No ves ninguna manera de levantar el puente.";
+				new_line;
+				return true;
+			Open:
+				print "El puente levadizo ya está tendido; simplemente tienes que atravesarlo para alcanzar [la EntradaCastilloPuertas] de la fortaleza.";
+				new_line;
+				return true;
+		],
+		description [;
+			print "El puente levadizo ha sido tendido sobre [el EntradaCastilloFoso] permitiendo el paso hasta la [EntradaCastilloPuertas](entrada) del castillo.";
+			if (self hasnt described) {
+				print " Compruebas con extrañeza que no hay cabos ni cadenas con los que levantar la pasarela. Como si al barón no le preocupara poder sufrir un ataque.";
+			}
+			new_line;
+			return true;
+		],
+;
+
+Atrezzo -> -> "tablones"
+ has	male pluralname,
+ with	name_f 'tabla',
+		name_fp 'tablas',
+		name_m 'tablon',
+		name_mp 'tablones',
+		gender G_MASCULINO + G_PLURAL,
+		adjectives 'ancha' 'anchas' 'ancho' 'anchos' 'madera' 'roble',
+		!!------------------
+		description [;
+			print "Anchos tablones de roble perfectamente serrados y ensamblados. Un trabajo de carpintería muy profesional.";
+			new_line;
+			return true;
+		],
+;
+
+!! @EntradaCastilloPuertas
+AdjacentRoom	-> EntradaCastilloPuertas "puertas"
+ has	female open pluralname,
+ with	name_f 'entrada' 'puerta',
+		name_fp 'puertas',
+		name_m 'porton',
+		name_mp 'portones',
+		gender G_FEMENINO + G_PLURAL,
+		adjectives
+			'castillo' 'enorme' 'enormes' 'fortaleza' 'hierro' 'metalica'
+			'metalicas' 'metalico' 'metalicos',
 		!!------------------
 		adjacent_room PatioArmas,
 		before [;
-			Enter:
-				print "Cruzas el puente levadizo y entras en la fortaleza del barón.";
+			Close,
+			Pull,
+			Push:
+				print "No cede[n self] lo más mínimo, ni utilizando todo tu peso para hacer fuerza.";
 				new_line;
-				self.AdjacentRoom::before();
 				return true;
+			Enter:
+				!! FIXME - después de que la gárgola aparezca, y tras el final
+				!! de la conversación con ella, esta comprobación falla
+				if (~~Gargola.appears()) {
+					print "Cruzas el puente levadizo y entras en la fortaleza del barón.";
+					new_line;
+					new_line;
+					self.AdjacentRoom::before();
+				}
+				return true;
+			Open:
+				print "Ya está[n self] abiert[o self].";
+				new_line;
+				return true;
+		],
+		description [;
+			print "Dos [self](portones) enormes de hierro forjado, abiertos de par en par. Detrás aguarda una oscuridad amenazante.";
+			new_line;
+			return true;
+		],
+;
+
+!! @EntradaCastilloTorres
+Atrezzo	-> EntradaCastilloTorres "torres"
+ class	Background,
+ has	female pluralname,
+ with	name_f 'torre',
+		name_fp 'torres',
+		gender G_FEMENINO + G_PLURAL,
+		adjectives 'inclinada' 'inclinadas',
+		!!------------------
+		before [;
+			Climb:
+				<<Climb EntradaCastilloCastillo>>;
+		],
+		description [;
+			print "Las dos torres más pequeñas, a izquierda y derecha de [las EntradaCastilloPuertas] de entrada, se inclinan hacia afuera peligrosamente como si pudieran desplomarse en cualquier momento. Pero es la torre central la que hace que te sobrecojas; con una altura de decenas de varas parece cernirse amenazadoramente sobre ti, lista para aplastarte a la menor oportunidad.";
+			new_line;
+			return true;
 		],
 ;

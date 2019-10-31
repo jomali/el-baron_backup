@@ -45,6 +45,7 @@
 !!
 !!	1) Atributos adicionales
 !!		<>	described
+!!		<>	remarkable
 !!
 !!	2)	Redefiniciones sobre la librería Inform
 !!		<>	Banner()
@@ -60,6 +61,7 @@
 !!		<>	LookSub()
 !!		<>	ParseNoun()
 !!		<>	PSN__()
+!!		<>	PRT__()
 !!		<>	VersionSub()
 !!
 !!------------------------------------------------------------------------------
@@ -77,6 +79,14 @@
 !! ExamineSub().
 !!------------------------------------------------------------------------------
 Attribute described;
+
+!!------------------------------------------------------------------------------
+!! Permite marcar objetos como destacados dentro de la historia (por si mismo,
+!! marcar un objeto como destacado no tiene ningún efecto práctico, pero puede
+!! utilizarse en conjunto con otros sistemas como el de palabras destacadas,
+!! por ejemplo).
+!!------------------------------------------------------------------------------
+Attribute remarkable;
 
 
 !!==============================================================================
@@ -647,7 +657,7 @@ Global _last_location = 0;
 !!
 !!	@returns {boolean} Verdadero
 !!	@override parserm.h
-!!	@version 3.0
+!!	@version 2019/09/17
 !!------------------------------------------------------------------------------
 [ PSN__ obj;
 	if (obj == 0) { print (string) NOTHING__TX; rtrue; }
@@ -661,14 +671,21 @@ Global _last_location = 0;
 	if (LanguagePrintShortName(obj)) rtrue;
 	#Endif; ! LanguagePrintShortName;
 	!! Se relega a la rutina 'short_name_indef()' del objeto las tareas de
-	!! creación del hipervínculo y de selección de estilo:
+	!! creación del hipervínculo y de selección de estilo (si es oportuno):
 	if (indef_mode && obj.&short_name_indef ~= 0
 		&& PrintOrRun(obj, short_name_indef, 1) ~= 0) {
 		return true;
 	}
 	!! Se relega a la rutina 'short_name()' del objeto las tareas de
-	!! creación del hipervínculo y de selección de estilo:
+	!! creación del hipervínculo y de selección de estilo (si es oportuno):
 	if (obj.&short_name ~= 0 && PrintOrRun(obj, short_name, 1) ~= 0) {
+		return true;
+	}
+	!! Algunos mensajes de error del analizador de comandos pueden pasar
+	!! objetos "VerboIrregular" que deben imprimirse en esta estapa para evitar
+	!! que PRT__() pueda introducir algún estilo de texto destacado:
+	if (obj ofclass VerboIrregular) {
+		print (object) obj;
 		return true;
 	}
 	!! 'PRT__()' se encarga de imprimir el nombre del objeto, crear el
@@ -688,28 +705,32 @@ Global _last_location = 0;
 !!		obstante, para determinar automáticamente el estilo de texto destacado
 !!		—cuando el parámetro 'style' es 0— y para asociar a él el hipervínculo
 !!	@param {integer} [type=0] - Código numérico forzando un tipo de objeto,
-!!		independientemente de la definición de 'rtxt'
+!!		independientemente de la definición de 'rtxt': 0, objetos genéricos; 1,
+!!		objetos destacados; 2, puntos cardinales y otras direcciones de
+!!		desplazamiento; 3, elecciones
 !!	@returns {boolean} Verdadero
+!!	@dependency baron.inf
 !!	@dependency baron_utils.inf
 !!	@dependency hyperlinks.h
 !!	@dependency textStyles.h
-!!	@version 1.0
+!!	@version 2019/09/14
 !!------------------------------------------------------------------------------
 [ PRT__ rtxt alternative object_type
 	style_code previous_style hyperlinks_status;
 	!! Establece el tipo de objeto:
 	if (object_type == 0 && metaclass(rtxt) == Object) {
 		if (rtxt ofclass ChoiceSetItem) {
-			object_type = 4;
+			object_type = CHOICE_OBJECT;
 		} else if (rtxt ofclass CompassDirection or AdjacentRoom) {
-			object_type = 3;
-		} else if (rtxt ofclass Item or Character) {
-			object_type = 2;
+			object_type = DIRECTION_OBJECT;
+		} else if ((rtxt has remarkable)
+			|| (~~(rtxt has concealed or scenery))) {
+			object_type = REMARKABLE_OBJECT;
 		} else {
-			object_type = 1;
+			object_type = OTHER_OBJECT;
 		}
 	} else if (object_type == 0) {
-		object_type = 1;
+		object_type = OTHER_OBJECT;
 	}
 
 	!! Establece el estilo de texto destacado:

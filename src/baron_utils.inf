@@ -46,49 +46,17 @@ Array _hyperlinks_utility_array_a buffer LEN_HUGEHUGESTR;
 #Endif; ! USE_VORPLE;
 #Endif; ! TARGET_GLULX;
 
-!!------------------------------------------------------------------------------
-!! Utils encapsula un conjunto de rutinas de utilidad con el propósito de
-!! liberar parte del alcance global de la aplicación:
-!!
-!!	<>	check_object_capacity()
-!!	<>	create_vorple_hyperlink()
-!!	<>	erase_window()
-!!	<>	fade_in_sound()
-!!	<>	fade_out_sound()
-!!	<>	get_action_verb()
-!!	<>	get_grammatical_inflection()
-!!	<>	get_highlight_style()
-!!	<>	get_hyperlinks_status()
-!!	<>	get_text_style()
-!!	<>	get_top_holder()
-!!	<>	initialise_glulx()
-!!	<>	is_compass_enabled()
-!!	<>	play_sfx()
-!!	<>	press_any_key()
-!!	<>	print_horizontal_rule();
-!!	<>	read_configuration_file()
-!!	<>	restart()
-!!	<>	set_compass_mode()
-!!	<>	set_grammatical_inflection()
-!!	<>	set_highlight_style()
-!!	<>	set_hyperlinks_status()
-!!	<>	set_status_bar_alignment()
-!!	<>	set_status_bar_contents()
-!!	<>	set_text_style()
-!!	<>	spanish_nominative_pronoun()
-!!	<>	website_hyperlink()
-!!	<>	write_configuration_file()
-!!	<>	write_garglk_configuration_file()
-!!------------------------------------------------------------------------------
 Object	Utils "(Utilities)"
  with	!!----------------------------------------------------------------------
-		!! Comprueba si un objeto contenedor/soporte 'obj' tiene capacidad para
-		!! albergar un segundo objeto 'second' pasados ambos como parámetro.
+		!! Comprueba si un objto contenedor/soporte 'obj' tiene capacidad
+		!! suficiente para contener un segundo objeto 'second', pasados ambos
+		!! como parámetro.
 		!!
 		!!	@param {Object} obj - Objeto contenedor/soporte
-		!!	@param {Object} second - Objeto que se compara con los límites de
-		!!		capacidad (cantidad, tamaño, volumen y peso) de 'obj'
+		!!	@param {Object} second - Objeto que se comprueba si puede ser
+		!!		contenido en 'obj'
 		!!	@returns {integer} Código con el resultado de la comprobación:
+		!!		0) si no se usa la extensión 'capacities.h'
 		!!		1) 'obj' tiene capacidad para albergar a 'second'
 		!!		-1) se supera la cantidad máxima de objs. que puede tener 'obj'
 		!!		-2) se supera la capacidad de tamaño máximo de 'obj'
@@ -97,7 +65,7 @@ Object	Utils "(Utilities)"
 		!!		-5) se supera la capacidad de peso máximo de 'obj'
 		!!		-6) el peso agregado supera la capacidad máxima de 'obj'
 		!!	@dependency capacities.h
-		!!	@version 1.0
+		!!	@version 2019/07/15
 		!!----------------------------------------------------------------------
 		check_object_capacity [ obj second;
 			!! Rutina definida por la extensión 'capacities.h':
@@ -105,7 +73,7 @@ Object	Utils "(Utilities)"
 		],
 		!!----------------------------------------------------------------------
 		!! Crea un hipervínculo en Vorple.
-		!! FIXME
+		!! FIXME doc?
 		!!----------------------------------------------------------------------
 		create_vorple_hyperlink [ item alternative;
 			#Ifdef USE_VORPLE;
@@ -130,7 +98,7 @@ Object	Utils "(Utilities)"
 		!! Elimina los contenidos de todas las ventanas de la interfaz.
 		!!
 		!!	@returns {boolean} Verdadero
-		!!	@version 1.0
+		!!	@version 2019/07/15
 		!!----------------------------------------------------------------------
 		erase_window [;
 		    #Ifdef TARGET_ZCODE;
@@ -322,121 +290,6 @@ Object	Utils "(Utilities)"
 			return result;
 		],
 		!!----------------------------------------------------------------------
-		!! Retorna el verbo principal que se corresponde con la acción pasada
-		!! como parámetro.
-		!!
-		!!	@param {Object} x - Acción
-		!!	@returns {string} Verbo principal que se corresponde con la acción
-		!!	@version 1.0
-		!!----------------------------------------------------------------------
-		get_action_verb [ x;
-			switch (x) {
-				!! GROUP 2 ACTIONS
-				!! (Usually work, given the right circumstances)
-				##Close:		return "Cerrar";
-				##Disrobe:		return "Desvestir";
-				##Drop:			return "Dejar";
-				##Eat:			return "Comer";
-				##Empty:		return "Vaciar";
-				!##EmptyT
-				##Enter:		return "Entrar";
-				##Examine:		return "Examinar";
-				##Exit:			return "Salir";
-				##GetOff:		return "Salir";
-				##Give:			return "Dar";
-				##Go:			return "Ir";
-				##GoIn:			return "Entrar";
-				##Insert:		return "Meter";
-				##Inv:			return "Inventario";
-				##InvTall:		return "Inventario largo";
-				##InvWide:		return "Inventario ancho";
-				##Lock:			return "Bloquear";
-				##Look:			return "Mirar";
-				##Open:			return "Abrir";
-				##Order:		return "Ordenar";
-				##PutOn:		return "Poner encima";
-				##Remove:		return "Quitar";
-				##Search:		return "Buscar";
-				##Show:			return "Enseñar";
-				##SwitchOff:	return "Apagar";
-				##SwitchOn:		return "Encender";
-				##Take:			return "Coger";
-				!##Transfer
-				##Unlock:		return "Desbloquear";
-				!##VagueGo
-				##Wear:			return "Vestir";
-				!! GROUP 3 ACTIONS
-				!! (Output a message and stop at the "before" stage)
-				##Answer:		return "Responder";
-				##Ask:			return "Preguntar";
-				##AskFor:		return "Preguntar por";
-				##Attack:		return "Atacar";
-				##Blow:			return "Soplar";
-				##Burn:			return "Quemar";
-				##Buy:			return "Comprar";
-				##Climb:		return "Escalar";
-				##Consult:		return "Consultar";
-				##Cut:			return "Cortar";
-				##Dig:			return "Excavar";
-				##Drink:		return "Beber";
-				##Fill:			return "Llenar";
-				##Jump:			return "Saltar";
-				##JumpOver:		return "Saltar";
-				##Kiss:			return "Besar";
-				!##LetGo:
-				##Listen:		return "Escuchar";
-				##LookUnder:	return "Mirar debajo";
-				##Mild:			return "Insultar";
-				##No:			return "No";
-				##Pray:			return "Rezar";
-				##Pull:			return "Tirar";
-				##Push:			return "Empujar";
-				##PushDir:		return "Empujar hacia";
-				##Receive:		return "Recibir";
-				##Rub:			return "Frotar";
-				##Set:			return "Establecer";
-				##SetTo:		return "Establecer a";
-				##Sing:			return "Cantar";
-				##Sleep:		return "Dormir";
-				##Smell:		return "Oler";
-				##Sorry:		return "Disculpar";
-				##Squeeze:		return "Agitar";
-				##Strong:		return "Blasfemar";
-				##Swim:			return "Nadar";
-				##Swing:		return "Columpiar";
-				##Taste:		return "Saborear";
-				##Tell:			return "Decir";
-				##Think:		return "Pensar";
-				##ThrowAt:		return "Lanzar a";
-				##Tie:			return "Atar";
-				##Touch:		return "Tocar";
-				##Turn:			return "Girar";
-				##Wait:			return "Esperar";
-				##Wake:			return "Despertar";
-				##WakeOther:	return "Despertar";
-				##Wave:			return "Gesticular";
-				##WaveHands:	return "Gesticular con las manos";
-				##Yes:			return "Si";
-				!! GRAMÁTICA ESPAÑOLA EXTENDIDA:
-				##Dance:		return "Bailar";
-				##GoDown:		return "Descender";
-				##GoUp:			return "Ascender";
-				##KnockOn:		return "Llamar";
-				##Masturbate:	return "Masturbarse";
-				##Read:			return "Leer";
-				##Shout:		return "Gritar";
-				##Sit:			return "Sentarse";
-				##SleepWith:	return "Follar";
-				##StandUp:		return "Levantarse";
-				##Untie:		return "Desatar";
-				##Use:			return "Usar";
-				##Write:		return "Escribir";
-				##Xyzzy:		return "Xyzzy";
-				!! CUSTOM ACTIONS:
-				##TalkTo:		return "Hablar";
-			}
-		],
-		!!----------------------------------------------------------------------
 		!! Retorna el código numérico de la flexión gramatical actual utilizada
 		!! por la obra, tal y como se definen en la extensión 'SpanishLM.h':
 		!!
@@ -451,7 +304,7 @@ Object	Utils "(Utilities)"
 		!!	9)	Futuro, tercera persona
 		!!
 		!!	@returns {integer} Código numérico de la flexión gramatical actual
-		!!	@version 1.0
+		!!	@version 2019/09/14
 		!!----------------------------------------------------------------------
 		get_grammatical_inflection [
 			result;
@@ -470,7 +323,7 @@ Object	Utils "(Utilities)"
 		!!		para el que se pretende conocer el estilo de texto resaltado
 		!!	@returns {integer} Código numérico del estilo de texto resaltado
 		!!		para los objetos de tipo 'object_type'. -1 por defecto
-		!!	@version 1.1
+		!!	@version 2019/09/14
 		!!----------------------------------------------------------------------
 		get_highlight_style [ object_type
 			result;
@@ -517,7 +370,7 @@ Object	Utils "(Utilities)"
 		!!
 		!!	@returns {integer} Código numérico del estilo de texto utilizado
 		!!		actualmente. 0 por defecto
-		!!	@version 1.0
+		!!	@version 2019/09/14
 		!!----------------------------------------------------------------------
 		get_text_style [
 			result;
@@ -534,7 +387,7 @@ Object	Utils "(Utilities)"
 		!!	@param {Object} obj - Objeto del que se desea averiguar su
 		!!		antecesor más lejano
 		!!	@returns {Object} Antecesor más lejano de 'obj'
-		!!	@version 1.0
+		!!	@version 2019/09/14
 		!!----------------------------------------------------------------------
 		get_top_holder [ obj
 			aux;
@@ -630,7 +483,7 @@ Object	Utils "(Utilities)"
 		!!
 		!!	@returns Verdadero si la navegación se realiza a través de los
 		!!		puntos cardinales. Falso en caso contrario
-		!!	@version 1.0
+		!!	@version 2019/09/14
 		!!----------------------------------------------------------------------
 		is_compass_enabled [;
 			return self.compass_mode;
@@ -733,6 +586,7 @@ Object	Utils "(Utilities)"
 		!!		leen los parámetros de configuración
 		!!	@returns {boolean} Verdadero si el fichero se lee con éxito. Falso
 		!!		en caso contrario
+		!!	@version 2019/06/24
 		!!----------------------------------------------------------------------
 		!! FIXME - comprobar funcionalidades de fichero externo
 		read_configuration_file [ file_name
@@ -782,7 +636,7 @@ Object	Utils "(Utilities)"
 					3:	e = TEXT_STYLE_IMPORTANT;
 					4:	e = TEXT_STYLE_HEADER;
 					5:	e = TEXT_STYLE_MONOSPACED;
-					6:	e = TEXT_STYLE_REVERSED;
+					6:	e = TEXT_STYLE_QUOTE;
 					7:	e = TEXT_STYLE_USER1;
 					default: e = TEXT_STYLE_UPRIGHT;
 				}
@@ -792,7 +646,7 @@ Object	Utils "(Utilities)"
 					3:	f = TEXT_STYLE_IMPORTANT;
 					4:	f = TEXT_STYLE_HEADER;
 					5:	f = TEXT_STYLE_MONOSPACED;
-					6:	f = TEXT_STYLE_REVERSED;
+					6:	f = TEXT_STYLE_QUOTE;
 					7:	f = TEXT_STYLE_USER1;
 					default: f = TEXT_STYLE_UPRIGHT;
 				}
@@ -802,7 +656,7 @@ Object	Utils "(Utilities)"
 					3:	g = TEXT_STYLE_IMPORTANT;
 					4:	g = TEXT_STYLE_HEADER;
 					5:	g = TEXT_STYLE_MONOSPACED;
-					6:	g = TEXT_STYLE_REVERSED;
+					6:	g = TEXT_STYLE_QUOTE;
 					7:	g = TEXT_STYLE_USER1;
 					default: g = TEXT_STYLE_UPRIGHT;
 				}
@@ -812,7 +666,7 @@ Object	Utils "(Utilities)"
 					3:	h = TEXT_STYLE_IMPORTANT;
 					4:	h = TEXT_STYLE_HEADER;
 					5:	h = TEXT_STYLE_MONOSPACED;
-					6:	h = TEXT_STYLE_REVERSED;
+					6:	h = TEXT_STYLE_QUOTE;
 					7:	h = TEXT_STYLE_USER1;
 					default: h = TEXT_STYLE_UPRIGHT;
 				}
@@ -838,7 +692,7 @@ Object	Utils "(Utilities)"
 		!! Reestablece el modelo del mundo a su estado inicial.
 		!!
 		!!	@returns {boolean} Verdadero
-		!!	@version 1.0
+		!!	@version 2019/10/31
 		!!----------------------------------------------------------------------
 		restart [
 			obj;
@@ -846,6 +700,7 @@ Object	Utils "(Utilities)"
 				give obj ~described;
 				give obj ~general;
 				give obj ~moved;
+				obj.state = 0;
 			}
 			objectloop(obj ofclass Room) {
 				give obj ~general;
@@ -860,7 +715,7 @@ Object	Utils "(Utilities)"
 		!!		través de la brújula (si 'mode' es verdadero) o no (si 'mode'
 		!!		es falso)
 		!!	@returns {boolean} Modo de navegación reemplazado
-		!!	@version 1.0
+		!!	@version 2019/09/14
 		!!----------------------------------------------------------------------
 		set_compass_mode [ mode
 			result;
@@ -904,19 +759,18 @@ Object	Utils "(Utilities)"
 		!!	@returns {integer} Código numérico del estilo de texto resaltado
 		!!		que se había estado utilizando previamente para los objetos del
 		!!		tipo 'object_type'. -1 si 'object_type' no es un código válido
-		!!	@date 2019/02/27
+		!!	@date 2019/06/24
 		!!----------------------------------------------------------------------
 		set_highlight_style [ object_type text_style
-			default_text_style result status;
+			result status;
 			!! Inicializaciones del método:
 			if (object_type < 1 || object_type > 4) {
 				return -1;
 			}
-			default_text_style = TEXT_STYLE_UPRIGHT;
 			result = self.get_highlight_style(object_type);
 			status = self.get_hyperlinks_status(object_type);
 			!! Modifica el estilo de texto en función del estado calculado:
-			if (text_style == TEXT_STYLE_NOTE or TEXT_STYLE_REVERSED
+			if (text_style == TEXT_STYLE_NOTE or TEXT_STYLE_QUOTE
 				&& status) {
 				!! FIXME
 				!! text_style = TEXT_STYLE_USER1;
@@ -1068,7 +922,7 @@ Object	Utils "(Utilities)"
 		!!		escriben los parámetros de configuración
 		!!	@returns {boolean} Verdadero si el fichero se escribe con éxito.
 		!!		Falso en caso contrario
-		!!	@version 1.0
+		!!	@version 2019/06/24
 		!!----------------------------------------------------------------------
 		write_configuration_file [ file_name
 			file_ref str i temp_txt temp_code;
@@ -1108,7 +962,7 @@ Object	Utils "(Utilities)"
 						TEXT_STYLE_IMPORTANT:	temp_code = 3;
 						TEXT_STYLE_HEADER:		temp_code = 4;
 						TEXT_STYLE_MONOSPACED:	temp_code = 5;
-						TEXT_STYLE_REVERSED:	temp_code = 6;
+						TEXT_STYLE_QUOTE:	temp_code = 6;
 						TEXT_STYLE_USER1:		temp_code = 7;
 					}
 					print temp_code, " # Estilo de texto de ",
@@ -1125,128 +979,6 @@ Object	Utils "(Utilities)"
 			#Endif; ! TARGET_
 
 			return false;
-		],
-		!!----------------------------------------------------------------------
-		!! Escribe un fichero 'garglk.ini' con los parámetros de configuración
-		!! de la obra.
-		!!
-		!!	@returns {integer} 2 si ya existe un fichero 'garglk.ini' (no se
-		!!		reescribe); 1 si el fichero se escribe con éxito; 0 si se
- 		!!		produce algún problema de escritura
-		!!	@version 1.0
-		!!----------------------------------------------------------------------
-		write_garglk_configuration_file [
-			file_name file_ref str ch;
-			!! FIXME - comprobar que el intérprete soporte la lectura/escritura
-			#Ifdef TARGET_GLULX;
-			file_name = "garglk.ini";
-			!!	glk_fileref_create_by_name(
-			!!		fileusage_Data + fileusage_BinaryMode,
-			!!		ChangeAnyToCString(file_name), 0);
-			file_ref = glk($0061, $00+$000, ChangeAnyToCString(file_name), 0);
-			if (file_ref ~= 0) {
-				!!	glk_stream_open_file(fileref, filemode_Read, 0);
-				str = glk($0042, file_ref, $02, 0);
-				ch = glk($0090, str); ! glk_get_char_stream
-				!! Cierra el archivo:
-				glk($0044, str, 0); ! glk_stream_close
-				if (ch ~= null) {
-					!! Si ya existe un fichero con contenidos, retorna:
-					glk($0063, file_ref); ! glk_fileref_destroy
-					return 2;
-				}
-				!!	glk_stream_open_file(fileref, filemode_Write, 0);
-				str = glk($0042, file_ref, $01, 0);
-				glk($0063, file_ref); ! glk_fileref_destroy
-				glk($0047, str); ! glk_stream_set_current
-				!! Escritura en fichero de los parámetros de configuración:
-				print "#===============================================================================^";
-				print "# Fonts, sizes and spaces^";
-				print "#-------------------------------------------------------------------------------^";
-				print "^";
-				print "#monofont	Liberation Mono^";
-				print "monosize	16.0^";
-				print "^";
-				print "#propfont	Roboto^";
-				print "propsize	20.0^";
-				print "^";
-				print "cols			65^";
-				print "rows			20^";
-				print "^";
-				print "wmarginx	0				# space around the window frame^";
-				print "wmarginy	0^";
-				print "wpaddingx	0				# space between windows^";
-				print "wpaddingy	0^";
-				print "wborderx	0				# border line width between windows^";
-				print "wbordery	0^";
-				print "tmarginx	0				# internal margin of text windwos^";
-				print "tmarginy	0^";
-				print "^";
-				print "leading	32.0			# Also known as linespacing^";
-				print "baseline	20.0			# Offset from top of line to baseline^";
-				print "^";
-				print "#===============================================================================^";
-				print "# Scroll^";
-				print "#-------------------------------------------------------------------------------^";
-				print "^";
-				print "scrollwidth	0				# set to 8 to make a nice scrollbar^";
-				print "scrollbg	202020^";
-				print "scrollfg	E06666^";
-				print "^";
-				print "#===============================================================================^";
-				print "# Colors and style definitions^";
-				print "#-------------------------------------------------------------------------------^";
-				print "^";
-				print "gamma		1				# this only affects text rendering^";
-				print "caretshape	2				# 0=smalldot 1=fatdot 2=thinline 3=fatline 4=block^";
-				print "linkstyle	0				# 1=show hyperlinks 0=hide hyperlinks^";
-				print "^";
-				print "moreprompt	…^";
-				print "morealign	1				# 0=left 1=center 2=right^";
-				print "morefont	monor^";
-				print "^";
-				print "windowcolor	202020			# overall window background color^";
-				print "bordercolor	202020			# border line color^";
-				print "caretcolor	E06666			# input caret color^";
-				print "linkcolor	F3F3F3			# hyperlink color^";
-				print "morecolor	E06666			# more prompt color^";
-				print "^";
-				print "# Colors for text buffer windows^";
-				print "tcolor	0	F3F3F3	202020	# Normal^";
-				print "tcolor	1	F3F3F3	202020	# Emphasized^";
-				print "tcolor	2	F3F3F3	202020	# Preformatted^";
-				print "tcolor	3	F3F3F3	202020	# Header^";
-				print "tcolor	4	F3F3F3	202020	# Subheader^";
-				print "tcolor	5	F3F3F3	202020	# Alert^";
-				print "tcolor	6	F3F3F3	202020	# Note^";
-				print "tcolor	7	F3F3F3	202020	# BlockQuote^";
-				print "tcolor	8	F3F3F3	202020	# Input^";
-				print "tcolor	9	F3F3F3	202020	# User1^";
-				print "tcolor	10	F3F3F3	202020	# User2^";
-				print "^";
-				print "# Colors for text grid windows^";
-				print "gcolor	0	202020	606060	# Normal^";
-				print "gcolor	1	202020	606060	# Emphasized^";
-				print "gcolor	2	202020	606060	# Preformatted^";
-				print "gcolor	3	202020	606060	# Header^";
-				print "gcolor	4	202020	606060	# Subheader^";
-				print "gcolor	5	202020	606060	# Alert^";
-				print "gcolor	6	202020	606060	# Note^";
-				print "gcolor	7	202020	606060	# BlockQuote^";
-				print "gcolor	8	202020	606060	# Input^";
-				print "gcolor	9	202020	606060	# User1^";
-				print "gcolor	10	202020	606060	# User2^";
-				!! Cierra el archivo y termina la operación:
-				glk($002F, gg_mainwin); ! glk_set_window
-				glk($0044, str, 0); ! glk_stream_close
-				return 1;
-			}
-			#Ifnot; ! TARGET_ZCODE;
-			!! (Por evitar alertas del compilador)
-			file_name = file_ref + str;
-			#Endif; ! TARGET_
-
-			return 0;
 		],
  private
 		!!----------------------------------------------------------------------
