@@ -1,0 +1,533 @@
+
+
+!!==============================================================================
+!!
+!!	EL BARÓN
+!!	Escena tercera
+!!
+!!==============================================================================
+!!
+!!	Archivo:		baron_scene-three.xinf
+!!	Autor(es):		Victor Gijsbers
+!!					J. Francisco Martín <jfm.lisaso@gmail.com>
+!!	Idioma:			ES (Español)
+!!	Sistema:		Inform-INFSP 6
+!!	Plataforma:		Máquina-Z/Glulx
+!!	Versión:		0.0
+!!	Fecha:			2020/01/XX
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	Este archivo forma parte de la ficción interactiva EL BARÓN.
+!!
+!!	EL BARÓN es software libre: usted puede redistribuirlo y/o
+!!	modificarlo bajo los términos de la Licencia Pública General
+!!	GNU publicada por la Fundación para el Software Libre, ya
+!!	sea la versión 3 de la Licencia, o (a su elección) cualquier
+!!	versión posterior.
+!!
+!!	EL BARÓN se distribuye con la esperanza de que sea útil,
+!!	pero SIN GARANTÍA ALGUNA; ni siquiera la garantía implícita
+!!	MERCANTIL o de APTITUD PARA UN PROPÓSITO DETERMINADO.
+!!	Consulte los detalles de la Licencia Pública General GNU
+!!	para más información.
+!!
+!!	Debería haber recibido una copia de la Licencia Pública
+!!	General GNU junto a EL BARÓN. En caso contrario, consulte
+!!	<http://www.gnu.org/licenses/>.
+!!
+!!	Copyright (c) 2004, Victor Gijsbers
+!!	Copyright (c) 2020, J. Francisco Martín
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	ÍNDICE
+!!
+!!	0)
+!!	1)	En el camino que atraviesa el bosque
+!!	2)	El mirador de la loma
+!!
+!!------------------------------------------------------------------------------
+
+
+!!==============================================================================
+!!
+!!	0)
+!!
+!!------------------------------------------------------------------------------
+
+!! @BosqueCielo
+Atrezzo	BosqueCielo "cielo"
+ class	Background,
+ has	male,
+ with	found_in Bosque Mirador,
+		name_f 'estrella' 'luna' 'noche' 'nube',
+		name_fp 'estrellas' 'nubes',
+		name_m 'cielo' 'firmamento',
+		gender G_MASCULINO,
+   		!!------------------
+		description [;
+			if (real_location == Bosque) {
+				print "De vez en cuando, a medida que avanzas por [el DirBosqueMirador], alcanzas a ver recortes incompletos de luna entre huecos dejados por las nubes y las copas [de los BosqueArboles].";
+			} else {
+				if (Baron.is_a_wolf()) {
+					print "La luna se ha escondido en su propia madriguera y ahora las alturas están totalmente negras. Puedes olisquear en el aire la nevada que está por venir.";
+				} else {
+					print "Las nubes han ocultado la luna y las estrellas, poniéndole una mortaja a la noche. No hay duda alguna de que se acerca otra nevada.";
+				}
+			}
+			new_line;
+			return true;
+		],
+		react_before [;
+			Examine:
+				if (noun == u_obj) {
+					<<Examine self>>;
+				}
+		],
+;
+
+!! @BosqueNieve
+Snow	BosqueNieve "nieve"
+ has	female,
+ with	found_in Bosque Mirador,
+		name_f 'nieve',
+		name_m 'manto',
+		gender G_FEMENINO,
+		adjectives 'blanca' 'blanco',
+   		!!------------------
+		description [;
+			if (Baron.is_a_wolf()) {
+				print "Parece querer enterrarlo todo bajo ella.";
+			} else {
+				if (real_location == Bosque) {
+					print "Aplasta las copas [de los BosqueArboles] bajo su peso y cubre el suelo, ocultando en parte el [DirBosqueMirador](sendero). Tienes que ir con cuidado para no desviarte.";
+				} else {
+					print "Parece querer sepultar el mundo entero bajo su manto blanco.";
+				}
+			}
+			new_line;
+			return true;
+		],
+;
+
+
+!!==============================================================================
+!!
+!!	1)	En el camino que atraviesa el bosque
+!!
+!!------------------------------------------------------------------------------
+
+!! @Bosque
+Outdoors	Bosque "En el camino que atraviesa el bosque"
+ has	male,
+ with	name_f 'espesura',
+		name_m 'bosque',
+		gender G_MASCULINO,
+		!!------------------
+		b_to [;
+			<<Enter BosquePueblo>>;
+		],
+		description [;
+			if (self.is_deeper_into_the_woods()) {
+				if (Baron.is_a_wolf()) {
+					!! TODO
+				} else {
+					print "Allí donde la luz de la luna consigue filtrarse a través de las copas [de los BosqueArboles] se pueden distinguir charcos congelados";
+					if (self.state > 1) {
+						print " entre [BosqueNieve] y barro";
+					} else {
+						self.state++;
+						print " entre barro y ramas caídas";
+					}
+					print ". [El DirBosqueMirador] es estrecho y sinuoso, tanto que tienes que avanzar con cuidado, prestando atención a cada paso para no desviarte y perderte en el bosque.";
+				}
+			} else {
+				print "Los aullidos perforan el aire gélido de la noche. Durante estos meses, los más duros del invierno, la caza escasea y [los BosqueLobos] están hambrientos, por lo que se vuelven más audaces y expeditivos. No es difícil encontrárselos incluso tan cerca [del BosquePueblo]. A pesar de ellos continúas tu camino entre [los BosqueArboles], vislumbrando apenas la [DirBosqueMirador](senda) cubierta de [BosqueNieve].";
+			}
+			new_line;
+			return true;
+		],
+		f_to [;
+			<<Enter DirBosqueMirador>>;
+		],
+		initial [;
+			if (self hasnt visited) {
+				new_line;
+				print "Alcanzas las lindes del bosque antes de que la campana de la iglesia, ya en la distancia, llegue a repicar tres veces. Los pastos y los campos de labranza dejan paso ahora a una espesura de coníferas, y lo hacen con tanta brusquedad que no puedes evitar la sensación de estar siendo engullido por las fauces de un monstruo colosal. La idea te estremece, pero sigues caminando, adentrándote cada vez más bajo el denso follaje.
+				^^
+				No has dejado de dar vueltas en tu cabeza a la empresa que tienes por delante; aventurando posibilidades, ideando planes para entrar en el castillo del barón, imaginando el desarrollo de un enfrentamiento que está cada vez más próximo. De pronto el aullido de los lobos te saca violentamente de tus reflexiones. Todos los músculos de tu cuerpo se tensan en una respuesta instintiva y el corazón te comienza a latir desbocado. Resulta difícil calcular distancias con exactitud, con la nieve acallando en parte los sonidos, pero te sorprendería si los animales estuviesen mucho más allá que a mil varas. Y no te separan todavía menos de dos leguas del castillo.
+				^^";
+				new_line;
+				return true;
+			}
+		],
+		is_deeper_into_the_woods [;
+			return self.state > 0;
+		],
+		nw_to [;
+			if (Utils.is_compass_enabled()
+				&& ~~self.is_deeper_into_the_woods()) {
+				return self.f_to();
+			} else {
+				return self.cant_go();
+			}
+		],
+		s_to [;
+			if (Utils.is_compass_enabled()
+				&& ~~self.is_deeper_into_the_woods()) {
+				return self.b_to();
+			} else {
+				return self.cant_go();
+			}
+		],
+		se_to [;
+			if (Utils.is_compass_enabled()
+				&& self.is_deeper_into_the_woods()) {
+				return self.b_to();
+			} else {
+				return self.cant_go();
+			}
+		],
+		set_deeper_into_the_woods [ value;
+			if (value) {
+				self.state = 1;
+			} else {
+				self.state = 0;
+			}
+			return true;
+		],
+		u_to [;
+			<<Climb BosqueArboles>>;
+		],
+		w_to [;
+			if (Utils.is_compass_enabled()
+				&& self.is_deeper_into_the_woods()) {
+				return f_obj();
+			} else {
+				return self.cant_go();
+			}
+		],
+;
+
+!! @DirBosqueMirador
+AdjacentRoom	-> DirBosqueMirador "camino"
+ has	male,
+ with	name_f 'senda',
+		name_m 'camino' 'sendero',
+		gender G_MASCULINO,
+		!!------------------
+		adjacent_room Mirador,
+		before [;
+			Enter:
+				if (Bosque.is_deeper_into_the_woods()) {
+					!! TODO - gestionar loba
+					self.AdjacentRoom::before();
+					return true;
+				} else {
+					Bosque.set_deeper_into_the_woods(true);
+					move BosqueLobos to Limbo;
+					print "Caminas alerta, con [la BosqueNieve] crujiendo bajo tus botas. ";
+					<<Look>>;
+				}
+		],
+		description [;
+			print "Avanzas por un estrecho [self](sendero) abierto entre [los BosqueArboles]. Visible apenas por culpa [de la BosqueNieve] y la oscuridad.";
+			new_line;
+			return true;
+		],
+		reset [;
+			self.tried_to_enter = false;
+			return true;
+		],
+ private
+		tried_to_enter false,
+;
+
+!! @BosqueArboles
+Atrezzo	-> BosqueArboles "árboles"
+ has	male pluralname,
+ with	name_f 'conifera' 'rama',
+		name_fp 'coniferas' 'ramas',
+		name_m 'arbol' 'pino' 'tronco',
+		name_mp 'arboles' 'pinos' 'troncos',
+		gender G_MASCULINO + G_PLURAL,
+		adjectives 'alta' 'altas' 'alto' 'altos' 'resbaladizo' 'resbaladizos',
+		!!------------------
+		before [;
+			Attack:
+				if (Baron.is_a_wolf()) {
+					print "Afilas tus garras sobre la corteza resbaladiza de un tronco, preparándote antes de partir en busca del hombre malvado.";
+				} else {
+					if (IndirectlyContains(real_location, Hacha)) {
+						print "Prácticamente siempre que vienes aquí es para clavar tu [Hacha] en alguno de estos troncos. Pero no esta noche.";
+					} else {
+						print "Te sientes raro viniendo hasta aquí con las manos desnudas. Prácticamente siempre que te internas en el bosque lo haces en busca e madera, con tu hacha entre las manos. Pero no esta noche.";
+					}
+				}
+				new_line;
+				return true;
+			Climb:
+				if (Baron.is_a_wolf()) {
+					print "¡No eres una ardilla!";
+				} else {
+					print "Trepar por esos pinos es difícil incluso con buena luz y cuando no tienen los troncos húmedos y resbaladizos por culpa [de la BosqueNieve]. Ahora es simplemente imposible.";
+				}
+				new_line;
+				return true;
+		],
+		description [;
+			print "Los gigantes del bosque se elevan sobre tu cabeza. Sus ramas combadas por la carga de [BosqueNieve].";
+			new_line;
+			return true;
+		],
+;
+
+!! @BosqueLobos
+Atrezzo	-> BosqueLobos "lobos"
+ class	Background
+ has	male pluralname,
+ with	name_f 'loba',
+		name_fp 'lobas',
+		name_m 'animal' 'lobezno' 'lobo',
+		name_mp 'animales' 'lobeznos' 'lobos',
+		gender G_MASCULINO + G_PLURAL,
+		!!------------------
+		before [;
+			Attack:
+				print "Están cerca, pero no lo suficiente aún. Ocultos por la oscuridad de la noche, invisibles a tus ojos humanos. Te encontrarán preparado si vienen a por ti.";
+				new_line;
+				return true;
+			Listen:
+				<<Examine self>>;
+		],
+		description [;
+			print "Están cerca. Ocultos en algún lugar entre [los BosqueArboles].";
+			new_line;
+			return true;
+		],
+		react_before [;
+			Listen:
+				if (noun == nothing) {
+					<<Listen self>>;
+				}
+		],
+		reset [;
+			move self to Bosque;
+			return true;
+		],
+;
+
+!! @BosquePueblo
+Atrezzo	-> BosquePueblo "pueblo"
+ class	Background,
+ has	enterable male,
+ with	name_f 'casa',
+		name_m 'pueblo',
+		gender G_MASCULINO,
+		!!------------------
+		before [;
+			DefaultAction:
+				<<Enter self>>;
+			Enter:
+				if (Baron.is_a_wolf()) {
+					print "No. La madriguera de piedra está en el sentido opuesto, siguiendo la [DirBosqueMirador](senda). Allí es donde tienes que ir.";
+				} else {
+					!! TODO - huir de la loba
+					print "Regresar a casa es una idea tentadora… tentadora, pero cobarde. No, tienes que rescatar a María.";
+				}
+				new_line;
+				return true;
+		],
+		description [;
+			print "Has dejado [el self] a tu espalda, oculto ya tras los primeros [BosqueArboles].";
+			new_line;
+			return true;
+		],
+		reset [;
+			self.tried_to_flee = false;
+			return true;
+		],
+ private
+		tried_to_flee false,
+;
+
+
+!!==============================================================================
+!!
+!!	2)	El mirador de la loma
+!!
+!!------------------------------------------------------------------------------
+
+!! @Mirador
+Outdoors	Mirador "El mirador de la loma"
+ has	male,
+ with	gender G_MASCULINO,
+		name_f 'colina' 'loma',
+		name_m 'alto' 'mirador' 'valle',
+		!!------------------
+		b_to [;
+			<<Enter MiradorBosque>>;
+		],
+		before [;
+			Listen:
+				if (Baron.is_a_wolf()) {
+					print "Sólo se escucha el rumor del viento entre las copas de los árboles. Ninguno os acercáis nunca tanto hasta los territorios del hombre malo.";
+				} else {
+					print "No se escucha nada. Tan cerca de las haciendas del barón hasta los lobos guardan silencio.";
+				}
+				new_line;
+				return true;
+			Smell:
+				if (Baron.is_a_wolf()) {
+					print "Se puede olisquear cómo se aproxima otra nevada en la brisa nocturna.";
+					new_line;
+					return true;
+				}
+		],
+		d_to [;
+			return self.f_to();
+		],
+		description [;
+			if (Baron.is_a_wolf()) {
+				print "Ves por fin [el MiradorCastillo] desde un alto despejado de [MiradorBosque](árboles): es una especie de cascarón del color de [la BosqueNieve], con tres garras gigantescas que se alzan hacia [el BosqueCielo] como intentando arañar la [BosqueCielo](noche) sin luna. Se encuentra en el fondo del valle que se abre ante ti, todavía a una buena carrera de distancia. El [DirMiradorCastillo](sendero) de humanos lleva loma abajo como una culebra hasta ese lugar maldito.";
+			} else {
+				print "Atisbas finalmente [el MiradorCastillo] del barón después de encumbrar una pequeña elevación sin [MiradorBosque](árboles): se trata de una mole de piedra blanca, capaz de destacar aún entre [la BosqueNieve] que lo cubre todo, con tres [MiradorCastillo](torres:OTHER_OBJECT) que se elevan hacia la [BosqueCielo](noche) en ángulos extravagantes. [El DirMiradorCastillo] zigzaguea a través del desnivel en dirección a la entrada de la [MiradorCastillo](fortaleza:OTHER_OBJECT).";
+			}
+			new_line;
+			return true;
+		],
+		e_to [;
+			if (Utils.is_compass_enabled()) return self.b_to();
+			else return self.cant_go();
+		],
+		exits [;
+			print "[Un DirMiradorCastillo] desciende por la pendiente de la loma en dirección [al MiradorCastillo].";
+			new_line;
+			return true;
+		],
+		f_to [;
+			<<Enter DirMiradorCastillo>>;
+		],
+		initial [;
+			!! Baron.become_lycanthrope();
+			!! Utils.erase_window(); !! FIXME
+			if (self hasnt visited) {
+				if (Baron.is_a_wolf()) {
+					give MiradorCastillo female;
+					give MiradorCastillo ~male;
+					MiradorCastillo.gender = G_FEMENINO;
+				}
+			}
+		],
+		w_to [;
+			if (Utils.is_compass_enabled()) return self.f_to();
+			else return self.cant_go();
+		],
+;
+
+!! @DirMiradorCastillo
+AdjacentRoom	-> DirMiradorCastillo "camino"
+ has	male,
+ with	name_f 'senda',
+		name_m 'camino' 'sendero',
+		gender G_MASCULINO,
+		adjectives 'hombres' 'humana' 'humano' 'humanos',
+		!!------------------
+		before [;
+			Enter,
+			Go:
+				if (Baron.is_a_wolf()) {
+					print "Un copo de nieve aislado se posa en tu hocico con suavidad, derritiéndose de inmediato. Te limpias el agua de una lenguetada y echas a correr colina abajo…";
+				} else {
+					print "Un copo de nieve aislado se posa en tu mejilla con suavidad, derritiéndose de inmediato. Te frotas la lágrima de la cara y empiezas a caminar colina abajo…";
+				}
+				new_line;
+				new_line;
+				Utils.start_scene(4);
+				return true;
+		],
+		description [;
+			print "Desciende por la pendiente en dirección [al MiradorCastillo].";
+			new_line;
+			return true;
+		],
+;
+
+!! @MiradorBosque
+Atrezzo	-> MiradorBosque "bosque"
+ class	Background,
+ has	enterable male,
+ with	name_f 'arboleda' 'espesura',
+		name_m 'abeto' 'arbol' 'bosque' 'pino',
+		name_mp 'abetos' 'arboles' 'pinos',
+		gender G_MASCULINO,
+		!!------------------
+		before [ a;
+			Enter,
+			Go:
+				!! FIXME - condiciones
+				a = 1;
+				if (a == 1) { ! wolvin.status == 12, 15
+					print "Quizá los lobos no te dejen cruzar [el self] tan fácilmente a la vuelta… aunque ya tendrás tiempo de preocuparte por eso más tarde. Ahora no vas a volverte atrás.";
+				} else if (a == 2) { ! wolvin.status == 13
+					print "Sería una estupidez internarte de nuevo en [el self] ahora que has llegado hasta aquí.";
+				} else if (a == 3) { ! wolvin.status == 25, 26
+					print "Confías en que el pequeño pueda descansar por fin ahora que tiene la tripa llena, aunque sea sólo por esta noche. Mañana tendrá que luchar por sobrevivir a un nuevo día… de cualquier forma ya no es cosa tuya. Por delante tienes otra lucha diferente.";
+				}
+				new_line;
+				return true;
+		],
+		description [;
+			if (Baron.is_a_wolf()) {
+				print "Echas la vista atrás, hacia el bosque. Hacia el lugar en el que has dejado a tu cachorro";
+				if (self hasnt described) {
+					print ". De algún modo resulta liberador haber salido de ahí. Un sentimiento que te avergüenza profundamente, pero que no por ello deja de ser real.";
+				} else {
+					print ". Allí siguen la sensación de libertad y la vergüenza.";
+				}
+			} else {
+				print "Echas la vista atrás, hacia el bosque. Hay una quietud estremecedora entre esos árboles.";
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! @MiradorCastillo
+Atrezzo	-> MiradorCastillo
+ class	Background,
+ has	enterable male remarkable,
+ with	short_name [;
+			if (Baron.is_a_wolf()) {
+				print "[](madriguera:REMARKABLE_OBJECT) de piedra";
+			} else {
+				print "[](castillo:REMARKABLE_OBJECT)";
+			}
+			return true;
+		],
+		name_f 'casa' 'fortaleza' 'garra' 'madriguera' 'mole' 'torre',
+		name_fp 'garras' 'torres',
+		name_m 'castillo',
+		gender G_MASCULINO,
+		adjectives
+			'baron' 'inclinada' 'inclinadas' 'piedra' 'torcida' 'torcidas',
+		!!------------------
+		before [;
+			Enter:
+				<<Enter DirMiradorCastillo>>;
+		],
+		description [;
+			if (Baron.is_a_wolf()) {
+				print "La madriguera de piedra es grande como una colina. Nunca has estado dentro —nunca hasta ahora te habías atrevido a acercarte tanto—; quién sabe los peligros que te aguardan en su interior…";
+			} else {
+				print "Tiene tres grandes torres de planta circular, con las dos más pequeñas, a los lados, inclinándose grotescamente hacia afuera. Aunque es la torre central la que resulta de verdad inquietante; mucho más gruesa y alta que las otras dos, parece inclinarse también, en tu dirección. Siempre en tu dirección. La mires desde donde la mires.";
+				if (self hasnt described) {
+					print "^^
+					No se aprecia luz alguna en su interior.";
+				}
+			}
+			new_line;
+			return true;
+		],
+;

@@ -20,7 +20,7 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2019/02/XX
+!!	Fecha:			2020/XX/XX
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -43,7 +43,7 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2004, Victor Gijsbers
-!!	Copyright (c) 2018, J. Francisco Martín
+!!	Copyright (c) 2020, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -88,7 +88,7 @@
 !!------------------------------------------------------------------------------
 
 Constant Story
-"EL BARÓN";
+"El Barón";
 
 Constant Headline
 "Una historia interactiva. Escrita por Victor Gijsbers y publicada bajo la Licencia Pública General de GNU en su versión 3 (o cualquier versión posterior). La presente edición ha sido desarrollada por J. Francisco Martín.";
@@ -96,12 +96,12 @@ Constant Headline
 Constant Checking 1;
 Release 0;
 
-!! Descomentar para compilar la versión Web/Móvil:
-!! Constant VERSION_WEB_MOBILE;
-
 !!------------------------------------------------------------------------------
 !!	Control de las extensiones utilizadas por la obra
 !!------------------------------------------------------------------------------
+
+!! Descomentar para compilar la versión Web/Móvil:
+Constant VERSION_WEB_MOBILE;
 
 #Ifndef VERSION_WEB_MOBILE;
 !! Si no se está compilando para Web/Móvil, es que se compila para escritorio:
@@ -141,6 +141,9 @@ Constant OTHER_OBJECT 1;
 Constant SIZE_S 0;
 Constant SIZE_M 1;
 Constant SIZE_L 2;
+
+!! Estilos de texto adicionales:
+Constant TEXT_STYLE_MENU = 11;
 
 !! Nombre del fichero de configuración:
 Constant CONFIG_FILE_NAME "baron.params";
@@ -197,7 +200,7 @@ Object	GUIConfig "(GUI Configuration)"
 		!!----------------------------------------------------------------------
 		!! Configuración por defecto A. Ancho de ventana >= threshold_A
 		graphic_width_A 0 0,	! (px)
-		margin_A 0 0,			! (%)
+		margin_A 0 0,		 	! (%)
 		padding_A 0 0 8 0,		! (px)
 		threshold_A 0,			! (px)
 		!! Configuración por defecto B. Ancho de ventana >= threshold_B
@@ -249,7 +252,7 @@ Global _hyperlinks_command = "";
 !!------------------------------------------------------------------------------
 
 #Ifdef USE_SPANISH_LM;
-Constant PS1 ">";				! Inductor
+Constant PS1 "-";				! Inductor
 
 Global FORMER__TX	= "tu antiguo ~yo~";
 Global YOURSELF__TX	= "ti mismo";
@@ -288,13 +291,13 @@ Constant INPUT_STYLE_ITALIC 1;
 
 !! Configuración de aspecto para el estilo de texto NOTE:
 Constant NOTE_STYLE_FGC $E06666; ! #E06666
-Constant NOTE_STYLE_BOLD 1;
+Constant NOTE_STYLE_BOLD 0;
 Constant NOTE_STYLE_ITALIC 0;
 
 !! Configuración de aspecto para el estilo de texto QUOTE:
 Constant QUOTE_STYLE_FGC $6D9EEB; ! #6D9EEB
-Constant QUOTE_STYLE_BOLD 1;
-Constant QUOTE_STYLE_ITALIC 1;
+Constant QUOTE_STYLE_BOLD 0;
+Constant QUOTE_STYLE_ITALIC 0;
 
 !! Configuración de aspecto para el estilo de texto REVERSED:
 Constant REVERSED_STYLE_BOLD 0;
@@ -373,10 +376,10 @@ Include "SpanishLM.h";			! Mensajes de la librería
 #Endif; ! USE_SPANISH_LM;
 
 #Ifdef USE_EXTENDED_LIBRARY;
-Include ">baron_lib.inf";		! Personalizaciones de la librería
+Include ">utils/baron_lib.inf";		! Personalizaciones de la librería
 #Endif; ! USE_EXTENDED_LIBRARY;
 
-Include ">baron_langLM.inf";	! Mensajes personalizados de la librería
+Include ">utils/baron_langLM.inf";	! Mensajes personalizados de la librería
 
 #Ifdef USE_GWINDOWS;
 Include "gwincls.h";			! GWindows: Window Class Framework
@@ -742,6 +745,7 @@ Include "vorple-screen-effects.h";
 	VorpleExecuteJavaScriptCommand(BuildCommand("
 		ifjs.keyUp({ keyCode: ifjs.config.highlightKeyCodes[0] });
 	"));
+!	VorpleScrollToBottom();
 	#Endif; ! USE_VORPLE;
 ];
 
@@ -775,7 +779,7 @@ Include "vorple-screen-effects.h";
 !!	@returns {boolean} Verdadero para interrumpir la ejecución normal de la
 !!		rutina de selección de estilo de texto. Falso para continuar
 !!		normalmente
-!!	@version 2019/06/18
+!!	@version 2020/05/31
 !!------------------------------------------------------------------------------
 #Ifdef TEXT_STYLES;
 [ BeforeSettingTextStyle previous_style next_style
@@ -789,7 +793,8 @@ Include "vorple-screen-effects.h";
 			or TEXT_STYLE_IMPORTANT or TEXT_STYLE_MONOSPACED
 			or TEXT_STYLE_NOTE or TEXT_STYLE_HEADER
 			or TEXT_STYLE_INPUT or TEXT_STYLE_QUOTE
-			or TEXT_STYLE_USER1 or TEXT_STYLE_USER2) {
+			or TEXT_STYLE_USER1 or TEXT_STYLE_USER2
+			or TEXT_STYLE_MENU) {
 			applied_styles = 1;
 		} else { ! (previous_style == TEXT_STYLE_UPRIGHT)
 			applied_styles = 0;
@@ -808,20 +813,22 @@ Include "vorple-screen-effects.h";
 			TEXT_STYLE_MONOSPACED:
 				VorpleStyle(STYLE_MONOSPACE);
 			TEXT_STYLE_REVERSED:
-				VorpleStyle(STYLE_DARK_GRAY_LETTERS);
-				VorpleStyle(STYLE_LIGHT_GRAY_BACKGROUND);
+				VorpleStyle(STYLE_WHITE_LETTERS);
+				VorpleStyle(STYLE_BLACK_BACKGROUND);
 			TEXT_STYLE_HEADER:
 				VorpleStyle(STYLE_LARGE);
 			TEXT_STYLE_NOTE:
-				VorpleStyle(STYLE_RED_LETTERS);
+				VorpleStyle(STYLE_WHITE_LETTERS);
 			TEXT_STYLE_QUOTE:
-				VorpleStyle(STYLE_BLUE_LETTERS);
+				VorpleStyle(STYLE_RED_LETTERS);
 			TEXT_STYLE_INPUT:
 				VorpleStyle(STYLE_FANTASY);
 			TEXT_STYLE_USER1:
 				VorpleStyle(STYLE_YELLOW_BACKGROUND);
 			TEXT_STYLE_USER2:
 				VorpleStyle(STYLE_LIGHT_GRAY_LETTERS);
+			TEXT_STYLE_MENU:
+				VorpleStyle(STYLE_GREEN_LETTERS);
 		}
 	}
 	#Endif; ! USE_VORPLE;
@@ -891,6 +898,7 @@ Include "vorple-screen-effects.h";
 	Utils.set_hyperlinks_status(OTHER_OBJECT, true);
 	!! Palabras destacadas:
 	#Ifdef VERSION_WEB_MOBILE;
+	VorpleOpenHTMLTag("div", "current-location");
 	Utils.set_highlight_style(REMARKABLE_OBJECT, TEXT_STYLE_NOTE);
 	Utils.set_highlight_style(DIRECTION_OBJECT, TEXT_STYLE_QUOTE);
 	Utils.set_highlight_style(CHOICE_OBJECT, TEXT_STYLE_NOTE);
@@ -953,7 +961,9 @@ Include "vorple-screen-effects.h";
 	lookmode = 2;
 
 	!! Menú principal:
-	location = MainMenu.run(true);
+	!! location = MainMenu.run(true);
+	location = GrutaSombras;
+	print "^^";
 
 	!! Se evita la impresión inicial del banner
 	return 2;
@@ -1669,16 +1679,16 @@ Verb	'conversa' 'platica'
 !!
 !!------------------------------------------------------------------------------
 
-Include ">baron_classes.inf";
-Include ">baron_menu.inf";
-Include ">baron_tutorial.inf";
-Include ">baron_utils.inf";
+Include ">utils/baron_classes.inf";
+Include ">utils/baron_menu.inf";
+Include ">utils/baron_tutorial.inf";
+Include ">utils/baron_utils.inf";
 
-Include ">baron_scene-zero.inf";
-Include ">baron_scene-one.inf";
-Include ">baron_scene-two.inf";
-Include ">baron_scene-three.inf";
-Include ">baron_scene-four.inf";
-Include ">baron_scene-five.inf";
-Include ">baron_scene-six.inf";
-Include ">baron_scene-seven.inf";
+Include ">scenes/baron_scene-zero.inf";
+Include ">scenes/baron_scene-one.inf";
+Include ">scenes/baron_scene-two.inf";
+Include ">scenes/baron_scene-three.inf";
+Include ">scenes/baron_scene-four.inf";
+Include ">scenes/baron_scene-five.inf";
+Include ">scenes/baron_scene-six.inf";
+Include ">scenes/baron_scene-seven.inf";

@@ -1,0 +1,345 @@
+
+
+!!==============================================================================
+!!
+!!	EL BARÓN
+!!	Escena cuarta
+!!
+!!==============================================================================
+!!
+!!	Archivo:		baron_scene-four.xinf
+!!	Autor(es):		Victor Gijsbers
+!!					J. Francisco Martín <jfm.lisaso@gmail.com>
+!!	Idioma:			ES (Español)
+!!	Sistema:		Inform-INFSP 6
+!!	Plataforma:		Máquina-Z/Glulx
+!!	Versión:		0.0
+!!	Fecha:			2020/02/XX
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	Este archivo forma parte de la ficción interactiva EL BARÓN.
+!!
+!!	EL BARÓN es software libre: usted puede redistribuirlo y/o
+!!	modificarlo bajo los términos de la Licencia Pública General
+!!	GNU publicada por la Fundación para el Software Libre, ya
+!!	sea la versión 3 de la Licencia, o (a su elección) cualquier
+!!	versión posterior.
+!!
+!!	EL BARÓN se distribuye con la esperanza de que sea útil,
+!!	pero SIN GARANTÍA ALGUNA; ni siquiera la garantía implícita
+!!	MERCANTIL o de APTITUD PARA UN PROPÓSITO DETERMINADO.
+!!	Consulte los detalles de la Licencia Pública General GNU
+!!	para más información.
+!!
+!!	Debería haber recibido una copia de la Licencia Pública
+!!	General GNU junto a EL BARÓN. En caso contrario, consulte
+!!	<http://www.gnu.org/licenses/>.
+!!
+!!	Copyright (c) 2004, Victor Gijsbers
+!!	Copyright (c) 2020, J. Francisco Martín
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	ÍNDICE
+!!
+!!	0)
+!!	1)	Ante las puertas del castillo
+!!
+!!------------------------------------------------------------------------------
+
+
+!!==============================================================================
+!!
+!!	0)
+!!
+!!------------------------------------------------------------------------------
+
+!! @Gargola
+Character	Gargola "gárgola" Limbo
+ has	female,
+ with	name_f 'gargola',
+		name_m 'monstruo',
+		gender G_FEMENINO,
+		adjectives 'piedra' 'roca',
+		!!------------------
+;
+
+
+!!==============================================================================
+!!
+!!	1)	Ante las puertas del castillo
+!!
+!!------------------------------------------------------------------------------
+
+!! @Castillo
+Outdoors	EntradaCastillo "Ante las puertas del castillo"
+ has	female,
+ with	gender G_FEMENINO,
+		!!------------------
+		b_to [;
+			<<Enter EntradaCastilloBosque>>;
+		],
+		description [;
+			if (Baron.is_a_wolf()) {
+				!! TODO
+			} else {
+				print "[El EntradaCastilloPuente] está[n EntradaCastilloPuente] tendid[o EntradaCastilloPuente] sobre el ancho [EntradaCastilloFoso](foso) que rodea [el EntradaCastilloCastillo]";
+				if (IndirectlyContains(self, Gargola)) {
+					print ", facilitando el paso";
+				} else {
+					print ", dejando el paso libre";
+				}
+				print " hasta [las DirEntradaCastilloPuertas] abiert[o DirEntradaCastilloPuertas] del otro lado. Tras ";
+				Utils.print_spanish_nominative_pronoun(DirEntradaCastilloPuertas);
+				print ", las tres [EntradaCastilloTorres] blancas se recortan torcidas contra [el EntradaCastilloCielo] negro. Puedes ver todo un ejército de [EntradaCastilloGargolas] agolpado en lo alto, entre los [EntradaCastilloMurallas](merlones) y sobre las [EntradaCastilloMurallas](cornisas), vigilando atentamente cada uno de tus movimientos. La burla y el desprecio más profundo encerrados a un mismo tiempo en su mirada.";
+			}
+			new_line;
+			return true;
+		],
+		e_to [;
+			if (Utils.is_compass_enabled()) return self.b_to();
+			else return self.cant_go();
+		],
+		exits [;
+			print "[Las DirEntradaCastilloPuertas] está[n DirEntradaCastilloPuertas] abiert[o DirEntradaCastilloPuertas] frente a ti.";
+			new_line;
+			return true;
+		],
+		f_to [;
+			<<Enter DirEntradaCastilloPuertas>>;
+		],
+		w_to [;
+			if (Utils.is_compass_enabled()) return self.f_to();
+			else return self.cant_go();
+		],
+;
+
+!! @DirEntradaCastilloPuertas
+AdjacentRoom	-> DirEntradaCastilloPuertas "puertas"
+ class	Background,
+ has	female open pluralname,
+ with	name_f 'entrada' 'puerta',
+		name_fp 'puertas',
+		name_m 'porton',
+		name_mp 'portones',
+		gender G_FEMENINO + G_PLURAL,
+		adjectives
+			'castillo' 'enorme' 'enormes' 'fortaleza' 'hierro' 'metalica'
+			'metalicas' 'metalico' 'metalicos',
+		!!------------------
+		before [;
+			Close,
+			Pull,
+			Push,
+			Turn:
+				print "Dudas que fueses capaz de moverl[o self] lo más mínimo, ni aún utilizando todo tu peso para hacer fuerza.";
+				new_line;
+				return true;
+			Enter:
+				!! TODO - gestionar aparición de la gárgola
+				print "Cruzas el puente levadizo y entras en la fortaleza del barón.";
+				new_line;
+				new_line;
+				Utils.start_scene(5);
+				return true;
+			Open:
+				print "Ya está[n self] abiert[o self].";
+				new_line;
+				return true;
+		],
+		description [;
+			print "Son dos [self](portones) enormes de hierro forjado, abiertos de par en par. En algún lugar al otro lado aguarda tu hija.";
+			new_line;
+			return true;
+		],
+;
+
+!! @EntradaCastilloBosque
+Atrezzo	-> EntradaCastilloBosque "bosque"
+ class	Background,
+ has	enterable male,
+ with	name_f 'espesura',
+		name_m 'arbol' 'bosque' 'pino',
+		name_mp 'arboles' 'pinos',
+		gender G_MASCULINO,
+		!!------------------
+		before [;
+			Enter:
+				print "Ahora es demasiado tarde para volverse atrás.";
+				new_line;
+				return true;
+		],
+		description [;
+			print "El bosque que rodea [al EntradaCastilloCastillo] está en completo silencio. Ni un solo árbol crece a distancia de tiro de piedra de [las EntradaCastilloMurallas], como si las plantas temiesen también al barón.";
+			new_line;
+			return true;
+		],
+;
+
+!! TODO
+!! @EntradaCastilloCastillo
+Atrezzo	-> EntradaCastilloCastillo "castillo"
+;
+
+!! TODO
+!! @EntradaCastilloCielo
+Atrezzo	-> EntradaCastilloCielo "cielo"
+ class	Background,
+ has	male,
+ with	name_f 'estrella' 'luna' 'noche' 'nube',
+		name_fp 'estrellas' 'nubes',
+		name_m 'cielo' 'firmamento',
+		gender G_MASCULINO,
+   		!!------------------
+		description [;
+		],
+		react_before [;
+			Examine:
+				if (noun == u_obj) {
+					<<Examine self>>;
+				}
+		],
+;
+
+!! TODO
+!! @EntradaCastilloFoso
+Atrezzo	-> EntradaCastilloFoso "foso"
+ class	Background,
+ has	enterable male,
+ with	name_m 'foso',
+		gender G_MASCULINO,
+		!!------------------
+		before [;
+		],
+		description [;
+		],
+;
+
+!! TODO
+!! @EntradaCastilloGargolas
+Atrezzo	-> EntradaCastilloGargolas "gárgolas"
+ class	Background,
+ has	female pluralname remarkable,
+ with	name_fp 'estatuas' 'gargolas',
+		name_mp 'monstruos',
+		gender G_FEMENINO + G_PLURAL,
+		adjectives 'piedra',
+		!!------------------
+		before [;
+		],
+		description [;
+		],
+;
+
+!! TODO
+!! @EntradaCastilloMurallas
+Atrezzo	-> EntradaCastilloMurallas "murallas"
+ class	Background,
+ has	female pluralname,
+ with	name_f 'muralla' 'pared',
+		name_fp 'murallas' 'paredes',
+		name_m 'muro',
+		name_mp 'muros',
+		gender G_FEMENINO + G_PLURAL,
+		adjectives 'blanca' 'blancas' 'blanco' 'blancos',
+		!!------------------
+		before [;
+		],
+		description [;
+		],
+;
+
+!! TODO
+!! @EntradaCastilloNieve
+Snow	-> EntradaCastilloNieve "nieve"
+ has	female,
+ with	name_f 'nieve',
+		name_m 'manto',
+		gender G_FEMENINO,
+		adjectives 'blanca' 'blanco',
+   		!!------------------
+		description [;
+		],
+;
+
+!! TODO: pasa por el puente
+!! -> No es algo donde puedas pasar.
+!! @EntradaCastilloPuente
+Atrezzo	-> EntradaCastilloPuente
+ has	male transparent,
+ with	short_name [;
+			print "[](puente) levadizo";
+			return true;
+		],
+		name_f 'pasarela' 'plataforma',
+		name_m 'puente',
+		gender G_MASCULINO,
+		adjectives 'levadizo',
+		!!------------------
+		before [;
+			Close:
+				if (self.tried_to_close) {
+					print "No parece haber forma de levantar la [self](plataforma).";
+				} else {
+					self.tried_to_close = true;
+					print "Por más extraño que resulte, no ves cabos ni cadenas con los que levantar la pasarela, como si al barón no le preocupara poder sufrir un ataque.";
+				}
+				new_line;
+				return true;
+			Open:
+				print "Ya está[n self] tendid[o self]. Sólo tienes que cruzarl[o self] para alcanzar [las DirEntradaCastilloPuertas] de la [EntradaCastilloCastillo](fortaleza).";
+				new_line;
+				return true;
+		],
+		description [;
+			print "Está tendid[o self], permitiendo salvar [el EntradaCastilloFoso] y llegar hasta la [DirEntradaCastilloPuertas](entrada) [del EntradaCastilloCastillo].";
+			if (~~self.tried_to_close) {
+				print " ";
+				<<Close self>>;
+			} else {
+				print " Construid[o self] en madera de roble, se trata de un trabajo de carpintería muy profesional, con los anchos tablones perfectamente serrados y ensamblados.";
+			}
+			new_line;
+			return true;
+		],
+		reset [;
+			self.tried_to_close = false;
+			return true;
+		],
+ private
+		tried_to_close false,
+;
+
+Atrezzo -> -> "tablones"
+ has	male pluralname,
+ with	name_f 'tabla',
+		name_fp 'tablas',
+		name_m 'tablon',
+		name_mp 'tablones',
+		gender G_MASCULINO + G_PLURAL,
+		adjectives 'ancha' 'anchas' 'ancho' 'anchos' 'madera' 'roble',
+		!!------------------
+		description [;
+			print "De madera de roble. Forma[n self] parte [del EntradaCastilloPuente].";
+			new_line;
+			return true;
+		],
+;
+
+!! TODO
+!! @EntradaCastilloTorres
+Atrezzo	-> EntradaCastilloTorres "torres"
+ class	Background,
+ has	enterable male,
+ with	name_f 'fortaleza' 'torre',
+		name_fp 'torres',
+		name_m 'castillo' 'torreon',
+		gender G_MASCULINO,
+		adjectives 'baron',
+		!!------------------
+		before [;
+		],
+		description [;
+		],
+;

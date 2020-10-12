@@ -1,0 +1,185 @@
+
+
+!!==============================================================================
+!!
+!!	EL BARÓN
+!!	Tutorial con ayudas al usuario
+!!
+!!==============================================================================
+!!
+!!	Archivo:		baron_tutorial.inf
+!!	Autor(es):		Victor Gijsbers
+!!					J. Francisco Martín <jfm.lisaso@gmail.com>
+!!	Idioma:			ES (Español)
+!!	Sistema:		Inform-INFSP 6
+!!	Plataforma:		Máquina-Z/Glulx
+!!	Versión:		0.0
+!!	Fecha:			2020/05/XX
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	Este archivo forma parte de la ficción interactiva EL BARÓN.
+!!
+!!	EL BARÓN es software libre: usted puede redistribuirlo y/o
+!!	modificarlo bajo los términos de la Licencia Pública General
+!!	GNU publicada por la Fundación para el Software Libre, ya
+!!	sea la versión 3 de la Licencia, o (a su elección) cualquier
+!!	versión posterior.
+!!
+!!	EL BARÓN se distribuye con la esperanza de que sea útil,
+!!	pero SIN GARANTÍA ALGUNA; ni siquiera la garantía implícita
+!!	MERCANTIL o de APTITUD PARA UN PROPÓSITO DETERMINADO.
+!!	Consulte los detalles de la Licencia Pública General GNU
+!!	para más información.
+!!
+!!	Debería haber recibido una copia de la Licencia Pública
+!!	General GNU junto a EL BARÓN. En caso contrario, consulte
+!!	<http://www.gnu.org/licenses/>.
+!!
+!!	Copyright (c) 2004, Victor Gijsbers
+!!	Copyright (c) 2020, J. Francisco Martín
+!!
+!!------------------------------------------------------------------------------
+
+
+!! @Tutorial
+Object	Tutorial "(Tutorial)"
+ has	~on,
+ with
+		hint_hesitations [;
+			if (~~self.hint_hesitations_printed) {
+				self.hint_hesitations_on = true;
+				give self on;
+			}
+		],
+		hint_highlight_key_a [;
+			if (~~self.hint_highlight_key_a_printed) {
+				self.hint_highlight_key_a_on = true;
+				give self on;
+			}
+		],
+		hint_highlight_key_b [;
+			if (~~self.hint_highlight_key_b_printed) {
+				self.hint_highlight_key_b_on = true;
+				give self on;
+			}
+		],
+		hint_keywords_a [;
+			if (~~self.hint_keywords_a_printed) {
+				self.hint_keywords_a_on = true;
+				give self on;
+			}
+		],
+		hint_keywords_b [;
+			if (~~self.hint_keywords_b_printed) {
+				self.hint_keywords_b_on = true;
+				give self on;
+			}
+		],
+		hint_repeated_actions [;
+			if (~~self.hint_repeated_actions_printed) {
+				self.hint_repeated_actions_on = true;
+				give self on;
+			}
+		],
+		!! Las pistas del tutorial se imprimen al mismo tiempo que el inductor
+		!! (ver el objeto 'LibraryMessages' en 'baron_langLM.h'):
+		hints [
+			previous_style;
+			if (self has on) {
+				give self ~on;
+				new_line;
+				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+				print (string) TEXT_STYLE_PARSER_PREFIX;
+				print "Tutorial: ";
+				if (self.hint_hesitations_on) {
+					self.hint_hesitations_text();
+					jump hint_printed;
+				}
+				if (self.hint_highlight_key_a_on) {
+					self.hint_highlight_key_a_text();
+					jump hint_printed;
+				}
+				if (self.hint_highlight_key_b_on) {
+					self.hint_highlight_key_b_text();
+					jump hint_printed;
+				}
+				if (self.hint_keywords_a_on) {
+					self.hint_keywords_a_text();
+					jump hint_printed;
+				}
+				if (self.hint_keywords_b_on) {
+					self.hint_keywords_b_text();
+					jump hint_printed;
+				}
+				.hint_printed;
+				print (string) TEXT_STYLE_PARSER_SUFIX;
+				Utils.set_text_style(previous_style);
+				new_line;
+				return true;
+			}
+		],
+ private
+		are_hyperlinks_enabled [;
+			if (Utils.get_hyperlinks_status(1)
+				&& Utils.get_hyperlinks_status(2)
+				&& Utils.get_hyperlinks_status(3)
+				&& Utils.get_hyperlinks_status(4)) {
+				return true;
+			} else {
+				return false;
+			}
+		],
+		hint_hesitations_on false,
+		hint_hesitations_printed false,
+		hint_hesitations_text [;
+			self.hint_hesitations_on = false;
+			self.hint_hesitations_printed = true;
+			print "Cuando el protagonista da muestras de duda o indecisión suele significar que estás a punto de iniciar una acción con consecuencias irreversibles. Si de verdad quieres seguir adelante, simplemente vuelve a";
+			if (self.are_hyperlinks_enabled()) print " utilizar";
+			else print " teclear";
+			print " la misma acción de nuevo.";
+			return true;
+		],
+		hint_highlight_key_a_on false,
+		hint_highlight_key_a_printed false,
+		hint_highlight_key_a_text [;
+			self.hint_highlight_key_a_on = false;
+			self.hint_highlight_key_a_printed = true;
+			print "Mantén pulsada la tecla «Shift/Mayús.» para ver los objetos con los que se puede interactuar. Puedes hacer clic con el ratón sobre cualquiera de las palabras que aparezcan destacadas.";
+			return true;
+		],
+		hint_highlight_key_b_on false,
+		hint_highlight_key_b_printed false,
+		hint_highlight_key_b_text [;
+			self.hint_highlight_key_b_on = false;
+			self.hint_highlight_key_b_printed = true;
+			print "Recuerda, la tecla «Shift/Mayús.» te permite ver los objetos con los que puedes interactuar.";
+			return true;
+		],
+		hint_keywords_a_on false,
+		hint_keywords_a_printed false,
+		hint_keywords_a_text [;
+			self.hint_keywords_a_on = false;
+			self.hint_keywords_a_printed = true;
+			print "Al mantener pulsado «Shift/Mayús.» pueden aparecer dos tipos de palabra destacada diferente. El primero de ellos, con un estilo blanco brillante, lo utilizan aquellos objetos que puedes investigar o manipular con mayor detalle, como por ejemplo «mármol» o «puertas».";
+			self.hint_keywords_b_on = true;
+			give self on;
+			return true;
+		],
+		hint_keywords_b_on false,
+		hint_keywords_b_printed false,
+		hint_keywords_b_text [;
+			self.hint_keywords_b_on = false;
+			self.hint_keywords_b_printed = true;
+			print "Con el segundo estilo de texto, en rojo brillante, se muestran las salidas sobre las que puedes hacer clic para desplazarte desde una localidad a otra diferente.";
+			return true;
+		],
+		hint_repeated_actions_on false,
+		hint_repeated_actions_printed false,
+		hint_repeated_actions_text [;
+			self.hint_repeated_actions_on = false;
+			self.hint_repeated_actions_printed = true;
+			print "En general, al hacer clic sobre el nombre de un objeto interactivo el protagonista lo examinará y podrás conseguir más información sobre él. Pero hay algunos objetos sobre los que resulta natural intentar acciones adicionales (como coger, abrir, vestir, etc.). Si haces clic por segunda vez sobre alguno de estos objetos podrás ver cómo el protagonista intenta una acción distinta a la de la primera vez.";
+		],
+;

@@ -1,0 +1,728 @@
+
+
+!!==============================================================================
+!!
+!!	EL BARÓN
+!!	Escena tercera
+!!
+!!==============================================================================
+!!
+!!	Archivo:		baron_scene-three.xinf
+!!	Autor(es):		Victor Gijsbers
+!!					J. Francisco Martín <jfm.lisaso@gmail.com>
+!!	Idioma:			ES (Español)
+!!	Sistema:		Inform-INFSP 6
+!!	Plataforma:		Máquina-Z/Glulx
+!!	Versión:		0.0
+!!	Fecha:			2019/02/XX
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	Este archivo forma parte de la ficción interactiva EL BARÓN.
+!!
+!!	EL BARÓN es software libre: usted puede redistribuirlo y/o
+!!	modificarlo bajo los términos de la Licencia Pública General
+!!	GNU publicada por la Fundación para el Software Libre, ya
+!!	sea la versión 3 de la Licencia, o (a su elección) cualquier
+!!	versión posterior.
+!!
+!!	EL BARÓN se distribuye con la esperanza de que sea útil,
+!!	pero SIN GARANTÍA ALGUNA; ni siquiera la garantía implícita
+!!	MERCANTIL o de APTITUD PARA UN PROPÓSITO DETERMINADO.
+!!	Consulte los detalles de la Licencia Pública General GNU
+!!	para más información.
+!!
+!!	Debería haber recibido una copia de la Licencia Pública
+!!	General GNU junto a EL BARÓN. En caso contrario, consulte
+!!	<http://www.gnu.org/licenses/>.
+!!
+!!	Copyright (c) 2004, Victor Gijsbers
+!!	Copyright (c) 2019, J. Francisco Martín
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	ÍNDICE
+!!
+!!	0)
+!!	1)	En el camino que atraviesa el bosque
+!!	2)	Las lindes del bosque
+!!
+!!------------------------------------------------------------------------------
+
+
+!!==============================================================================
+!!
+!!	0)
+!!
+!!------------------------------------------------------------------------------
+
+!! @BosqueCadaver
+Item	BosqueCadaver "cadáver" Limbo
+ has	male,
+ with	name_f 'persona',
+		name_m 'cadaver' 'cuerpo' 'hombre' 'muerto',
+		gender G_MASCULINO,
+		!!------------------
+		description [;
+			print "Un cadáver medio devorado yace en el suelo. Su sangre enrrojece la nieve.";
+			new_line;
+			return true;
+		],
+;
+
+!! @BosqueNieve
+Atrezzo	BosqueNieve "nieve" Limbo
+ has	female,
+ with	found_in CaminoBosque LindesBosque,
+		name_f 'nieve',
+		gender G_FEMENINO,
+		!!------------------
+		before [;
+			Dig,
+			LookUnder:
+				if (second ~= nothing
+					&& second ~= player
+					&& IndirectlyContains(player, second)) {
+					print "Hurgas aquí y allá entre [la self] con [el second], sin encontrar nada.";
+					new_line;
+					return true;
+				}
+				print "Hurgas aquí y allá entre [la self], sin encontrar nada.";
+				new_line;
+				return true;
+			Search:
+				<<Dig self>>;
+		],
+		description [;
+			!! TODO
+			print "A veces la nieve otorga a los objetos una cualidad de cuento de hadas al posarse sobre ellos. Hoy no, no esta nieve. Esta nieve parece querer asfixiarlos y enterrarlos para siempre.";
+			new_line;
+			return true;
+		],
+		react_before [;
+			Dig:
+				if (noun == nothing || noun == location) {
+					<<Dig self second>>;
+				}
+		],
+;
+
+!! @BosqueLoba
+Character	BosqueLoba "loba" Limbo
+ has	concealed female remarkable,
+ with	name_f 'bestia' 'loba',
+		name_fp 'bestias' 'lobas',
+		name_m 'lobo',
+		name_mp 'lobos',
+		gender G_FEMENINO,
+		!!------------------
+		before [;
+			Attack:
+				StopDaemon(self);
+				move self to Limbo;
+				if (IndirectlyContains(player, Hacha)) {
+					!! TODO - revisar
+					print "You grip the axe so tightly that your knuckles turn white. The wolf growls in warning, but you hear panic in her voice. She won't be able to withstand you. No. You smile a hard, cold smile and take a step forwards. Will you kill to protect Maartje? You most assuredly will.
+					^^
+					The she-wolf takes half a step backwards, but you press on. She knows that she must fight, that there is no way back, and thus she leaps at you--but before her teeth can find your throat the axe smashes her ribcage. With a soft whine she falls to the ground.";
+				} else {
+					!! TODO - revisar
+					print "With clenched fists, you carefully take a step towards the she-wolf. The wolf growls in warning, but with an undertone of panic. You take a step forwards. She takes half a step backwards; every hair in her neck stands upwards. You take another step forwards, and another one, and she leaps at you--but before her teeth can sink into your throat your fist connects with the side of her head, temporarily averting her attack.";
+					print " You fall over backwards, her weight on top of you, but with a nimble roll you succeed in freeing yourself. Again she tries to reach your throat, but your hands have already found hers and with your greater weight you pin her to the ground. You squeeze, and squeeze, and hit her head against the ground, while she desperately attempts to get loose. Her saliva streams across your hands; her blood starts colouring the snow; her movements become weaker by the moment. The struggle lasts for minutes, but finally she lies still, dead. Fatigued and with your heart pounding, you arise.";
+				}
+				if (BosqueLobezno in CaminoBosque) {
+					new_line;
+					new_line;
+					print "The young wolf emits a heart-rending cry, then jumps away between the trees. From a safe distance it stands staring at his mother's corpse, whining pitifully.";
+				} else {
+					move BosqueLobezno to CaminoBosque;
+					new_line;
+					new_line;
+					print "Between the trees, very near, a heart-rending cry penetrates the night. A young wolf, lean with hunger, stares at his mother's corpse.";
+				}
+				new_line;
+				return true;
+			JumpOver:
+				!! TODO - dudar la primera vez
+				!! TODO - revisar
+				print "This plan is madness; but then again, so is the whole undertaking. You take a run up until you are only a few steps away from the she-wolf--who recoils from your sudden approach--and then you jump forward, jump upward, expecting any moment to feel her sharp teeth tear into you from beneath...";
+				new_line;
+				Utils.press_any_key();
+				new_line;
+				print "...but no. You land on her far side, face-first in the snow, but immediately recover your footing and start running. Behind you angry howls resound through the dark forest, and you hear the sound of soft paws running, but you don't look back--your entire being is focussed on what is in front of you, on how you can get there as quickly as possible.";
+				new_line;
+				Utils.press_any_key();
+				new_line;
+				print "How long do you sustain your sprint? Minutes? Hours? You have no idea--but when you turn around, exhausted and breathing heavily, the wolf is nowhere to be seen. You are safe, for now.";
+				new_line;
+				StopDaemon(self);
+				PlayerTo(LindesBosque);
+				return true;
+			Touch:
+				!! TODO
+				return false;
+		],
+		daemon [;
+			new_line;
+			switch (self.state) {
+				0:
+					print "Una figura oscura salta repentinamente frente a ti desde la maleza, bloqueándote el paso. [Una self]. Te osbserva fijamente, con la luna reflejada en sus ojos fieros.";
+				1:
+					move BosqueLobezno to CaminoBosque;
+					print "[La self] revela dos filas de dientes afilados y da algunos pasos tentativos hacia ti. Desde algún lugar entre los árboles surge entonces una segunda figura. Un lobezno, escuálido y no mucho mayor que un gato.";
+				2:
+					print "[La self] continúa acercándose lentamente y está ya a distancia de salto, con los ojos hambrientos clavados en tu garganta. Aúlla. Un sonido primigenio cargado a un tiempo de ferocidad y miedo.";
+				3:
+					print "Distingues una sombra de duda en la bestia, aunque tan sólo dura un instante. Entonces el lobo lloriquea lastimosamente por culpa del frío y del hambre y su padre parece encontrar el coraje de nuevo. Coloca los cuartos traseros en posición de ataque.";
+				4:
+					!! TODO - revisar
+					print "Awe-struck and afraid, you only stand and stare. As a spring suddenly released, the she-wolf jumps forward, knocking you to the ground. Before you can so much as cry out she is on top of you, her sharp teeth searching for your throat, finding it, sinking into it, and with a quickly rising sense of horror you feel how your windpipe is torn to pieces, how warm, sweet blood flows over your tongue and out of your mouth, how you gasp for breath like a fish out of water, how the teeth of the starved young wolf tear open your belly, how it feasts on your steaming entrails while its mother laps up the blood coming from your mouth and throat, and how, finally, everything turns black...";
+					Utils.press_any_key();
+					StopDaemon(self);
+					move self to Limbo;
+					Baron.become_lycanthrope();
+			}
+			self.state++;
+			new_line;
+			return true;
+		],
+		description [;
+			print "Es excepcionalmente grande, aunque el invierno le ha pasado factura de manera evidente; ves cómo sus huesos se marcan bajo el pelaje sucio y apagado.";
+			new_line;
+			return true;
+		],
+		life [;
+			Attack:
+				!! TODO
+				return false;
+		],
+		reset [;
+			move self to Limbo;
+			return true;
+		],
+ private
+		quips [ i;
+			switch (i) {
+				0:
+					print "Calm the she-wolf completely.";
+				1:
+					print "~It's all right, dear wolf, just relax. Neither of us wants to fight, do we? We can be friends.~, you whisper in her ear.";
+				2:
+					print "Suddenly break her neck.";
+				3:
+					print "~It's all right, dear wolf, just relax,~ you whisper in her ear. Then, without warning, you apply all the force you can muster and break her neck with a sharp jerk. She emits a soft gurgling howl, but then lies still and limp in your arms.";
+				4:
+					print "Growl angrily and threateningly.";
+				5:
+					print "The she-wolf raises every hair in her neck, and growls back fiercely. Her muscles are tensed, and she is ready to leap at you if you make a wrong move.";
+				6:
+					print "Growl softly and calmly.";
+				7:
+					print "For a moment the she-wolf seems surprised that she can communicate with you. Then her muscles relax--she understand that you mean her no harm.";
+				8:
+					print "Howl, sorrowfully, to the moon.";
+				9:
+					StopDaemon(self);
+					move self to Limbo;
+					print "You lift your head and a howl bursts forth that sounds exactly like the lament of a wolf. You howl--and put your soul in it. You never knew that so much pain and so much sorrow were hidden in your heart; but now the tones of your grief sound through the night, crystal clear and each distinct. After a moment of astonished silence, the she-wolf follows your example, and together you howl a heart-breaking duet.";
+					new_line;
+					Utils.press_any_key();
+					new_line;
+					print "After an eternity, you fall silent. The she-wolf regards you for a moment, then nods her head a single time, and disappears into the snow-covered woods.";
+					if (parent(BosqueLobezno) == CaminoBosque) {
+						move BosqueLobezno to Limbo;
+						print " Her young follows her.";
+					}
+				10:
+					print "Atácala.";
+				11:
+					print "Growl again, fiercely.";
+				12:
+					print "The she-wolf opens her mouth, revealing two rows of sharp teeth. From the woods a second shape slinks towards her: a young wolf, very lean.";
+				13:
+					print "Ofrécela tu garganta.";
+				14:
+					print "You undo the top buttons of your coat and lay yourself down in the snow. A moment of contemplation; a moment to realise what you are doing. Then you offer your bare throat to the she-wolf.
+					^^
+					Suspicious, perhaps fearing a trap, she slowly walks towards you; but her hunger is greater than her fear. Sharp teeth sink into your throat and you feel, calmly and as if from a distance, how your windpipe is torn to pieces, how warm, sweet blood flows over your tongue and out og your mouth, how life and light quickly ebb away and everything turns black.";
+					Baron.become_lycanthrope();
+				15:
+					print "Walk past her.";
+				16:
+					print "Now that she is calm, you can just walk past the wolf. She looks at you as you go away, but shows no intention of following you.";
+					new_line;
+					Utils.press_any_key();
+					new_line;
+					print "When you can no longer see her in the darkness, her lonely howling breaks the silence of the night.
+					^^
+					But you walk on, in the direction of the baron's castle.";
+				17:
+					print "Stroke her.";
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! @BosqueLobaCadaver
+Character	BosqueLobaCadaver Limbo
+ has	concealed female remarkable,
+ with	short_name [;
+			print "cadáver de la [](loba:REMARKABLE_OBJECT)";
+			return true;
+		],
+		name_f 'bestia' 'loba',
+		name_fp 'bestias' 'lobas',
+		name_m 'cadaver' 'cuerpo' 'lobo',
+		name_mp 'lobos',
+		gender G_FEMENINO,
+		!!------------------
+		description [;
+			!! TODO - revisar
+			print "La loba yace muerta en la nieve. Ves la agonía congelada en su rostro, y la desesperación, pero también una alegría vergonzosa por el descanso final, libre por fin de toda responsabilidad.";
+			new_line;
+			return true;
+		],
+		reset [;
+			move self to Limbo;
+			return true;
+		],
+;
+
+!! @BosqueLobezno
+Item	BosqueLobezno "lobezno" Limbo
+ has	male remarkable,
+ with	name_f 'bestia',
+		name_fp 'bestias',
+		name_m 'cachorro' 'lobezno' 'lobo',
+		name_mp 'lobos',
+		gender G_FEMENINO,
+		!!------------------
+		before [;
+			Attack:
+				!! TODO
+				return false;
+			JumpOver:
+				!! TODO
+				return false;
+			Pull,
+			Push:
+				!! TODO
+				return false;
+			Take:
+				!! TODO
+				return false;
+			Touch:
+				!! TODO
+				return false;
+		],
+		description [;
+			!! TODO
+			return false;
+		],
+		reset [;
+			move self to Limbo;
+			return true;
+		],
+ private
+		quip [ i;
+			switch (i) {
+				0:
+					print "Mátalo, porque un mundo sin lobos es un lugar mejor.";
+				1:
+					if (IndirectlyContains(player, Hacha)) {
+						print "You grin and run at the young wolf. Before he can react you slice his body in two with a single blow of your axe. One wolf less. Blood spurts in thick streams across the ground, while his warm entrails slowly sink into the melting snow.";
+					} else {
+						print "You grin, and with a leap you jump right on top of the little wolf. Compared to his mother he is easy prey: with your strong arms you break his spine without much effort. The small body lies still in the snow. One wolf less.";
+					}
+				2:
+					print "Mátalo, para salvarlo de la lenta agonía de la inanición.";
+				3:
+					print "~Come here, little wolf,~ you say softly while you sink to your knees. With sweet words and calming gestures you are able to approach the small animal, which is still in shock because of his mother's death.";
+					new_line;
+					Utils.press_any_key();
+					new_line;
+					print "~I am very sorry, small one, but this is for the best,~ you whisper. With a sudden move you grab his head and break his little neck. The small body goes limp immediately; a whimper escapes from its mouth--but then he is silent and the light in his eyes goes out.
+					^^
+					Tears roll down your cheeks.";
+				4:
+					print "Scare him away.";
+				5:
+					print "Screaming loudly and waving[if:IndirectlyContains(player, Hacha)] your axe[else] your arms[fi], you come at the little animal, which runs away as fast as it can. Seconds later it disappears between the trees.";
+				6:
+					print "~Go away, dumb beast! Shoo!~";
+				7:
+					print "Screaming loudly and waving your arms, you come at the little animal, which runs away as fast as it can. Seconds later it disappears between the trees.";
+				8:
+					print "~I... I... I am sorry that I killed your mother.~";
+				9:
+					print "The young wolf looks at you, sad and uncomprehending.";
+				10:
+					print "Howl a lament for his lost mother.";
+				11:
+					print "You lift your head and a howl bursts forth that sounds exactly like the lament of a wolf. You howl--and put your soul in it. You never knew that so much pain and so much sorrow were hidden in your heart; but now the tones of your grief sound through the night, crystal clear and each distinct. After a moment of astonished silence, the young wolf follows your example, and together you lament his mother's death.";
+					new_line;
+					Utils.press_any_key();
+					new_line;
+					print "After an eternity you fall silent. The little wolf looks at you--in his eyes only sorrow. Once more he glances at the lifeless body of his mother, then he turns around and disappears into the snow-covered forest.";
+				12:
+					print "~You can't survive alone, little one. It is better if I spare you the slow death of starvation.~";
+				13:
+					print "~Come here, little wolf,~ you say softly while you sink to your knees. With sweet words and calming gestures you are able to approach the small animal, which is still in shock because of his mother's death.";
+					new_line;
+					Utils.press_any_key();
+					new_line;
+					print "~I am very sorry, small one, but this is for the best,~ you whisper. With a sudden move you grab his head and break his little neck. The small body goes limp immediately; a whimper escapes from its mouth--but then he is silent and the light in his eyes goes out.
+					^^
+					Tears roll down your cheeks.";
+				14:
+					print "~Everything will turn out all right. You will overcome this loss and learn to cope for yourself.~";
+				15:
+					print "The eyes of the young wolf dwell for a while on the soulless corpse of his mother. He lifts his little head an howls once again, a sharp note of pain and desperation. Then he turns away and disappears into the vastness of the forest, alone.";
+				16:
+					print "~In the future you must go your own way, but now I can try to help you. Let your mother do you a last favour: no matter how grisly it is, you must eat her body. You must, in order to survive.~";
+				17:
+					print "The small wolf looks at you with comprehending eyes, but doesn't dare to approach as long as you stand next to the body. Calmly you walk away, towards the baron's castle. When you have put enough distance between yourself and his mother's corpse, the young wolf leaves the trees and starts eating it--his revulsion quickly turns to enthusiasm.
+					^^
+	 		   		Fascinated, and with a mixture of horror and pity, you observe the scene. But you soon walk on--there is still your daughter to free.";
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! @PortadaDiario
+Item	PortadaDiario Limbo
+ has	female,
+ with	name_f 'portada',
+		name_m 'diario' 'libro',
+		gender G_FEMENINO,
+		!!------------------
+		before [;
+			Burn:
+				!! TODO
+				print "El cuero falso no llega a arder.";
+				new_line;
+				return true;
+		],
+		description [;
+			!! TODO - revisar
+			print "Una portada de cartón forrado con cuero falso de color rojo. Es todo cuanto queda del diario de María.";
+			new_line;
+			return true;
+		],
+;
+
+
+!!==============================================================================
+!!
+!!	1)	En el camino que atraviesa el bosque
+!!
+!!------------------------------------------------------------------------------
+
+!! @CaminoBosque
+Outdoors	CaminoBosque "En el camino que atraviesa el bosque"
+ has	male,
+ with	name_f 'espesura',
+		name_m 'bosque',
+		gender G_MASCULINO,
+		!!------------------
+		b_to [;
+			<<Enter BosquePueblo>>;
+		],
+		cant_go [;
+			if (Baron.has_become_a_lycanthrope()) {
+				print "No. A la casa de piedra no se va por ahí. Tienes que seguir el [DirLindesBosque](sendero).";
+			} else {
+				print "Ya se hace difícil seguir el [DirLindesBosque](sendero) por culpa [de la BosqueNieve] y la falta de luz. Si te internas en el bosque en cualquier otra dirección lo más seguro es que acabes perdiéndote.";
+			}
+			new_line;
+			return true;
+		],
+		d_to [;
+			!! TODO - posible respuesta para otras localidades:
+			print "Hay otros caminos mucho más rápidos para descender al infierno…";
+			new_line;
+			return true;
+		],
+		deeper_into_the_woods [;
+			return self.state > 0;
+		],
+		description [;
+			if (self.deeper_into_the_woods()) {
+				if (Baron.has_become_a_lycanthrope()) {
+					!! TODO
+					print "";
+				} else {
+					print "Allí donde la luz de la luna consigue filtrarse a través del follaje se pueden atisbar charcos congelados";
+					if (self has general) {
+						give self ~general;
+						print " entre las ramas caídas";
+					} else {
+						print " entre la nieve";
+					}
+					print " y el barro. El camino es estrecho y sinuoso. Tienes que avanzar con cuidado, prestando atención a cada paso para no desviarte de la senda y perderte en el bosque. [f_obj](Adelante), siempre hacia [f_obj](adelante:OTHER_OBJECT), hacia el castillo del barón.";
+				}
+			}
+			new_line;
+			return true;
+		],
+		e_to [;
+			if (Utils.is_compass_enabled()
+				&& self.deeper_into_the_woods()) {
+				<<Enter BosquePueblo>>;
+			} else {
+				return self.cant_go();
+			}
+		],
+		f_to [;
+			<<Enter DirLindesBosque>>;
+		],
+		initial [;
+			#Ifdef DEBUG;
+			move Abrigo to Baron;
+			move AlbumFotos to Baron;
+			move Brujula to Baron;
+			move DiarioMaria to Baron;
+			move Hacha to Baron;
+			move Pedernal to Baron;
+			move Peluche to Baron;
+			move Ropa to Baron;
+			give Abrigo worn;
+			give Ropa worn;
+			#Endif; ! DEBUG;
+		],
+		ne_to [;
+			if (Utils.is_compass_enabled()
+ 				&& ~~self.deeper_into_the_woods()) {
+				<<Enter BosquePueblo>>;
+			} else {
+				return self.cant_go();
+			}
+		],
+		u_to [;
+			<<Climb BosqueArboles>>;
+		],
+		w_to [;
+			if (Utils.is_compass_enabled()) <<Enter DirLindesBosque>>;
+			else return self.cant_go();
+		],
+;
+
+!! @BosquePueblo
+Atrezzo	-> BosquePueblo "pueblo"
+ class	Background,
+ has	enterable male,
+ with	name_f 'casa',
+		name_m 'pueblo',
+		gender G_MASCULINO,
+		!!------------------
+		before [;
+			DefaultAction:
+				<<Enter self>>;
+			Enter:
+				if (Baron.has_become_a_lycanthrope()) {
+					print "No. El hogar de piedra está en el sentido opuesto [de la DirLindesBosque](senda). Allí es dónde tienes que ir.";
+				} else if (parent(BosqueLoba) == CaminoBosque) {
+					if (self.tried_to_flee) {
+						!! TODO
+						print "^You turn around and make a hasty escape, back to the village. Everywhere between the trees you see the slavering fangs and the red glowing eyes of the fiends of the forest as they pursue you, never more than a step behind you, never more than a heartbeat away from ripping you to pieces.
+						^^
+						Suddenly, halfway back, shame overwhelms you. If you cannot even face a wolf, how will you ever be able to rescue Maartje from the clutch of the evil baron? Breathing heavily, you lean against a tree for a moment. No fiends pursue you--only the howling of wolves, no closer than when you first entered the woods.
+						^^
+						Giving up is not an option. You must go back.";
+					} else {
+						!! TODO
+						print "Piensas en echar a correr en dirección al pueblo, pero dudas.";
+					}
+				} else {
+					if (self.tried_to_flee) {
+						!! TODO
+						print "It was only a momentary weakness, which you quickly overcome. You will not retreat. You will not back down. You will not be stopped.";
+					} else {
+						print "Regresar a casa es una idea tentadora… tentadora pero cobarde. No, tienes que rescatar a María.";
+					}
+				}
+				new_line;
+				return true;
+		],
+;
+
+
+!!==============================================================================
+!!
+!!	2)	Las lindes del bosque
+!!
+!!------------------------------------------------------------------------------
+
+!! @DirLindesBosque
+AdjacentRoom	DirLindesBosque "camino"
+ has	male,
+ with	found_in CaminoBosque,
+		gender G_MASCULINO,
+		!!------------------
+		adjacent_room LindesBosque,
+		before [;
+			Enter:
+				if (CaminoBosque.deeper_into_the_woods()) {
+					if (parent(BosqueLoba) == CaminoBosque) {
+						if (self.tried_to_enter) {
+							print "Sin miedo. No muestres miedo, te repites mientras reúnes todo el aplomo del que eres capaz. Estas criaturas sólo atacan a aquellos que son más débiles que ellas. Ocúltalo… sin miedo.
+							^^
+							Echas a andar.
+							^^
+							A pesar de tus esfuerzos por controlarlo, con cada paso el corazón te palpita cada vez más violentamente en el pecho, como un caballo desbocado encerrado en una cárcel de paredes de tambor. Estás convencido de que la loba será capaz de escuchar tu miedo y ver más allá de esa patética máscara de autocontrol. Pasas junto a ella conteniendo prácticamente la respiración y empiezas a alejarte, caminando de espaldas al principio, sin apartar la mirada de sus ojos hambrientos. Sólo al perderla de vista en la oscuridad te atreves a darte la vuelta, aunque aún continúas andando con paso muy lento durante un rato, procurando mantener la calma, confiando en que el animal no decida cambiar de idea.
+							^^
+							Ella te observa fijamente hasta que desapareces entre los árboles, sin decidirse a salir en tu persecución. Un lobezno —su cachorro— se le une en el camino. De su garganta brota un quejido lastimoso.
+							^^
+							¿Nada que comer, madre?
+							^^
+							No, pequeño. Nada que comer.";
+							new_line;
+							Utils.press_any_key();
+							new_line;
+							Utils.print_horizontal_rule();
+							new_line;
+						} else {
+							self.tried_to_enter = true;
+							print "Das dos pasos cautelosos hacia el frente, manteniéndote tan cerca de los árboles como te es posible. [La BosqueLoba] gruñe amenazadora y muestra los colmillos, sus ojos fijos en tu garganta. Titubeas. La única forma de llegar hasta el castillo es continuando hacia [f_obj] por el camino. Pasando junto al animal.";
+							new_line;
+							return true;
+						}
+					}
+					self.AdjacentRoom::before();
+					return true;
+				}
+		],
+;
+
+!! @LindesBosque
+Outdoors	LindesBosque "Aún en el camino del bosque"
+ has	male,
+ with	gender G_MASCULINO,
+		!!------------------
+		b_to [;
+			<<Enter CaminoBosque3Bosque>>;
+		],
+		before [;
+			Listen:
+				if (Baron.has_become_a_lycanthrope()) {
+					print "Sólo puedes escuchar el rumor del viento entre las copas de los árboles. Ninguno os acercáis nunca tanto hasta los territorios del hombre malo.";
+				} else {
+					print "No se escucha nada. Tan cerca de las haciendas del barón hasta los lobos guardan silencio.";
+				}
+				new_line;
+				return true;
+		],
+		d_to [;
+			<<Enter CaminoBosque3Camino>>;
+		],
+		description [;
+			if (Baron.has_become_a_lycanthrope()) {
+				print "Ves finalmente [el CaminoBosque3Castillo] del humano malvado; un cascarón blanco con tres garras gigantescas que se alzan hacia lo alto, como intentando arañar el cielo sin estrellas. [Un CaminoBosque3Camino] desciende por la colina como una culebra hacia ese lugar maldito.";
+			} else {
+				print "Atisbas finalmente [el CaminoBosque3Castillo] tras encumbrar una leve colina; una mole de piedra blanca acentuada por la oscuridad que la rodea, con sus tres torres elevándose hacia el cielo en ángulos extravagantes. [Un CaminoBosque3Camino] zigzaguea a través del desnivel en dirección a la entrada de la [CaminoBosque3Castillo](fortaleza:OTHER_OBJECT).";
+			}
+			new_line;
+			return true;
+		],
+		e_to [;
+			if (Utils.is_compass_enabled()) <<Enter CaminoBosque3Camino>>;
+			else return self.cant_go();
+		],
+		exits [;
+			print "[El CaminoBosque3Camino] desciende por la ladera hasta [el CaminoBosque3Castillo].";
+			new_line;
+			return true;
+		],
+		f_to [;
+			<<Enter CaminoBosque3Camino>>;
+		],
+		w_to [;
+			if (Utils.is_compass_enabled()) <<Enter CaminoBosque3Bosque>>;
+			else return self.cant_go();
+		],
+;
+
+!! @CaminoBosque3Bosque
+Atrezzo	-> CaminoBosque3Bosque "bosque"
+ class	Background,
+ has	enterable male,
+ with	name_f 'arboleda',
+		name_m 'abeto' 'arbol' 'bosque' 'pino',
+		name_mp 'abetos' 'arboles' 'pinos',
+		gender G_MASCULINO,
+		!!------------------
+		before [
+			a;
+			Enter:
+				a = 1;
+				!! FIXME - condiciones
+				if (a == 1) { ! wolvin.status == 12, 15
+					print "Quizá los lobos no te dejan cruzar el bosque tan fácilmente a la vuelta… aunque ya tendrás tiempo para preocuparte por eso más tarde. Ahora no es momento de volver atrás.";
+				} else if (a == 2) { ! wolvin.status == 13
+					print "Sería una estupidez internarte de nuevo en el bosque ahora. No después de alcanzar el castillo al fin; no después de escapar a duras penas de aquella loba.";
+				} else if (a == 3) { ! wolvin.status == 25, 26
+					print "Confías en que el pequeño pueda descansar al fin sin el dolor de tener el estómago vacío. Ya ha sufrido suficiente.";
+				}
+				new_line;
+				return true;
+		],
+		description [;
+			!! TODO - descripción
+			return false;
+		],
+;
+
+!! @CaminoBosque3Camino
+AdjacentRoom	-> CaminoBosque3Camino "camino"
+ has	male,
+ with	name_f 'senda',
+		name_m 'camino',
+		gender G_MASCULINO,
+		adjectives 'bosque' 'castillo',
+		!!------------------
+		adjacent_room EntradaCastillo,
+		before [;
+			Enter:
+				print "Un copo de nieve suelto se posa con suavidad en tu mejilla. Te frontas la cara con el antebrazo y empiezas a caminar colina abajo…";
+				new_line;
+				Utils.press_any_key();
+				new_line;
+				self.AdjacentRoom::before();
+				return true;
+		],
+;
+
+!! @CaminoBosque3Castillo
+Atrezzo	-> CaminoBosque3Castillo
+ class	Background,
+ has	enterable male remarkable,
+ with	short_name [;
+			if (Baron.has_become_a_lycanthrope()) {
+				print "[](casa:REMARKABLE_OBJECT) de piedra";
+			} else {
+				print "[](castillo:REMARKABLE_OBJECT) del barón";
+			}
+			return true;
+		],
+		name_f 'casa' 'fortaleza' 'garra' 'torre',
+		name_fp 'garras' 'torres',
+		name_m 'castillo',
+		gender G_MASCULINO,
+		adjectives 'baron' 'inclinada' 'inclinadas' 'piedra',
+		!!------------------
+		before [;
+			Enter:
+				<<Enter CaminoBosque3Camino>>;
+		],
+		description [;
+			if (Baron.has_become_a_lycanthrope()) {
+				print "La casa de piedra es grande como una colina. Nunca has estado dentro —nunca has ido más allá de donde estás ahora—; no sabes qué peligros pueden aguardar en su interior.";
+			} else {
+				print "Hay un punto grotesco en su arquitectura; tiene tres grandes torres de planta circular con las dos más pequeñas, a los lados, inclinándose perceptiblemente hacia afuera. La torre central por su parte, más gruesa y alta, parece inclinarse también, mires desde donde mires, siempre en tu dirección. No se aprecia luz alguna en su interior.";
+			}
+			new_line;
+			return true;
+		],
+;

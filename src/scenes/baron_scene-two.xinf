@@ -1,0 +1,2352 @@
+
+
+!!==============================================================================
+!!
+!!	EL BARÓN
+!!	Escena segunda
+!!
+!!==============================================================================
+!!
+!!	Archivo:		baron_scene-two.xinf
+!!	Autor(es):		Victor Gijsbers
+!!					J. Francisco Martín <jfm.lisaso@gmail.com>
+!!	Idioma:			ES (Español)
+!!	Sistema:		Inform-INFSP 6
+!!	Plataforma:		Máquina-Z/Glulx
+!!	Versión:		0.0
+!!	Fecha:			2020/01/XX
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	Este archivo forma parte de la ficción interactiva EL BARÓN.
+!!
+!!	EL BARÓN es software libre: usted puede redistribuirlo y/o
+!!	modificarlo bajo los términos de la Licencia Pública General
+!!	GNU publicada por la Fundación para el Software Libre, ya
+!!	sea la versión 3 de la Licencia, o (a su elección) cualquier
+!!	versión posterior.
+!!
+!!	EL BARÓN se distribuye con la esperanza de que sea útil,
+!!	pero SIN GARANTÍA ALGUNA; ni siquiera la garantía implícita
+!!	MERCANTIL o de APTITUD PARA UN PROPÓSITO DETERMINADO.
+!!	Consulte los detalles de la Licencia Pública General GNU
+!!	para más información.
+!!
+!!	Debería haber recibido una copia de la Licencia Pública
+!!	General GNU junto a EL BARÓN. En caso contrario, consulte
+!!	<http://www.gnu.org/licenses/>.
+!!
+!!	Copyright (c) 2004, Victor Gijsbers
+!!	Copyright (c) 2020, J. Francisco Martín
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	ÍNDICE
+!!
+!!	0)
+!!	1)	En tu dormitorio
+!!	2)	Descansillo
+!!	3)	Habitación de María
+!!	4)	Frente a tu casa
+!!
+!!------------------------------------------------------------------------------
+
+!! FIXME
+!! Reorganizar distribución de las localidades de acuerdo a los puntos
+!! cardinales a fin de colocar el bosque y el castillo del barón al
+!! oeste(-suroeste) del pueblo. Es importante que el sentido de desplazamiento
+!! sea este -> oeste, a la contra del sentido natural de lectura, puesto que
+!! genera una tensión sutil.
+
+!!==============================================================================
+!!
+!!	0)
+!!
+!!------------------------------------------------------------------------------
+
+!! @Abrigo
+Item	Abrigo "abrigo" Limbo
+ class	Clothes,
+ has	male,
+ with	name_f 'pelliza',
+		name_m 'abrigo' 'gaban' 'sobretodo',
+		gender G_MASCULINO,
+		adjectives 'invernal' 'invierno',
+		!!------------------
+		before [;
+			Disrobe:
+			!! TODO
+				if (location ofclass Outdoors) {
+					print "Hace un frío helador. El abrigo te protege de acabar congelado.";
+					new_line;
+					return true;
+				} else {
+					return self.Clothes::before();
+				}
+		],
+		description [;
+			print "Compraste este abrigo hace poco, obligado por la insistencia de tu mujer. Es verdad que el viejo estaba ya agujereado en algunas partes y que no protegía tan bien frío, pero estabas acostumbrado a él. Era *tu* abrigo. Las mujeres no comprenden estas cosas.";
+			new_line;
+			return true;
+		],
+		layer 2,
+;
+
+!! @E2_Recapitulacion
+Object	E2_Recapitulacion "(Escena Dos Recap.)" Limbo;
+
+!! @E2_DiaEspecial
+Object	-> -> E2_DiaEspecial "Un día especial"
+ with	description
+			"Has recordado el día de tu boda con Gilda.",
+;
+
+!! @E2_InfanciaMaria
+Object	-> -> E2_InfanciaMaria "La infancia de María"
+ with	description
+			"Has repasado algunos momentos de la infancia de María, desde que nació, hasta que se cortó abruptamente.",
+;
+
+!! TODO - eliminar campanario de JardinPueblo
+!! @CasaCampanario
+Atrezzo	CasaCampanario "campanario"
+ class	Background,
+ has	male,
+ with	found_in DormitorioBaron DormitorioMaria Jardin,
+		name_f 'iglesia' 'torre',
+		name_m 'campanario' 'templo',
+		gender G_MASCULINO,
+		adjectives 'pueblo',
+		!!------------------
+		description [;
+			switch (location) {
+				DormitorioMaria:
+					print "Desde el cuarto de María no se alcanza a ver la iglesia.";
+				default:
+					print "La mitad superior de la torre de la iglesia se alza sobre los tejados cubiertos de [NieveCasa], como un dedo negro señalando [el CieloCasa] estrellado.";
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! @CasaCerro
+Atrezzo	CasaCerro
+ class	Background,
+ has	male,
+ with	found_in DormitorioBaron DormitorioMaria,
+		short_name [;
+			print "[](cerro:OTHER_OBJECT) del campesino";
+			return true;
+		],
+		name_f 'colina' 'elevacion' 'loma' 'montana',
+		name_m 'cerro' 'otero',
+		gender G_MASCULINO,
+		adjectives 'blanco' 'campesino' 'del',
+		!!------------------
+		description [;
+			switch (location) {
+				!! TODO - domitorio
+				default:
+					print "A través de la ventana puedes ver el cerro del campesino, la colina completamente cubierta de [NieveCasa]] que se eleva detrás [del PuebloCasa].";
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! TODO - rutina de parsing para: bóveda celeste
+!! @CieloCasa
+Atrezzo	CieloCasa "cielo"
+ class	Background,
+ has	male,
+ with	found_in DormitorioBaron DormitorioMaria Jardin,
+		name_f 'estrella',
+		name_fp 'estrellas',
+		name_m 'cielo' 'firmamento',
+		gender G_MASCULINO,
+		adjectives 'nocturno',
+		!!------------------
+		description [;
+			if (location == DormitorioBaron) {
+				print "Miras hacia el cielo a través [del DormitorioBaronVentana]. ";
+			}
+			if (location == DormitorioMaria) {
+				print "Miras hacia el cielo a través [del DormitorioMariaVentana]. ";
+			}
+			print "En la distancia cósmica, las almas de los mayores guerreros del pasado arden salvajemente mientras luchan en un combate eterno con fuerzas desconocidas del más allá. Aquí, en la tierra, su luz lejana adorna la cúpula celeste como hermosas velas contra terciopelo negro.";
+			new_line;
+			return true;
+		],
+;
+
+!! @LunaCasa
+Atrezzo	LunaCasa "luna"
+ class	Background,
+ has	female light,
+ with	found_in Descansillo DormitorioBaron DormitorioMaria Jardin,
+		name_f 'luna' 'luz',
+		gender G_FEMENINO,
+		adjectives 'llena',
+		!!------------------
+		description [;
+			switch (location) {
+				Descansillo:
+					print "La poca luz que consigue filtrarse en el descansillo sin ventanas lo hace a través de tu [DirDormitorioBaron](dormitorio).";
+				DormitorioMaria:
+					print "La luz de la luna sólo alcanza [la DormitorioMariaVentana] indirectamente, reflejada en [la NieveCasa] de fuera, creando un ambiente tétrico en el dormitorio.";
+				default:
+					print "Los contornos de los objetos se desdibujan y parecen fluir entre sí bajo la luz de la luna, intangibles, como elementos de un sueño.";
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! @NieveCasa
+Atrezzo	NieveCasa "nieve"
+ class	Background,
+ has	female,
+ with	found_in DormitorioBaron DormitorioMaria,
+		name_f 'nieve',
+		gender G_FEMENINO,
+		!!------------------
+		before [;
+			Dig,
+			LookUnder:
+				print "Antes tienes que salir a la calle.";
+				new_line;
+				return true;
+		],
+		description [;
+			!! Exclusivo del dormitorio principal:
+			if (location == DormitorioBaron) {
+				print "Pones la mirada más allá";
+				if (DormitorioBaronVentana hasnt open) {
+					print " del panel de vidrio";
+				}
+				print " [del DormitorioBaronVentana]. ";
+			}
+			!! Exclusivo del cuarto de María:
+			if (location == DormitorioMaria) {
+				print "Pones la mirada más allá";
+				if (DormitorioMariaVentana hasnt open) {
+					print " del panel de vidrio";
+				}
+				print " [del DormitorioMariaVentana]. ";
+			}
+			!! General:
+			print "Una gruesa capa de nieve se ha ido asentando sobre el paisaje a lo largo de los últimos días. El mundo entero está cubierto de blanco";
+			!! Exclusivo del dormitorio principal y del jardín:
+			if (location == DormitorioBaron) {
+				print " salvo por las calles más transitadas [del JardinPueblo], convertidas en un lodazal resbaladizo";
+			}
+			print ".";
+			new_line;
+			return true;
+		],
+;
+
+!! @PuebloCasa
+Atrezzo	PuebloCasa "pueblo"
+ class	Background,
+ has	male,
+ with	found_in DormitorioBaron DormitorioMaria,
+ with	name_m 'pueblo',
+		gender G_MASCULINO,
+		!!------------------
+		description [;
+			switch (location) {
+				DormitorioBaron:
+					print "Tienes una buena vista de gran parte del pueblo. Todo está en silencio y a oscuras, salvo por unas pocas luces sueltas que arden sin mucha convicción en mitad de la noche invernal.";
+				DormitorioMaria:
+					!! TODO
+			}
+			new_line;
+			return true;
+		],
+;
+
+
+!!==============================================================================
+!!
+!!	1)	En tu dormitorio (Gilda)
+!!
+!!------------------------------------------------------------------------------
+
+!! @DirDormitorioBaron
+AdjacentRoom	DirDormitorioBaron "dormitorio"
+ has	male,
+ with	found_in Descansillo,
+		short_name [;
+			print "[](dormitorio:DIRECTION_OBJECT) principal";
+			return true;
+		],
+		name_f 'habitacion',
+		name_m 'cuarto' 'dormitorio',
+		gender G_MASCULINO,
+		adjectives 'principal',
+		!!------------------
+		adjacent_room DormitorioBaron,
+		before [;
+			Enter:
+				print "Regresas al dormitorio en completo silencio.";
+				new_line;
+				self.AdjacentRoom::before();
+				return true;
+		],
+;
+
+!! @DormitorioBaron
+Indoors	DormitorioBaron
+ has	male,
+ with	short_name [;
+			print "En tu [](dormitorio)";
+			return true;
+		],
+		name_f	'estancia' 'habitacion',
+		name_m	'cuarto' 'dormitorio',
+		gender	G_MASCULINO,
+		!!------------------
+		description [;
+			if (player in DormitorioBaronSilla) {
+				print "Sentado en [la DormitorioBaronSilla] observas cómo la";
+			} else {
+				print "La";
+			}
+			print " luz de [la LunaCasa] se cuela a través de [la DormitorioBaronVentana] y arroja sobre [los DormitorioBaronMuebles] una pátina de una belleza sobrenatural. No se escucha nada aparte de la suave respiración de tu [Gilda](esposa), dormida";
+			if (Gilda.has_been_unmasked()) {
+				print " —o simulando hacerlo—";
+ 			}
+			print " en la gran [DormitorioBaronCama] que domina la habitación. [Una DormitorioBaronPuerta] conduce[if:Utils.is_compass_enabled()] [al e_obj][fi] hasta [el DirDescansillo] de fuera.";
+			new_line;
+			return true;
+		],
+		exits [;
+			print "La única [DormitorioBaronPuerta] de la habitación conduce [al DirDescansillo].";
+			new_line;
+			return true;
+		],
+		initial [;
+			if (self hasnt visited) {
+				new_line;
+				print "Un tono estridente y discorde rompe dos veces el silencio de la noche, despertándote de un sueño intranquilo. Aún puedes escuchar cómo el segundo tañido de la campana de la iglesia resuena en el aire durante unos instantes antes de que la quietud invernal se asiente de nuevo sobre el pueblo y el mundo entero parezca enmudecer. Para entonces, el recuerdo del sueño se ha desvanecido por completo también. Desearías poder librarte de todas las pesadillas con esa misma facilidad…
+				^^
+				Es la hora. Te frotas la somnolencia de los párpados con el índice y el pulgar de la mano derecha y sales de la cama, poniendo sumo cuidado para no despertar a Gilda. Sin duda intentaría detenerte.
+				^^";
+				new_line;
+				return true;
+			}
+		],
+		n_to [;
+			if (Utils.is_compass_enabled()) <<Enter DirDescansillo>>;
+			else return self.cant_go();
+		],
+		out_to [;
+			<<Enter DirDescansillo>>;
+		],
+;
+
+!! @DormitorioBaronCama
+HeavyItem	-> DormitorioBaronCama
+ has	concealed female supporter,
+ with	short_name [;
+			print "[](cama) de matrimonio";
+			return true;
+		],
+		name_f 'cama' 'piltra',
+		name_m
+			'camastro' 'catre' 'colchon' 'jergon' 'lecho' 'mobiliario'
+			'moblaje' 'mueble' 'somier',
+		name_mp 'muebles',
+		gender G_FEMENINO,
+		adjectives 'matrimonio',
+		!!------------------
+		before [;
+			Enter:
+				print "Si pudieses simplemente echarte en la cama y volverte a dormir. No hacer nada más, no preocuparte por nada, sólo encogerte bajo [la DormitorioBaronManta] y soñar con el cuerpo menudo y esbelto de María… pero no puedes.";
+				if (~~self.tried_to_sleep) {
+					self.tried_to_sleep = true;
+					print " No sin antes intentar liberarla. Incluso si fueses capaz de engañar a tu mente por una noche y fingir que ella descansa feliz en casa, la cruda realidad te golpeará de nuevo al despertar mañana, y de nuevo pasado mañana. Cuanto antes te enfrentes a ello, mejor.";
+				}
+				new_line;
+				return true;
+			Sit:
+				print "Prefieres seguir de pie por miedo a  [if:Gilda.has_been_unmasked()]molestar[else]despertar[fi] a [Gilda].";
+				new_line;
+				return true;
+		],
+		description [;
+			print "Hecha con tus propias manos, ocupa la mitad de la habitación. Bajo la luz de [la LunaCasa] puedes ver cómo [la DormitorioBaronManta] sube[n DormitorioBaronManta] y baja[n DormitorioBaronManta] acompasadamente con la respiración de [Gilda].";
+			new_line;
+			return true;
+		],
+		react_before [;
+			Sleep:
+				<<Enter self>>;
+		],
+		reset [;
+			self.tried_to_sleep = false;
+		],
+ private
+		tried_to_sleep false,
+;
+
+Atrezzo	-> -> "almohada"
+ has	female,
+ with	name_f 'almohada',
+		name_fp 'almohadas',
+		name_m 'almohadon' 'cojin',
+		name_mp 'almohadones' 'cojines',
+		gender G_FEMENINO,
+		adjectives 'pluma' 'plumas' 'plumon',
+		!!------------------
+		before [;
+			Pull,
+			Push,
+			PushDir,
+			Take,
+			Touch,
+			Turn,
+			Wave:
+				<<Take DormitorioBaronManta>>;
+		],
+		description [;
+			print "Una larga almohada rellena de plumas.";
+			new_line;
+			return true;
+		],
+;
+
+!! @Gilda
+Character	-> -> Gilda "Gilda"
+ has	female proper,
+ with	name_f 'conyuge' 'esposa' 'gilda' 'mujer' 'persona',
+		gender G_FEMENINO,
+		!!------------------
+		before [;
+			Attack:
+				!! TODO - estilo diálogos
+				if (~~self.tried_to_attack) {
+					self.tried_to_attack = true;
+					if (IndirectlyContains(player, Hacha)) {
+						print "Agarras el mango [del Hacha] con fuerza";
+					} else {
+						print "Cierras los puños con fuerza";
+					}
+					print " en un arrebato de furia. —¡Sería para toda la eternidad! —las palabras se forman repentinamente en tu mente, sin saber qué significan en realidad… pero se esfuman con la misma rapidez, dejándote inquieto y confundido. La sola idea de poder hacer daño a [Gilda] te aterra. ";
+				}
+				print "Nunca pondrías una mano encima a tu [Gilda](mujer).";
+				new_line;
+				return true;
+			Kiss:
+				if (~~self.has_been_unmasked()) {
+					return self.description(true);
+				} else if (~~self.tried_to_kiss) {
+					self.tried_to_kiss = true;
+					print "Tus labios rozan con ternura la pálida mejilla de [self] en un sencillo gesto de despedida. Parece estremecerse ante el contacto y entierra disimuladamente el rostro en la almohada.";
+				} else {
+					print "Sea fingido o no decides no molestar más su sueño.";
+				}
+				new_line;
+				return true;
+			Listen:
+				if (~~self.has_been_unmasked()) {
+					print "La noche encierra peligros; figurados y muy literales también, algunos. Pero el sonido rítmico de la respiración de [self] resulta de algún modo tranquilizador ante esas amenazas.";
+				} else {
+					print "El compás constante de la respiración de [self] no enmascara que está despierta en realidad.";
+				}
+				new_line;
+				return true;
+			Pull,
+			Push,
+			PushDir,
+			Squeeze,
+			Take,
+			TalkTo,
+			WakeOther:
+				if (~~self.has_been_unmasked()) {
+					print "No, no quieres despertarla. [self] se opone frontalmente a que pongas en peligro tu vida para intentar liberar a vuestra hija. Cada vez que has mencionado la intención de ir a salvar a María de las garras del barón estos últimos días, ella ha exclamado angustiada que no podía soportar la idea de perderte también a ti. Lo mejor es irse en silencio y dejarla dormir.";
+				} else {
+					print "Mejor no romper la farsa. Deja que finja dormir. Será más fácil para ella aceptar lo que estás a punto de hacer si no tiene que enfrentarse a ello explícitamente. Y tampoco tú crees tener fuerzas suficientes para oponerte a ella si te ruega que te quedes en casa.";
+				}
+				new_line;
+				return true;
+			Smell:
+				print "Reconocerías su olor entre miles; cálido y confortable.";
+				new_line;
+				return true;
+			!! TODO - ##Hug
+			Touch:
+				if (~~self.has_been_unmasked()) {
+					print "Temes despertarla si haces algo así.";
+				} else if (~~self.tried_to_touch) {
+					self.tried_to_touch = true;
+					print "Acarias su mejilla y por un momento dejas que tus dedos jugueteen delicadamente entre sus cabellos rubios, mientras ella finge seguir durmiendo.";
+				} else {
+					print "Es hora de marcharte.";
+				}
+				new_line;
+				return true;
+		],
+		description [ kiss;
+			if (~~self.has_been_unmasked()) {
+				self.unmasked = true;
+				print "Te inclinas con delicadeza sobre [la DormitorioBaronCama] para";
+				if (kiss) {
+					print " besar la frente";
+				} else {
+					print " contemplar el rostro";
+				}
+				print " de [self]. Su aliento se entrecorta por un momento y percibes cómo se tensan los músculos de su mandíbula. ¡Está despierta! Finge dormir, pero está despierta… sabe adónde te diriges";
+			} else {
+				print "Su respiración constante y pausada y su rostro aparentemente relajado no bastan para ocultar su engaño. Está despierta y sabe adónde te diriges";
+			}
+			print ". ¿Una forma de aprobación silenciosa que nunca sería capaz de expresar con palabras? ¿O simplemente es que está demasiado asustada como para enfrentarse a ti?";
+			new_line;
+			return true;
+		],
+		has_been_unmasked [;
+			return self.unmasked;
+		],
+		reset [;
+			self.tried_to_attack = false;
+			self.tried_to_kiss = false;
+			self.tried_to_touch = false;
+			self.unmasked = false;
+		],
+ private
+		tried_to_attack false,
+		tried_to_kiss false,
+		tried_to_touch false,
+		unmasked false,
+;
+
+!! @DormitorioBaronManta
+Atrezzo	-> -> DormitorioBaronManta "manta"
+ has	female,
+ with	name_f 'manta' 'sabana',
+		name_fp 'mantas' 'sabanas',
+		gender G_FEMENINO,
+		!!------------------
+		before [;
+			Pull,
+			Push,
+			PushDir,
+			Take,
+			Turn,
+			Wave:
+				print "No quieres molestar a [Gilda].";
+				new_line;
+				return true;
+			Touch:
+				print "Acaricias la manta suavemente, pensando en tiempos más felices.";
+				new_line;
+				return true;
+		],
+		description [;
+			print "En la penumbra apenas puedes distinguir los patrones de tonos carmesí y azul marino. [Gilda] tejió esta manta al mismo tiempo que tú construías la [DormitorioBaronCama](cama). De acuerdo con las tradiciones, sólo consumasteis vuestro matrimonio una vez las dos estuvieron acabadas.";
+			new_line;
+			return true;
+		],
+;
+
+!! @DormitorioBaronArmario
+HeavyItem	-> DormitorioBaronArmario "armario"
+ has	concealed male ~open openable transparent,
+ with	name_m 'armario' 'mobiliario' 'mueble',
+		name_mp 'muebles',
+		gender G_MASCULINO,
+		adjectives 'roble',
+		!!------------------
+		before [
+			previous_style;
+			Open:
+				print "Al abrir [el self] puedes ver las pilas de ropa perfectamente doblada y los vestidos de tu mujer que cuelgan de sus perchas de madera";
+				if (~~self.tried_to_open) {
+					self.tried_to_open = true;
+					print ". Te llama la atención uno de ellos, de un color blanco impoluto, colgado al fondo y casi invisible entre los demás. Sólo al apartar un par de faldas a rayas descubres que se trata del vestido de novia de Gilda. Dejas que tu mano palpe el suave paño y cierras los ojos un momento mientras los recuerdos de la boda desfilan claramente por tu mente como si todo hubiera ocurrido el día anterior…";
+					new_line;
+					previous_style = Utils.set_text_style(TEXT_STYLE_STRESSED);
+					Utils.press_any_key();
+					new_line;
+					print "Entras andando en la plaza mayor con el corazón palpitándote fuertemente en el pecho, incómodo en el traje gris que has comprado exclusivamente para el día de hoy —te sientes como un impostor que llevara el uniforme de otra persona—. Prácticamente el pueblo entero se ha reunido ya ante la puerta de la iglesia, hasta el punto que te cuesta un instante alcanzar a distinguir a tus padres y a los padres de Gilda entre la multitud.";
+					new_line;
+					Utils.press_any_key();
+					new_line;
+					print "Antes de continuar te detienes para enderezar la flor roja en el ojal del bolsillo de la chaqueta y, entonces, alguien mira en tu dirección y grita tu nombre. Todo el mundo se da la vuelta y comienza a aplaudir y a vociferar con alegría. De inmediato sientes cómo la sangre te sube a la cara hasta que tus mejillas se tornan del mismo color bermellón que el adorno del bolsillo.";
+					new_line;
+					Utils.press_any_key();
+					new_line;
+					print "Odias ser el centro de atención. Odias las muchedumbres y pasar por el trance de las obligaciones sociales, y por eso prefieres estar la mayor parte del tiempo solo, vagando por el bosque o encerrado en tu taller tallando madera. Pero pasar tanto tiempo solo presenta sus propios inconvenientes; ya has estado cerca de ser consumido por el negro vacío de la soledad en varias ocasiones. Es preferible encontrar una persona a la que poder amar, junto a la que sentirte seguro e inmune ante las amarguras de la vida. Y ese sueño está a punto de hacerse realidad.";
+					new_line;
+					Utils.press_any_key();
+					new_line;
+					print "¡Por fin! Resplandeciente como el sol de primavera, Gilda camina hacia ti con su largo cabello pajizo agitándose rebelde tras ella a pesar del esmerado peinado, y con su sonrisa fácil iluminándole el rostro. Parece una princesa en su vestido de novia blanco; una joven más bella, más pura y más inocente de lo que este mundo merece albergar en su interior. Y camina hacia ti. Con ojos llenos de amor y de ternura.";
+					new_line;
+					Utils.press_any_key();
+					new_line;
+					!! TODO - estilo diálogos
+					print "—Sí, quiero —dice sin mirar ya al capellán, con sus ojos almendrados clavados en los tuyos. Tomas su suave mano entre tus manos ásperas y callosas y, con toda la delicadeza de la que eres capaz, le colocas el anillo en el dedo. Ella hace lo propio, y después inclináis las cabezas la una hacia la otra hasta que vuestros labios se unen para sellar el pacto de amor eterno con más fuerza de la que ninguna palabra podría hacerlo jamás. La gente irrumpe en vítores y aplausos para ya no escuchas nada más, embriagado por la emoción pura tras haber unido tu destino al de Gilda.";
+					new_line;
+					Utils.press_any_key();
+					Utils.set_text_style(previous_style);
+					new_line;
+					print "Abres los ojos y tu mente regresa frente a los vestidos y los montones ordenados de ropa";
+				}
+				print ". Nada de lo que hay aquí resulta más adecuado que tu [Ropa] de trabajo, así que cierras [el self] de nuevo.";
+				new_line;
+				return true;
+		],
+		description [;
+			print "Tardaste semanas en construirlo. No sólo te encargaste de talar el roble del que sacaste la madera; también laminaste su tronco para convertirlo en tablas, lo lijaste, lo diste forma, tallando [los DormitorioBaronArmarioAdornos] intrincados que recorren el borde de su armazón, y lo barnizaste entero.";
+			if (self hasnt described) {
+				print ". Sonríes al recordar aquellos primeros meses tras la boda, cuando [Gilda] y tú amueblasteis juntos vuestra pequeña casa y la convertisteis en un hogar, compensando el poco dinero que teníais a base de ilusión y entusiasmo";
+			}
+			print ".";
+			new_line;
+			return true;
+		],
+		reset [;
+			self.tried_to_open = false;
+		],
+ private
+		tried_to_open false,
+;
+
+!! @DormitorioBaronArmarioAdornos
+Atrezzo	-> -> DormitorioBaronArmarioAdornos "adornos"
+ has	male pluralname,
+ with	name_f 'figura' 'flor' 'golondrina' 'talla' 'tortola',
+		name_fp 'figuras' 'flores' 'golondrinas' 'tallas' 'tortolas',
+		name_m 'adorno' 'corazon' 'grabado' 'pajaro',
+		name_mp 'adornos' 'corazones' 'grabados' 'pajaros',
+		gender G_MASCULINO + G_PLURAL,
+		adjectives
+			'armario' 'intrincada' 'intrincadas' 'intrincado' 'intrincados'
+			'madera',
+		!!------------------
+		description [;
+			print "Tórtolas arrullando sobre las ramas de frondosos árboles y golondrinas al vuelo, cada una de ellas plasmada en una postura única, se engarzan con una compleja maraña de diminutos corazones, de flores silvestres sacadas de los campos y bosques cercanos y de otras flores más exóticas sacadas de tu imaginación…";
+			if (self hasnt described) {
+				print " un diseño ideado por un artesano enamorado perdidamente.";
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! @DormitorioBaronMesita
+HeavyItem	-> DormitorioBaronMesita
+ has	female supporter transparent,
+ with	short_name [;
+			print "[](mesita:REMARKABLE_OBJECT) de noche";
+			return true;
+		],
+		name_f 'mesita',
+		gender G_FEMENINO,
+		adjectives 'noche',
+		!!------------------
+		before [;
+			Close:
+				<<Close DormitorioBaronMesitaCajon>>;
+			Open:
+				<<Open DormitorioBaronMesitaCajon>>;
+			Pull,
+			Push,
+			PushDir,
+			Take,
+			Turn:
+				print "Ya está bien donde está.";
+				new_line;
+				return true;
+		],
+		description [
+			i obj;
+			i = 0;
+			objectloop(obj in self
+				&& obj hasnt concealed or scenery or static) {
+				i++;
+			}
+			print "El primer mueble que construiste con tus propias manos: una mesita de noche de un cajón, muy sencilla, hecha con madera de pino";
+			if (i >= 1) {
+				print ". Puedes ver ";
+				WriteListFrom(child(self), ENGLISH_BIT + CONCEAL_BIT);
+				print " sobre ";
+				Utils.print_spanish_nominative_pronoun(self);
+			}
+			print ".";
+			new_line;
+			if (DormitorioBaronMesitaCajon has open) {
+				i = 0;
+				objectloop(obj in DormitorioBaronMesitaCajon
+					&& obj hasnt concealed or scenery or static) {
+					i++;
+				}
+				new_line;
+				print "[El DormitorioBaronMesitaCajon] está abierto";
+				if (i >= 1) {
+					print ". Dentro hay ";
+					WriteListFrom(child(DormitorioBaronMesitaCajon),
+						ENGLISH_BIT + CONCEAL_BIT);
+				} else {
+					print ", pero dentro no hay nada";
+				}
+				print ".";
+				new_line;
+			} else {
+				new_line;
+				print "[El DormitorioBaronMesitaCajon] está cerrado.";
+				new_line;
+			}
+			return true;
+		],
+		invent [;
+			!! XXX - Siempre se imprime la última en el listado de objetos
+			!! presentes en la localidad, puesto que no puede moverse e,
+			!! inicialmente, es la única presente que aparece listado. Debido a
+			!! cómo la librería gestiona el árbol de objetos, si el usuario
+			!! deja alguno otro en la localidad, éstos siempre se imprimirán
+			!! primero en el listado y, de esta manera, el apéndice ", al lado
+			!! de la cama" estará seguido siempre de un punto:
+			if (inventory_stage == 1) {
+				print "[un self], al lado de la [DormitorioBaronCama](cama:OTHER_OBJECT)";
+				return true;
+			}
+		],
+;
+
+!! @RetratoFamiliar
+Item	-> -> RetratoFamiliar
+ has	male remarkable,
+ with	short_name [;
+			print "[](fotografia:REMARKABLE_OBJECT) enmarcada";
+			return true;
+		],
+		name_f 'foto' 'fotografia',
+		name_m 'marco' 'retrato',
+		gender G_MASCULINO,
+		adjectives 'enmarcada' 'familia' 'familiar',
+		!!------------------
+		before [;
+			Burn:
+				return Baron.sets_fire(self);
+		],
+		description [;
+			print "La fotografía tiene algunos años. Es del décimo aniversario de tu matrimonio con [Gilda]. Aparecéis posando con solemnidad el uno junto al otro, como dos estatuas en blanco y negro, vestidos una vez más con vuestros trajes de boda.";
+			!! TODO
+			if (true) { ! verhaaltracker.status < 6
+				print " Una jovencísima María de sonrisa radiante ocupa el primer plano, preciosa en un vestido blanco. En la foto tu brazo descansa sobre su hombro en un gesto protector…";
+				if (self hasnt described) {
+					print " pero no la has sabido proteger y ahora ha sido secuestrada por el barón. Tienes que hacer todo lo posible por recuperarla.";
+				}
+			} else {
+				print " Una jovencísima María de expresión grave ocupa el primer plano, preciosa en un vestido blanco. En la foto tu brazo descansa sobre su hombro en un gesto protector, pero ella parece visiblemente incómoda ante su contacto.";
+			}
+			new_line;
+			return true;
+		],
+		size SIZE_S,
+;
+
+!! @DormitorioBaronMesitaCajon
+Item	-> -> DormitorioBaronMesitaCajon "cajón"
+ class	Receptacle,
+ has	concealed container male ~open openable static,
+ with	name_m 'cajon',
+		gender G_MASCULINO,
+		adjectives 'mesita',
+		!!------------------
+		before [;
+			!! TODO - default para abrir/cerrar el cajón
+			Pull:
+				<<Open self>>;
+			Push:
+				<<Close self>>;
+			PushDir,
+			Turn:
+				<<Turn DormitorioBaronMesita>>;
+			Take:
+				print "Forma parte [del DormitorioBaronMesita].";
+				new_line;
+				return true;
+		],
+		capacity_size SIZE_S,
+		description [;
+			if (self has open) {
+				<<Search self>>;
+			} else {
+				print "Está cerrado.";
+				new_line;
+				return true;
+			}
+		],
+;
+
+!! TODO - ¿modo brújula si el usuario suelta la brújula?
+!! @Brujula
+Item	-> -> -> Brujula "brújula"
+ has	female openable ~open,
+ with	name_f 'brujula',
+		gender G_FEMENINO,
+		!!------------------
+		after [;
+			Close:
+				Utils.set_compass_mode(false);
+				print "Cierras la tapa [del self] con un suave «click».";
+				new_line;
+				return true;
+			Open:
+				Utils.set_compass_mode(true);
+				print "Presionas con delicadeza el cierre y abres la tapa [del self], dejando la aguja al descubierto.";
+				new_line;
+				return true;
+		],
+		before [;
+			!! TODO - hacer que default abra/cierre la brújula contextualmente
+		],
+		description [;
+			print "Una pequeña brújula con carcasa de latón, simple y práctica";
+			if (self has open) {
+				print ". Tiene la tapa abierta, dejando al descubierto la aguja inmantada bajo el cristal";
+			} else {
+				print ". Tiene la tapa cerrada";
+			}
+			print ".";
+			new_line;
+			return true;
+		],
+;
+
+!! @Pedernal
+Item	-> -> -> Pedernal "pedernal"
+ has	male,
+ with	name_m 'encendedor' 'pedernal' 'silex',
+		gender G_MASCULINO,
+		!!------------------
+		description [;
+			print "Una pieza de pedernal. Pertenecía a un juego de encendedor, pero perdiste el eslabón de acero con el que sacarle chispas hace meses, en el bosque. De todos modos, cualquier otro trozo de acero podría cumplir igual el papel del eslabón.";
+			new_line;
+			return true;
+		],
+		size SIZE_S,
+;
+
+!! @DormitorioBaronMuebles
+Atrezzo	-> DormitorioBaronMuebles "muebles"
+ has	male pluralname,
+ with	name_m 'mobilario' 'mueble',
+		name_mp 'muebles',
+		gender G_MASCULINO + G_PLURAL,
+		!!------------------
+		description [
+			i obj;
+			objectloop(obj in DormitorioBaronSilla && obj hasnt scenery
+				&& obj hasnt static && obj hasnt concealed) {
+				i++;
+			}
+			print "Barnizados en plata por [la LunaCasa]. Son todos obra tuya; desde [la DormitorioBaronMesita] y la sencilla [DormitorioBaronSilla]";
+			if (i > 0) {
+				print " sobre la que tienes ";
+				WriteListFrom(child(self), ENGLISH_BIT + CONCEAL_BIT);
+			}
+			print ", hasta [la DormitorioBaronCama] que ocupa el centro del dormitorio, o el gran [DormitorioBaronArmario]] que hay en el fondo, decorado con [DormitorioBaronArmarioAdornos](tallas) de gran calidad.";
+			new_line;
+			return true;
+		],
+;
+
+!! @DormitorioBaronPuerta
+Item	-> DormitorioBaronPuerta "puerta"
+ has	female ~open openable scenery,
+ with	name_f 'entrada' 'puerta' 'salida',
+		gender G_FEMENINO,
+		adjectives 'estrecha',
+		!!------------------
+		after [;
+			Close:
+				print "Cierras la puerta con delicadeza.";
+				new_line;
+				return true;
+			Open:
+				print "Abres la puerta procurando no hacer ruido.";
+				new_line;
+				return true;
+		],
+		before [;
+			Enter:
+				<<Enter DirDescansillo>>;
+		],
+		description [;
+			print "La estrecha puerta separa tu dormitorio del [DirDescansillo](rellano). Está";
+			if (self has open) {
+				print "abierta";
+			} else {
+				print "cerrada";
+			}
+			print ".";
+			new_line;
+			return true;
+		],
+;
+
+!! @DormitorioBaronSilla
+Item	-> DormitorioBaronSilla
+ class	SmartEnterable,
+ has	female static supporter,
+ with	short_name [;
+			print "[](silla:OTHER_OBJECT)";
+			return true;
+		],
+		name_f 'silla',
+		gender G_FEMENINO,
+		!!------------------
+		after [
+			i obj;
+			Enter:
+				print "Te sientas en [el self].";
+				new_line;
+				return true;
+			Exit:
+				print "Vuelves a ponerte de pie.";
+				new_line;
+				return true;
+			LetGo,
+			Receive:
+				objectloop(obj in self && obj hasnt scenery
+					&& obj hasnt concealed) {
+					i++;
+				}
+				if (i > 0) {
+					give self ~concealed;
+				} else {
+					give self concealed;
+				}
+		],
+		before [
+			i obj temp;
+			Enter:
+				objectloop(obj in self && obj hasnt scenery
+					&& obj hasnt static && obj hasnt concealed) {
+					i++;
+					temp = obj;
+				}
+				if (i == 1) {
+					print "Tienes que quitar [el temp] [del self] antes.";
+					new_line;
+					return true;
+				} else if (i > 1) {
+					print "[El self] está[n self] ocupad[o self] con demasiadas cosas como para sentarte en ";
+					Utils.print_spanish_nominative_pronoun(self);
+					print ".";
+					new_line;
+					return true;
+				}
+			Pull,
+			Push,
+			PushDir,
+			Take,
+			Turn:
+				print "Ya está bien donde está.";
+				new_line;
+				return true;
+			Sit:
+				<<Enter self>>;
+		],
+		describe [
+			i obj temp;
+			objectloop(obj in self && obj hasnt scenery
+				&& obj hasnt static && obj hasnt concealed) {
+				i++;
+				temp = obj;
+			}
+			if (i == 1 && temp has clothing) {
+				new_line;
+				print "[Un temp] descansa[n temp] sobre [una self].";
+				new_line;
+				return true;
+			} else if (i > 0) {
+				print "Sobre [el self] puedes ver ";
+				WriteListFrom(child(self), ENGLISH_BIT + CONCEAL_BIT);
+				print ".";
+				new_line;
+				return true;
+			} else {
+				return false;
+			}
+		],
+		description [
+			i obj temp;
+			print "Una sencilla silla de madera";
+			!! Comprueba si hay objetos sobre la silla:
+			objectloop(obj in self && obj hasnt scenery
+				&& obj hasnt static && obj hasnt concealed) {
+				i++;
+				temp = obj;
+			}
+			if (i == 1 && temp has clothing) {
+				print ". Tienes [un temp] colocad[o temp] sobre el respaldo";
+			} else if (i > 0) {
+				print " sobre la que puedes ver ";
+				WriteListFrom(child(self), ENGLISH_BIT + CONCEAL_BIT);
+			}
+			print ".";
+			new_line;
+			return true;
+		],
+		drop_on_object [;
+			return parent(self);
+		],
+		react_before [;
+			Attack,
+			Blow,
+			Climb,
+			Close,
+			Disrobe,
+			Eat,
+			Empty,
+			EmptyT,
+			Go,
+			GoDown,
+			Insert:
+				if (parent(player) == self) {
+					return self.SmartEnterable::react_before();
+				}
+			Jump,
+			Lock,
+			LookUnder,
+			Open,
+			Pull,
+			Push,
+			PushDir,
+			PutOn,
+			Remove,
+			Search,
+			Smell:
+				if (parent(player) == self) {
+					return self.SmartEnterable::react_before();
+				}
+			Squeeze,
+			StandUp,
+			Swing,
+			SwitchOff,
+			SwitchOn,
+			Take,
+			Taste,
+			Touch,
+			Turn,
+			Unlock,
+			Wear:
+				if (parent(player) == self) {
+					return self.SmartEnterable::react_before();
+				}
+			Drop:
+				if ((parent(player) ~= self)
+					&& (IndirectlyContains(player, noun))
+					&& (noun has clothing)
+					&& (noun hasnt worn)
+					&& (second == nothing)) {
+					<<PutOn noun self>>;
+				} else {
+					return self.SmartEnterable::react_before();
+				}
+			Examine,
+			Kiss:
+				if (parent(player) == self && noun == Gilda) {
+					<Exit self>;
+					new_line;
+				}
+			Sit:
+				if (parent(player) == self) {
+					if (noun == self or nothing) {
+						print "Ya estás sentado.";
+						new_line;
+						return true;
+					} else {
+						<Exit self>;
+						new_line;
+					}
+				}
+				if (parent(player) ~= self && noun == nothing) {
+					<<Enter self>>;
+				}
+		],
+;
+
+!! TODO - ponte la ropa (cuando no está en manos del PC)
+!! TODO - desvistete
+!! TODO - deja la ropa (cuando la llevas puesta)
+!! @Ropa
+Item	-> -> Ropa "ropa"
+ class	Clothes
+ has	female transparent,
+ with	name_f 'indumentaria' 'prenda' 'ropa' 'vestimenta',
+		name_fp 'prendas' 'vestimentas',
+		name_m 'vestuario',
+		name_mp 'atavios' 'atuendos',
+		gender G_FEMENINO,
+		adjectives 'diario' 'lenador' 'trabajo',
+		article "tu",
+		!!------------------
+		after [
+			wear_it;
+			Take:
+				if (self.previous_parent ~= nothing) {
+					wear_it = false;
+					return self.when_taken(wear_it);
+				}
+				return false;
+			Wear:
+				if (real_location == DormitorioBaron) {
+					print "Te vistes en silencio.";
+					new_line;
+					return true;
+				}
+		],
+		before [
+			temp wear_it;
+			GetDressed:
+				temp = parent(self);
+				if (temp ~= player
+					! && TestScope(self, player) ! (redundante)
+					&& (temp == parent(player) || temp has supporter)) {
+					self.previous_parent = temp;
+					move self to player;
+					give self worn;
+					wear_it = true;
+					return self.when_taken(wear_it);
+				}
+			Take:
+				self.previous_parent = parent(self);
+				return false;
+			Smell:
+				<<Smell RopaCamisa>>;
+		],
+		description [;
+			print "Es la ropa que llevas cuando sales a talar árboles en el bosque: [una RopaCamisa] de cuadros rojos y azules, recios [RopaPantalones] vaqueros y dos pesadas [RopaBotas] de cuero. Puedes notar un ligero olor a sudor que se desprende [del RopaCamisa].";
+			new_line;
+			return true;
+		],
+		layer 1,
+		react_after [;
+			if (self.previous_parent ~= 0) {
+				self.previous_parent = 0;
+			}
+		],
+ private
+		!! Atributo temporal que se establece y es borrado a lo largo de un
+		!! mismo turno para conocer al antecesor del objeto:
+		previous_parent 0,
+		when_taken [
+			wear_it;
+			print "Recoges [el self]";
+			!! Considera dónde estaba colocado el objeto:
+			if (self.previous_parent has container) {
+				print " de dentro [del self.previous_parent]";
+			} else if (self.previous_parent has supporter) {
+				print " de encima [del self.previous_parent]";
+			}
+			!! Apéndice si el PC además se viste con el objeto:
+			if (wear_it) {
+				if (location == DormitorioBaron) {
+					print " y te vistes en silencio";
+				} else {
+					print " y te l[o self] pones";
+				}
+			}
+			!! Final:
+			print ".";
+			new_line;
+			return true;
+		],
+;
+
+!! @RopaBotas
+Item	-> -> -> RopaBotas "botas"
+ has	female pluralname,
+ with	name_f 'bota',
+		name_fp 'botas',
+		name_m 'calzado',
+		gender G_FEMENINO + G_PLURAL,
+		adjectives 'cuero' 'reforzada' 'reforzadas' 'reforzado',
+		!!------------------
+		before [;
+			Smell:
+				return false;
+			default:
+				return Ropa.before();
+		],
+		description [;
+			print "Un par de botas de cuero con refuerzo de acero en la puntera.";
+			new_line;
+			return true;
+		],
+;
+
+!! @RopaCamisa
+Item	-> -> -> RopaCamisa "camisa"
+ has	female,
+ with	name_f 'camisa' 'camiseta' 'camisola',
+		gender G_FEMENINO,
+		adjectives 'cuadros' 'lana' 'lenador',
+		!!------------------
+		before [;
+			Smell:
+				print "Huele ligeramente a sudor, sin llegar a apestar. Lo cuál tiene un punto erótico de acuerdo con";
+				if (TestScope(Gilda, player)) {
+					print " [Gilda]";
+				} else {
+					print " Gilda";
+				}
+				print ".";
+				new_line;
+				return true;
+			default:
+				return Ropa.before();
+		],
+		description [;
+			print "Una camisa de lana a cuadros rojos y azules. Tejida y teñida a mano por";
+			if (TestScope(Gilda, player)) {
+				print " [Gilda]";
+			} else {
+				print " Gilda";
+			}
+			print ". Desprende un ligero olor a sudor —fruto del trabajo duro y honesto—.";
+			new_line;
+			return true;
+		],
+;
+
+!! @RopaPantalones
+Item	-> -> -> RopaPantalones "pantalones"
+ has	male pluralname,
+ with	name_m 'pantalon' 'tejano' 'vaquero',
+		name_mp 'pantalones' 'tejanos' 'vaqueros',
+		gender G_MASCULINO + G_PLURAL,
+		adjectives 'duro' 'duros' 'recio' 'recios',
+		!!------------------
+		before [;
+			Smell:
+				return false;
+			default:
+				return Ropa.before();
+		],
+		description [;
+			print "Unos viejos vaqueros azules. Cómodos y resistentes; perfectos para el trabajo de un leñador.";
+			new_line;
+			return true;
+		],
+;
+
+!! @DormitorioBaronVentana
+Atrezzo	-> DormitorioBaronVentana "ventana"
+ has	female ~open openable transparent,
+ with	name_f 'ventana',
+		gender G_FEMENINO,
+		!!------------------
+		after [;
+			Close:
+				print "Cierras la ventana aislando la habitación del frío exterior.";
+				new_line;
+				return true;
+			Open:
+				print "La ventana se abre de golpe y una corriente helada entra en la habitación";
+				if (~~self.tried_to_open) {
+					self.tried_to_open = true;
+					print ". De pie bajo la luz de la luna dejas que tu mirada recorra metódicamente el paisaje invernal. En algún lugar a lo lejos, más allá del bosque, se encuentra el castillo del barón… donde tu hija está padeciendo un terror inconcebible en este mismo momento.";
+				}
+				print ".";
+				new_line;
+				return true;
+		],
+		before [;
+			Climb:
+				if (self has open) {
+					print "Sería desde luego una forma de salir de casa y emprender el camino hacia el castillo, pero resulta mucho más sencillo utilizar las escaleras en su lugar.";
+					new_line;
+					return true;
+				} else {
+					print "Tendrías que abrirl[o self] primero.";
+					new_line;
+					return true;
+				}
+			Search:
+				<<Examine self>>;
+		],
+		description [;
+			print "La espectral luz de la luna se cuela a través de la ventana. Fuera puedes ver el pueblo, cubierto por una gruesa capa de nieve que hace que la torre de la iglesia parezca levantarse como un negro dedo acusador sobre un mar de blanco.";
+			if (self hasnt described) {
+				!! TODO - estilo voz
+				print " ¿Cómo es posible —te preguntas— que un paisaje de tal belleza sea a la vez tan frío y hostil?";
+			}
+			new_line;
+			return true;
+		],
+		reset [;
+			self.tried_to_open = false;
+		],
+ private
+		tried_to_open false,
+;
+
+
+!!==============================================================================
+!!
+!!	2)	Descansillo
+!!
+!!------------------------------------------------------------------------------
+
+!! @DirDescansillo
+AdjacentRoom	DirDescansillo "descansillo"
+ has	male,
+ with	found_in DormitorioBaron DormitorioMaria,
+		name_m 'descansillo' 'rellano',
+		gender G_MASCULINO,
+		!!------------------
+		adjacent_room Descansillo,
+		before [;
+			Enter:
+				Descansillo.set_previous_location(location);
+				if (location == DormitorioBaron
+					&& DormitorioBaronPuerta hasnt open) {
+					give DormitorioBaronPuerta open;
+					print "Abres la puerta procurando no hacer ruido y sales al rellano.";
+					new_line;
+				}
+				if (location == DormitorioMaria
+					&& DormitorioMariaPuerta hasnt open) {
+					<Open DormitorioMariaPuerta>;
+				}
+				self.AdjacentRoom::before();
+				return true;
+		],
+;
+
+!! TODO - objeto Gilda
+!! @Descansillo
+Indoors	Descansillo "Descansillo"
+ has	male,
+ with	name_m 'descansillo' 'rellano',
+		gender G_MASCULINO,
+		!!------------------
+		d_to [;
+			<<Enter DescansilloEscaleras>>;
+		],
+		description [;
+			print "Eres capaz de distinguir sin dificultad las familiares formas y los objetos que te rodean, a pesar de las sombras que envuelven el descansillo como una mortaja. Gilda descansa en [el DirDormitorioBaron]";
+			switch (self.previous_location) {
+				DormitorioBaron:
+					print ", a tu espalda";
+				DormitorioMaria:
+					print ", frente a ti";
+				default:
+					print ", a tu izquierda";
+			}
+			print ", mientras que";
+			switch (self.previous_location) {
+				DormitorioBaron:
+					print " frente a ti";
+				DormitorioMaria:
+					print " a tu espalda";
+				default:
+					print ", a tu derecha";
+			}
+			print " tienes [la DirDormitorioMaria] roja al cuarto de María. [Unas DescansilloEscaleras] descienden hasta la planta baja.";
+			new_line;
+			return true;
+		],
+		e_to [;
+			if (Utils.is_compass_enabled()) <<Enter DescansilloEscaleras>>;
+			else return self.cant_go();
+		],
+		n_to [;
+			if (Utils.is_compass_enabled()) <<Enter DirDormitorioMaria>>;
+			else return self.cant_go();
+		],
+		reset [;
+			self.previous_location = 0;
+		],
+		s_to [;
+			if (Utils.is_compass_enabled()) <<Enter DirDormitorioBaron>>;
+			else return self.cant_go();
+		],
+		set_previous_location [ loc;
+			self.previous_location = loc;
+		],
+ private
+		previous_location 0,
+;
+
+!! @DescansilloComoda
+HeavyItem	-> DescansilloComoda "cómoda"
+ class	Receptacle
+ has	female ~open openable transparent,
+ with	name_f 'comoda',
+		name_m 'armario' 'mobiliario' 'mueble',
+		gender G_FEMENINO,
+		adjectives 'cerezo' 'elegante' 'madera' 'policromada' 'policromado',
+		!!------------------
+		before [;
+			Climb,
+			Enter:
+				print "Puedes alcanzar [el Espejo] sin tener que subierte ahí.";
+				new_line;
+				return true;
+			DefaultAction:
+				if (self has described) {
+					if (self has open) {
+						<<Close self>>;
+					} else {
+						<<Open self>>;
+					}
+				}
+				return false;
+			Pull,
+			Push,
+			PushDir,
+			Take,
+			Turn:
+				print "Pesa demasiado como para andar moviéndol[o self] sin necesidad.";
+				new_line;
+				return true;
+		],
+		capacity_size SIZE_M,
+		describe [;
+			new_line;
+			print "Distingues además el bulto oscuro de [una DescansilloComoda]. Sobre ella, [un Espejo] ovalado de grandes proporciones refleja la escasa claridad del rellano.";
+			new_line;
+			return true;
+		],
+		description [
+			i obj;
+			print "Hecha con madera de cerezo policromada. Es parte de la herencia de la abuela de Gilda, y uno de los pocos muebles de la casa que no has construido tú mismo";
+			if (self has open) {
+				print ". Está abierta";
+				objectloop(obj in self && obj hasnt concealed
+					&& obj hasnt scenery) {
+					i++;
+					give obj workflag;
+				}
+				if (i == 0) {
+					print ", pero no hay nada dentro";
+				} else {
+					print ", dejando ver [lista de objetos en self<ENGLISH_BIT + WORKFLAG_BIT>] en su interior";
+				}
+			} else {
+				print ". Está cerrada";
+			}
+			print ".";
+			new_line;
+			return true;
+		],
+;
+
+!! @AlbumFotos
+Item	-> -> AlbumFotos
+ has	male ~open openable remarkable transparent,
+ with	short_name [;
+			print "[](álbum:REMARKABLE_OBJECT) de fotos";
+			return true;
+		],
+		name_fp 'fotografias' 'fotos',
+		name_m 'album' 'libro',
+		gender G_MASCULINO,
+		!!------------------
+		after [;
+			Close:
+				if (self has general) {
+					print "Cierras [el self] con un suspiro.";
+				} else {
+					print "Dejas de mirar las viejas fotografías y cierras [el self].";
+				}
+				new_line;
+				return true;
+		],
+		before [;
+			Burn:
+				return Baron.sets_fire(self, second);
+			Close:
+				if (self hasnt open) {
+					print "[El self] está[n self] ya cerrad[o self].";
+					new_line;
+					return true;
+				}
+			Consult,
+			Open:
+				<<Examine self>>;
+		],
+		description [
+			previous_style temp;
+			temp = parent(self);
+			if (~~IndirectlyContains(player, self)) {
+				print "Un grueso [self](álbum) en el que Gilda ha ido metiendo fotos familiares";
+				if (temp ofclass Indoors) {
+					print ". Descansa en el suelo";
+				} else if (temp ofclass Outdoors) {
+					switch (temp) {
+						!! FIXME
+						!! CaminoBosque,
+						!! LindesBosque:
+						!! 	print ". Descansa sobre [la BosqueNieve]";
+						Edificio,
+						EntradaCastillo,
+						PatioArmas:
+							print ". Descansa sobre [la CastilloNieve]";
+						Jardin:
+							print ". Descansa sobre [la JardinNieve]";
+						default:
+							print ". Descansa sobre la nieve";
+					}
+				} else if (temp has supporter) {
+					print ". Descansa sobre [el temp]";
+				} else if (temp has container) {
+					print ". Está metido en [el temp]";
+				}
+				print ".";
+			} else {
+				switch (self.state) {
+					0:
+						self.state++;
+						!! TODO - determinar nivel fantasía del mundo (Navidad)
+						print "Gilda ha ido metiendo todas las fotos familiares en este grueso [self](álbum) desde que nació María. Al abrirlo, lo primero que puedes ver es su partida de nacimiento: diecinueve de diciembre, tan sólo unos días antes de la Navidad. Pasas la página y ves fotos de una Gilda con alguna arruga menos alrededor de los ojos, sonriendo exhausta en la cama del hospital mientras el bebé llora entre sus brazos; María en la hora del baño, dentro de un barreño diminuto; los abuelos por ambas partes turnándose para acunar a la pequeña; tú posando con ella ante el fotógrafo, orgulloso como un pavo real. Por un momento te dejas arrastrar ante el torrente de recuerdos felices. Hasta que la sombra del barón consigue abrirse paso y devolverte una vez más a la realidad.
+						^^
+						Hay otras fotos en el [self](álbum).";
+					1:
+						self.state++;
+						print "Ves crecer a María entre las páginas [del self].";
+						new_line;
+						previous_style
+							= Utils.set_text_style(TEXT_STYLE_STRESSED);
+						Utils.press_any_key();
+						new_line;
+						print "Durante meses has estado trabajando en secreto en la construcción de una gran casa de muñecas para su cuarto cumpleaños. Tres plantas comunicadas por escaleras de delicadas barandillas, con puertas y ventanas que se pueden abrir y cerrar, muebles de toda clase y muñecas de madera con las caras esmeradamente talladas para que hagan su hogar de aquel lugar en miniatura. Gilda se ha encargado de tejer coloridas cortinas, sábanas, alfombras y ropa para las muñecas. Y ahora el hermoso resultado de todo aquel trabajo aguarda en una esquina de la habitación, envuelto en papel brillante, y María corre a por él y rasga ansiosa el envoltorio. Grita por la sorpresa. Luego estudia la casa de muñecas maravillada durante largo rato, abriendo las puertas, probando diferentes lugares para las muñecas, corriendo y descorriendo las cortinas. Finalmente se da la vuelta con una gran sonrisa y corre a darte las gracias entre risas de felicidad.";
+						new_line;
+						Utils.press_any_key();
+						Utils.set_text_style(previous_style);
+						new_line;
+						print "Los ecos de aquella risa resuenan aún en tus oídos, después de tantos años.";
+					2:
+						self.state++;
+						print "María continúa creciendo página a página, fotografía a fotografía.";
+						new_line;
+						previous_style
+							= Utils.set_text_style(TEXT_STYLE_STRESSED);
+						Utils.press_any_key();
+						new_line;
+						!! TODO - diálogos
+						print "Es pleno verano y los tres habéis salido de excursión por el bosque. María, de siete años de edad, corre algo adelantada mientras vosotros lleváis la cesta con la comida entre los dos, disfrutando del paseo. —¡Papá! —exclama de pronto desde algún lugar entre los árboles, a vuestra izquierda. —¡Corre, ven a ver!—. Gilda pone los ojos en blanco y agarra el asa con las dos manos para que puedas internarte en el bosque. La encuentras a unos treinta pasos del sendero, inmóvil junto a una buddleja tan repleta de mariposas que apenas puedes llegar a distinguir sus flores púrpura. —¡Mira papá! —exclama, y salta hacia el arbusto. Todas las mariposas emprenden el vuelo y, por un instante, ella es un ángel envuelto en una nube de alas blancas.";
+						new_line;
+						Utils.press_any_key();
+						Utils.set_text_style(previous_style);
+						new_line;
+						print "Hay otras fotos en el [self](álbum).";
+					3:
+						self.state++;
+						print "Pasas a la página siguiente:";
+						new_line;
+						new_line;
+						!! TODO - diálogos
+						print "Es medio año más tarde, en el momento más frío del invierno. Has salido a montar en trineo con María, aprovechando la espesa capa de nieve que se ha formado sobre el pueblo durante los últimos días. —Me duelen las manos —se queja María, poco después de haber cruzado el cerro del campesino—. Están tan frías.— Con delicadeza, coges sus pequeñas manos entre las tuyas y las frotas para calentárselas, mientras te inclinas hacia adelante y besas su frente helada.";
+						new_line;
+						Utils.press_any_key();
+						Utils.set_text_style(previous_style);
+						new_line;
+						print "Hay otras fotos en el [self](álbum).";
+					4:
+						self.state++;
+						print "Las últimas fotografías del [self](álbum) son del noveno cumpleaños de María. Sorprendido, pasas las siguientes páginas pero sólo encuentras restos de pegamento allí donde deberían estar los recuerdos de los últimos tres años.";
+					default:
+						print "Hojeas una vez más el viejo [self](álbum) familiar, sin detenerte esta vez en los recuerdos encerrados entre sus páginas. Sólo registra vuestra vida hasta un punto, cerca del centro del libro. La segunda mitad se encuentra en blanco.";
+				}
+			}
+			new_line;
+			return true;
+		],
+		size SIZE_M,
+;
+
+!! @AlbumFotosPegamento
+Atrezzo	-> -> -> AlbumFotosPegamento
+ with	name_m 'pegamento',
+		description [;
+			print "Hay restos de pegamento entre las páginas de las segunda mitad del [AlbumFotos](álbum), como si todas las fotografías hechas después de una cierta fecha hubieran sido arrancadas.";
+			new_line;
+			return true;
+		],
+;
+
+!! @DescansilloEscaleras
+AdjacentRoom	-> DescansilloEscaleras "escaleras"
+ has	female pluralname,
+ with	name_f 'escalera' 'baja',
+		name_fp 'escaleras',
+		name_m 'escalon',
+		name_mp 'escalones',
+		gender G_FEMENINO + G_PLURAL,
+		adjectives 'caracol' 'madera' 'planta',
+		!!------------------
+		adjacent_room Jardin,
+		before [;
+			Enter:
+				if (Ropa hasnt worn && ~~IndirectlyContains(player, Ropa)) {
+					print "No piensas pasearte por ahí en camisón. Tienes que vestirte primero.";
+					new_line;
+					return true;
+				} else {
+					move Abrigo to player;
+					give Abrigo worn;
+					print "Bajas a oscuras hasta el recibidor y recoges tu [Abrigo] de un gancho junto a la puerta de la calle. Te lo pones antes de salir al frío invernal.";
+					new_line;
+					new_line;
+					self.AdjacentRoom::before();
+					return true;
+				}
+		],
+		description [;
+			print "[Las self] de madera descienden en círculo hacia la oscuridad de la planta baja.";
+			new_line;
+			return true;
+		],
+;
+
+!! @Espejo
+Atrezzo	-> Espejo "espejo"
+ has	male transparent,
+ with	name_m 'espejo' 'reflejo',
+		gender G_MASCULINO,
+		!!------------------
+		before [;
+			Attack:
+				print "El momento para hacer eso aún no ha llegado.";
+				new_line;
+				return true;
+		],
+		description [;
+			print "Alcanzas a ver tu reflejo a pesar de la poca luz";
+			if (IndirectlyContains(player, Ropa) && Ropa has worn) {
+				print "; tus ojos centelleando con resolución, la masculina ropa de leñador acentuando los marcados músculos de tus brazos.";
+				if (self hasnt described) {
+					print " Una tétrica sonrisa se dibuja entre las comisuras de tu boca al imaginar la reacción del barón cuando irrumpas en su castillo";
+					if (IndirectlyContains(player, Hacha)) {
+						print "; la sorpresa congelada para siempre en su rostro después de que lo decapites de un sólo golpe con tu [Hacha].";
+					} else {
+						print "; sus gritos pidiendo misericordia cuando empieces a destrozarle la cara golpes hasta dejársela reducida a una masa informe y sanguinolenta.";
+					}
+				}
+			} else {
+				print ". En camisón el aspecto es más bien desesperado antes que heroico, pero las apariencias pueden resultar engañosas.";
+				if (self hasnt described) {
+					print " Una tétrica sonrisa se dibuja entre las comisuras de tu boca al pensar en el barón bajando la guardia, confiado al ver tu semblante; el momento de sorprenderle";
+					if (IndirectlyContains(player, Hacha)) {
+						print " y decapitarle de un sólo golpe con tu [Hacha].";
+					} else {
+						print " y destrozarle la cara a golpes hasta dejársela reducida a una masa informe y sanguinolenta.";
+					}
+				}
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! Object spiegel_lijst "frame" overloop
+!!  class Prop,
+!!  has	male,
+!!  with	name 'frame' 'gilded',
+!!         description
+!! 			"The excessively decorated frame, painted with gold, would fit in better with your mother-in-law's interior than it does with yours--no surprise, since she has given it to you. It is unfortunate that as long as she regularly comes to visit you, you cannot throw it away.",
+!! 		before [;
+!! 			Attack:
+!! 				"You would love to, but social conventions stop you.";
+!! 		],
+!! ;
+
+
+!!==============================================================================
+!!
+!!	3)	Habitación de María
+!!
+!!------------------------------------------------------------------------------
+
+!! @DirDormitorioMaria
+AdjacentRoom	DirDormitorioMaria
+ has	female,
+ with	found_in Descansillo,
+		short_name [;
+			print "[](puerta:DIRECTION_OBJECT) roja";
+			return true;
+		],
+		name_f 'entrada' 'puerta',
+		gender G_FEMENINO,
+		adjectives 'de' 'maria' 'roja',
+		!!------------------
+		adjacent_room DormitorioMaria,
+		before [;
+			Enter:
+				if (DormitorioMariaPuerta hasnt open) {
+					!! TODO - saltos de línea
+					give DormitorioMariaPuerta open;
+					print "Empujas la puerta rojo brillante hasta abrirla por compelto y entras en la habitación.";
+				}
+				self.AdjacentRoom::before();
+				return true;
+		],
+;
+
+!! @DormitorioMaria
+Indoors	DormitorioMaria "Habitación de Maria"
+ has	female,
+ with	name_f 'estancia' 'habitacion',
+		name_m 'cuarto' 'dormitorio',
+		gender G_FEMENINO,
+		adjectives 'maria',
+		!!------------------
+		description [;
+			print "Sin la presencia radiante de María, su cuarto se ve vacío y muerto: [la DormitorioMariaCama] en la que no descansa nadie, [el DormitorioMariaEscritorio] tras el que nadie se sienta a estudiar y garabatear dibujos, el armario que guarda ropa que nadie reclama, [la DormitorioMariaCasaMunecas] con la que no hay nadie que juegue ya. Incluso los vivos colores con los que pintaste el techo, los muebles o la puerta [al DirDescansillo], se muestran como una paleta de grises en la luz pálida de las estrellas. Es un espectáculo deprimente.";
+			new_line;
+			return true;
+		],
+		out_to [;
+			<<Enter DirDescansillo>>;
+		],
+		s_to [;
+			if (Utils.is_compass_enabled()) <<Enter DirDescansillo>>;
+			else return self.cant_go();
+		],
+;
+
+!! @DormitorioMariaCama
+HeavyItem	-> DormitorioMariaCama "cama"
+ has	female supporter,
+ with	name_f 'cama',
+		gender G_FEMENINO,
+		adjectives 'maria',
+		!!------------------
+		before [;
+			Enter,
+			Sleep:
+				if (self.tried_to_sleep) {
+					print "No puedes quedarte aquí. No sin antes intentar liberar a María.";
+				} else {
+					print "Si pudieses simplemente echarte en la cama y volverte a dormir. No hacer nada más. No preocuparte por nada. Sólo encogerte bajo la manta y soñar con la figura pequeña y esbelta de María… pero no puedes. No sin antes intentar liberarla…";
+				}
+				new_line;
+				return true;
+		],
+		description [;
+			print "Una cama de generosas proporciones para una niña. Construida por tus propias manos, como prácticamente el resto de muebles de la casa";
+			switch (self.state) {
+				0:
+					print ". Tiene las sábanas estiradas perfectamente, la almohada colocada con extrema pulcritud. Todo casi demasiado impoluto, virginal, como si nunca hubiera estado destinado a ser utilizado por ningún ser humano";
+				1:
+					print ". Tiene las sábanas perfectamente estiradas, pero le falta la almohada";
+				2:
+					print ". Tienes las sábanas hechas un rebujo";
+					!! TODO
+					if (true) {
+						print " y la almohada apartada a un lado";
+					}
+					print ", como si alguien hubiese dormido recientemente en ella, lo que ayuda en parte a aliviar el aspecto sepulcral de la habitación";
+			}
+			print ".
+			^^
+			Se encuentra[n self] justo debajo [del DormitorioMariaVentana].";
+			new_line;
+			return true;
+		],
+		reset [;
+			self.tried_to_sleep = false;
+		],
+ private
+		tried_to_sleep false,
+;
+
+!! @DormitorioMariaCasaMunecas
+HeavyItem	-> DormitorioMariaCasaMunecas
+ has	female remarkable transparent,
+ with	short_name [;
+			print "[](casa:REMARKABLE_OBJECT) de muñecas";
+			return true;
+		],
+		name_f 'casa',
+		gender G_FEMENINO,
+		adjectives 'munecas',
+		!!------------------
+		description [;
+			!! TODO - variaciones si el PC ha recordado el cumpleaños de María
+			print "Otra de tus obras; una gran casa de muñecas de tres plantas, llena de muebles en miniatura. Las muñecas de madera están vestidas con ropas coloridas tejidas por Gilda y repartidas por sus diferentes habitaciones.";
+			new_line;
+			return true;
+		],
+;
+
+!! @DormitorioMariaMunecas
+HeavyItem	-> DormitorioMariaMunecas "muñecas"
+ has	female pluralname,
+ with	name_f 'familia' 'muneca',
+		name_fp 'munecas',
+		name_m 'muneco',
+		name_mp 'munecos',
+		gender G_FEMENINO + G_PLURAL,
+		!!------------------
+		description [;
+			print "Es una familia de cuatro pequeñas figuras de madera que vive en la casa de muñecas: padre, madre, hijo e hija";
+			!! TODO
+			if (true) {
+				print ". El padre está sentado en el sofá del comedor, leyendo el periódico, mientras que la madre anda por la cocina ocupada tal vez en preparar la cena. El niño mira pensativo por una ventana de la segunda planta. La niña, por su parte, lleva un delicado vestido rojo y está tumbada sobre la cama en su dormitorio de la tercera planta";
+			} else {
+				print ". El padre y la madre están ahora sentados cuidadosamente en sillas en miniatura alrededor de la mesa del comedor. El hijo sigue mirando pensativo por una ventana y la hija yace caída en el suelo de la cocina. Su delicado vestido rojo ahora torcido y arrugado";
+			}
+			print ".";
+			new_line;
+			return true;
+		],
+;
+
+!! @DormitorioMariaEscritorio
+HeavyItem	-> DormitorioMariaEscritorio "escritorio"
+ has	male supporter,
+ with	name_f 'mesa',
+		name_m 'escritorio',
+		gender G_MASCULINO,
+		!!------------------
+		description [
+			i obj;
+			print "Está cubiert[o self] con hojas de papel y lápices de colores";
+			objectloop(obj in self
+				&& obj hasnt scenery
+				&& obj hasnt concealed) {
+				i++;
+			}
+			if (i > 0) {
+				print ". Puedes ver ";
+				WriteListFrom(child(self), ENGLISH_BIT + CONCEAL_BIT);
+				print " entre los papeles";
+			}
+			print ".";
+			new_line;
+			return true;
+		],
+;
+
+!! @DiarioMaria
+Item	-> -> DiarioMaria "diario"
+ has	male remarkable,
+ with	name_m 'diario',
+		gender G_MASCULINO,
+		adjectives 'maria',
+		!!------------------
+		description [;
+			print "El libro, encuadernado en cuero falso de color rojo, parece tratarse de un diario. O eso supones, ya que está cerrado con un pequeño candado de cobre. Por más curiosidad que te despierte, nunca vulnerarías la intimidad de María.";
+			new_line;
+			return true;
+		],
+		is_destroyed [;
+			return self.destroyed;
+		],
+		reset [;
+			self.destroyed = false;
+		],
+		size SIZE_S
+ private
+		destroyed false,
+;
+
+!! @DormitorioMariaPuerta
+Item	-> DormitorioMariaPuerta "puerta"
+ has	female open openable scenery,
+ with	name_f 'entrada' 'puerta' 'salida',
+		gender G_FEMENINO,
+		adjectives 'roja',
+		!!------------------
+		before [;
+			Enter:
+				<<Enter DirDescansillo>>;
+		],
+		description [;
+			if (location == DormitorioMaria) {
+				print "La puerta conduce de vuelta al rellano.";
+			} else {
+				print "Pintada en un alegre color rojo, esta puerta conduce a la habitación de tu hija raptada.";
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! @Peluche
+Item	-> Peluche
+ has	male remarkable,
+ with	short_name [;
+			print "muñeco de [](peluche:REMARKABLE_OBJECT)";
+			return true;
+		],
+		name_m 'muneco' 'osito' 'oso' 'pardo' 'peluche',
+		gender G_MASCULINO,
+		adjectives 'maria',
+		!!------------------
+		describe [;
+			!! TODO - personalizar si está sobre la nieve
+			if (self has described) {
+				new_line;
+				print "[self](Pardo) descansa en el suelo.";
+			} else {
+				new_line;
+				print "Hay un [self](osito) de felpa en el suelo.";
+			}
+			new_line;
+			return true;
+		],
+		description [;
+			print "*Pardo* ha sido el peluche favorito de María y su compañero más leal durante años";
+			!! TODO
+			if (true) {
+				print ". La sonrisa tejida en su rostro resulta tranquilizadora de algún modo. Y aún tratándose de simples botones negros, en sus ojos casi parece atisbarse una chispa de inteligencia";
+			} else {
+				print ". La sonrisa tejida en su rostro resulta melancólica de algún modo. Y aún tratándose de simples botones negros, sus ojos parecen a punto de echarse a llorar desconsoladamente";
+			}
+			print ".";
+			new_line;
+			return true;
+		],
+		is_destroyed [;
+			return self.destroyed;
+		],
+		reset [;
+			self.destroyed = false;
+		],
+		size SIZE_M,
+ private
+		destroyed false,
+;
+
+!! @DormitorioMariaVentana
+Atrezzo	-> DormitorioMariaVentana "ventana"
+ has	female ~open openable transparent,
+ with	name_f 'ventana',
+		gender G_FEMENINO,
+		!!------------------
+		description [;
+			!! TODO
+			return false;
+		],
+;
+
+
+!!==============================================================================
+!!
+!!	4)	Frente a tu casa
+!!
+!!------------------------------------------------------------------------------
+
+!! @Jardin
+Outdoors	Jardin "Frente a tu casa"
+ has	male,
+ with	name_m 'jardin',
+		gender G_MASCULINO,
+		adjectives 'exterior',
+		!!------------------
+		description [;
+			print "Un manto de [JardinNieve] de al menos cuatro palmos ha enterrado casi por completo el jardín delantero, a excepción de algunos pocos [JardinArbustos]] raquíticos y sin hojas que sobresalen aquí y allá al lado [del JardinValla] que delimita tu propiedad. Más allá del jardín, [un JardinCamino] parte de la plaza mayor [del JardinPueblo] y serpentea por entre edificios, primero, y por entre los campos de labranza, después, en dirección";
+			if (Utils.is_compass_enabled()) {
+				print " [n_obj]. Hacia el castillo del barón";
+			} else {
+				print " al bosque. Y [al JardinDirCastillo] del barón";
+			}
+			print ".";
+			new_line;
+			return true;
+		],
+		e_to [;
+			if (Utils.is_compass_enabled()) <<Enter JardinPueblo>>;
+			else return self.cant_go();
+		],
+		in_to [;
+			<<Enter JardinDirCasa>>;
+		],
+		n_to [;
+			if (Utils.is_compass_enabled()) <<Enter JardinDirCastillo>>;
+			else return self.cant_go();
+		],
+		s_to [;
+			if (Utils.is_compass_enabled()) <<Enter JardinCerro>>;
+			else return self.cant_go();
+		],
+		w_to [;
+			if (Utils.is_compass_enabled()) <<Enter JardinDirCasa>>;
+			else return self.cant_go();
+		],
+;
+
+!! @Hacha
+Item	-> Hacha "hacha"
+ has	male,
+ with	name_m 'hacha',
+		gender G_MASCULINO,
+		adjectives 'afilado' 'lenador' 'mango',
+		!!------------------
+		before [;
+			Burn:
+				print "El mango [del self] es resistente y no arderá fácilmente.";
+				new_line;
+				return true;
+		],
+		description [;
+			print "Sin duda alguna tu herramienta principal. Está afilada, tiene un buen equilibrio, y los músculos de tus brazos están perfectamente acostumbrados a su peso";
+			!! TODO
+			if (true) {
+				print ". Probablemente podrías partir la cabeza del barón por la mitad con un sólo golpe";
+			}
+			print ".";
+			new_line;
+			return true;
+		],
+		invent [
+			i obj;
+			!! XXX - Es posible que el comportamiento no sea el esperado si en
+			!! la localidad actual hay un objeto con la propiedad 'describe',
+			!! pero que ésta retorne falso. En ese caso simplemente no se
+			!! imprimiría el apéndice ", apoyado contra la pared":
+			if (parent(self) == Jardin && inventory_stage == 1) {
+				objectloop(obj in location
+					&& obj hasnt scenery
+					&& obj hasnt concealed
+					&& ~~(obj provides describe)) {
+					i++;
+				}
+				if (i == 1) {
+					print "[un self], apoyado contra la pared";
+					return true;
+				}
+			}
+			return false;
+		],
+		size SIZE_M,
+;
+
+!! @JardinArbustos
+Atrezzo	-> JardinArbustos "arbustos"
+ has	male pluralname,
+ with	name_m 'arbusto',
+		name_mp 'arbustos',
+		gender G_MASCULINO + G_PLURAL,
+		adjectives 'seco' 'secos',
+		!!------------------
+		description [;
+			print "Hace semanas que han perdido todas sus hojas y, con ellas, el poco atractivo que pudieran tener. Ahora son sólo esqueletos enfermizos aguardando la primavera.";
+			new_line;
+			return true;
+		],
+;
+
+!! @JardinBuzon
+HeavyItem	-> JardinBuzon "buzón"
+ class	Receptacle,
+ has	male ~open openable,
+ with	name_m 'buzon',
+		gender G_MASCULINO,
+		adjectives 'abollado' 'roto',
+		!!------------------
+		before [;
+			Attack:
+				!! TODO
+				if (self.state == 2) {
+					print "Ya está[n self] destrozad[o self].";
+					new_line;
+					return true;
+				} else {
+					if (IndirectlyContains(player, Hacha)) {
+						self.state = 2;
+						print "Golpeas violentamente el buzón con la culata del hacha. Sale despedido de sus sujecciones y cae sobre la nieve, a varas varas de distancia, con la tapa completamente destrozada.";
+						new_line;
+						return true;
+					} else {
+						self.state = 1;
+						print "Lleno de ira, golpeas con un puñetazo el buzón.";
+						new_line;
+						return true;
+					}
+			}
+		],
+		describe [;
+			new_line;
+			switch (self.state) {
+				1:
+					print "Hay [un self] abollad[o self], colgad[o self] junto a la entrada de tu casa.";
+				2:
+					print "[El self] está[n self] destrozad[o self] sobre [la JardinNieve], a pocos pasos de la entrada de tu casa.";
+				default:
+					print "Junto a la entrada de tu casa hay colgado un sencillo [self] de hojalata.";
+			}
+			new_line;
+			return true;
+		],
+		description [;
+			!! TODO
+			print "A small letterbox hangs on the outside of the garden fence.";
+			new_line;
+			return true;
+		],
+		is_broken [;
+			return (self.state > 0);
+		],
+;
+
+!! @CartaBaron
+Item	-> -> CartaBaron
+ has	female remarkable,
+ with	short_name [;
+			print "[](carta:REMARKABLE_OBJECT)";
+			if (self has described) {
+				print " del barón";
+			}
+			return true;
+		],
+		name_f 'carta' 'misiva',
+		name_m 'correo',
+		gender G_FEMENINO,
+		adjectives 'baron',
+		!!------------------
+		before [;
+			Attack:
+				!! TODO
+				move self to Limbo;
+				print "In a fit of rage you tear the letter apart in dozens of shreds. How dare he! ~I love her,~ he writes. The heartless villain…";
+				new_line;
+				return true;
+			Burn:
+				return Baron.sets_fire(self);
+			Consult,
+			Read:
+				<<Examine self>>;
+		],
+		description [
+			previous_style;
+			if (self has described) {
+				print "Eres incapaz de leer de nuevo este insulto.";
+			} else {
+				print "El mensaje del pergamino está manuscrito con una letra legible y elegante:";
+				new_line;
+				previous_style = Utils.set_text_style(TEXT_STYLE_IMPORTANT);
+				new_line;
+				print "A los padres de María,
+				^^
+				Con la presente quiero comunicarles que su hija ha sido conducida hasta mi castillo, a orden mía. No tienen nada de qué preocuparse: se encuentra perfectamente a salvo y todas sus necesidades serán atendidas con la mayor diligencia. No intenten visitarla ni, mucho menos, pretendan llevársela de mi lado. El castillo está fuertemente custodiado y sólo conseguirían poner en peligro su propia integridad.
+				^^
+				Entiendo la contrariedad que sin duda supone tener que desprenderse así de una hija, y me disculpo sinceramente por provocarles semejante sufrimiento. ¿Qué motivos hay entonces detrás de tal acción? Amo a María. La amo y no puedo vivir sin tenerla a mi lado. Conmigo será feliz. Esto último lo prometo por mi honor. Confío en que algún día puedan entender que se trata de la situación más beneficiosa para ella.
+				^^
+				El Barón.";
+				new_line;
+				Utils.set_text_style(previous_style);
+				new_line;
+				print "Tus manos tiemblan inconteniblemente, arrugando la carta.";
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! @JardinCamino
+Atrezzo	-> JardinCamino "camino"
+ class	Background,
+ has	male,
+ with	name_m 'camino',
+		gender G_MASCULINO,
+		!!------------------
+		description [;
+			print "El paso de la gente y de los carros de caballos han convertido el camino en un barrizal medio congelado. Discurre desde el centro [del JardinPueblo] en dirección [al JardinDirCastillo] del barón.";
+			new_line;
+			return true;
+		],
+;
+
+!! @JardinCasa
+Atrezzo	-> JardinCasa "casa"
+ has	female,
+ with	name_f 'casa' 'ventana',
+		name_fp 'ventanas',
+		name_m 'edificio',
+		gender G_FEMENINO,
+		adjectives 'tu' 'madera',
+		!!------------------
+		before [;
+			Enter:
+				<<Enter JardinDirCasa>>;
+		],
+		description [;
+			print "Hecha de madera y pintada en colores claros, al igual que prácticamente todas las demás construcciones del pueblo. Tiene una altura de dos plantas, con los dormitorios en la planta superior y el salón, la cocina y tu taller en la inferior";
+			if (self hasnt described) {
+				print ". Buscas con la mirada la silueta de Gilda recortada en la ventana de tu dormitorio, pero no está ahí. Parece que nadie se despedirá de ti esta noche";
+			}
+			print ".";
+			new_line;
+			return true;
+		],
+;
+
+!! @JardinCerro
+Atrezzo	-> JardinCerro
+ class	Background,
+ has	male,
+ with	short_name [;
+			print "[](cerro:OTHER_OBJECT) del campesino";
+			return true;
+		],
+		name_f 'colina' 'elevacion' 'loma' 'montana',
+		name_m 'cerro' 'otero',
+		gender G_MASCULINO,
+		adjectives 'blanco' 'campesino' 'del',
+		!!------------------
+		before [;
+			Enter:
+				!! TODO
+				!! That road would take you out of the valley, each step taking you farther away from Maartje and the baron.
+				print "it does not lie in the right direction if you wish to reach the baron.";
+				new_line;
+				return true;
+		],
+		description [;
+			print "El cerro del campesino es la colina más alta de los alrededores. Se dibuja completamente blanco detrás [del JardinPueblo].";
+			new_line;
+			return true;
+		],
+;
+
+!! @JardinDirCasa
+AdjacentRoom	-> JardinDirCasa "entrada"
+ has	male,
+ with	name_f 'entrada',
+		gender G_FEMENINO,
+		adjectives 'casa',
+		!!------------------
+		adjacent_room Descansillo,
+		before [;
+			Enter:
+				!! TODO - volver a colgar el abrigo
+				self.AdjacentRoom::before();
+				return true;
+			Examine,
+			Search:
+				<<Examine JardinCasa>>;
+		],
+;
+
+!! @JardinDirCastillo
+Atrezzo	-> JardinDirCastillo "castillo"
+ class	Background,
+ has	male,
+ with	name_f 'fortaleza',
+		name_m 'castillo',
+		gender G_MASCULINO,
+		adjectives 'baron',
+		!!------------------
+		before [;
+			Enter:
+				if (self.state == 0) {
+					self.state++;
+					print "Te dispones a emprender el camino hacia [el self] del barón, pero vacilas antes siquiera de echar a andar";
+					if (~~JardinBuzon.is_broken()) {
+						print " al notar la ira que ha ido creciendo poco a poco en tu interior";
+					}
+					print ". ¿Cómo pueden tus vecinos descansar tan tranquilos? ¿Cómo es que ni uno sólo ha tenido las agallas de levantar la voz y salir en auxilio de María? Tan faltos de empatía… tan… tan asquerosamente egoístas. Todos saben lo que ha ocurrido pero nadie piensa mover un músculo para remediarlo porque nadie se siente responsable. Porque mientras algo no te afecte directamente es mucho más cómodo ignorarlo, aunque esté ocurriendo frente a tus propios ojos…";
+					new_line;
+					if (~~JardinBuzon.is_broken()) {
+						new_line;
+						<Attack JardinBuzon>;
+					}
+					return true;
+				}
+				print "Mascullas un insulto contra la humanidad en su conjunto y te abres paso a grandes zancadas por entre la capa de nieve.
+				^^";
+				new_line;
+				Utils.print_horizontal_rule();
+				new_line;
+				Utils.start_scene(3);
+				return true;
+		],
+;
+
+!! @JardinNieve
+Atrezzo	-> JardinNieve "nieve"
+ has	female,
+ with	name_f 'nieve',
+		gender G_FEMENINO,
+		!!------------------
+		before [;
+			Dig,
+			LookUnder:
+				if (second ~= nothing
+					&& second ~= player
+					&& IndirectlyContains(player, second)) {
+					print "Hurgas aquí y allá entre [la self] con [el second], sin encontrar nada.";
+					new_line;
+					return true;
+				}
+				print "Hurgas aquí y allá entre [la self], sin encontrar nada.";
+				new_line;
+				return true;
+			Search:
+				<<Dig self>>;
+		],
+		description [;
+			print "Una gruesa capa de nieve se ha asentado sobre el paisaje a lo largo de los últimos días. Todo está blanco salvo por [el JardinCamino], al final del jardín, convertido en un lodazal resbaladizo.";
+			new_line;
+			return true;
+		],
+		react_before [;
+			Dig:
+				if (noun == nothing || noun == location) {
+					<<Dig self second>>;
+				}
+		],
+;
+
+!! @JardinPueblo
+Atrezzo	-> JardinPueblo "pueblo"
+ class	Background,
+ has	male,
+ with	name_f 'iglesia' 'plaza' 'torre',
+		name_m 'campanario' 'pueblo' 'templo',
+		name_mp 'edificios' 'tejados',
+		gender G_MASCULINO,
+		adjectives 'mayor',
+		!!------------------
+		before [;
+			Enter:
+				!! TODO
+				print "That leads to the village square next to the church, far from Maartje.";
+				new_line;
+				return true;
+		],
+		description [;
+			!! TODO - pueblo
+			!! "Your house lies at the edge of the village, which in this cold December night is burdened with a thick layer of snow. At this time of the night, nobody walks the streets anymore. The village wraps itself in silence.";
+			!! TODO - iglesia
+			!! "The top of the church tower just peeks above the houses on the other side of the street, like a black finger against the star-filled sky.";
+
+			print "Aunque la plaza mayor queda oculta tras los edificios, desde aquí puedes ver la torre de la iglesia elevándose por encima del resto de los tejados, igual que esos [JardinArbustos]] lo hacen sobre [la JardinNieve]. Tras ella, a lo lejos, [el JardinCerro] se ve completamente blanco.";
+			new_line;
+			return true;
+		],
+;
+
+!! @JardinValla
+Atrezzo	-> JardinValla "valla"
+ has	female,
+ with	name_f 'cerca' 'valla',
+		gender G_FEMENINO,
+		adjectives 'madera',
+		!!------------------
+		before [;
+			Close,
+			Open:
+				print "No rodea al jardín por completo. Tiene una abertura lo suficientemente grande como para dejar el paso a un carro de caballos.";
+				new_line;
+				return true;
+		],
+		description [;
+			print "Una sencilla cerca de madera que delimita tu jardín. Viendo hasta dónde le llega, calculas que la capa de [JardinNieve] tiene unos cuatro palmos de espesor.";
+			new_line;
+			return true;
+		],
+;

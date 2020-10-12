@@ -2,8 +2,8 @@
 
 #	File:		preprocesaTexto.pl
 #	Author(s):	J. Francisco Martín <jfm.lisaso@gmail.com>
-#	Version:	3.4
-#	Released:	2019/09/17
+#	Version:	3.5
+#	Released:	2020/05/31
 #
 #	Script Perl para preprocesar código fuente escrito en lenguaje Inform 6.
 #	Permite añadir ciertas etiquetas a las descripciones de los objetos, que
@@ -13,6 +13,9 @@
 #
 #	HISTORIAL DE VERSIONES
 #
+#	3.5: 2020/05/31	Modificada la expresión regular para que la sustitución de
+#					género de un objeto acepte formas tanto masculina como
+#					femenina
 #	3.4: 2019/09/17	Al imprimir el listado de objetos contenidos por otro se
 #					dejan de listar los objetos ocultos por defecto
 #	3.3: 2019/09/12 Se omiten los comentarios si empiezan por '!!' (sin las
@@ -106,8 +109,8 @@ for (@lines) {
 
 	# Terminación de número adecuada: [n obj]
 	s/\[\s*n\s+(.+?)\s*\]/", (n) \1, "/g;
-	# Terminación de género adeuada: [o obj]
-	s/\[\s*o\s+(.+?)\s*\]/", (o) \1, "/g;
+	# Terminación de género adeuada: [o/a obj]
+	s/\[\s*(o|a)\s+(.+?)\s*\]/", (o) \2, "/g;
 
 	# Lista de objetos contenidos por otro objeto:
 	# [lista de objetos en/sobre obj<códigos de listado>]
