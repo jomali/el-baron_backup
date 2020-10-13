@@ -1,7 +1,7 @@
 
 # Ramas del árbol de directorios:
 /dist
-/docs
+# /docs
 /empaquetador
 /fonts
 /original
