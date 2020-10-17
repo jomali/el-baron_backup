@@ -1,0 +1,447 @@
+
+The bronze doors fall closed behind you, and you hear bolts being drawn  across the door. There is no way back; it is you, or the dragon. Gripping the axe in a gauntletted hand, you step forward, into the heat.
+
+
+THE BARON
+An interactive story, written by Victor Gijsbers
+and published under the GNU General Public License.
+New readers: PLEASE TYPE 'MENU', even if you are an
+experienced reader of interactive fiction.
+Release 1 / Serial number 060329 / Inform v6.30 Library 6/11 S
+Standard interpreter 1.1 (1C) / Library serial number 040227
+
+>l
+
+The cave's vestibule
+This small rectangular hall has been chiselled from the rock by humans and covered with black marble. Two bronze doors to the south hermetically close off the exit; in the north a narrow cave leads to the fiery lair of the dragon. The floor is littered with blackened bones and skulls, throwing flickering shadows southwards.
+
+>x walls
+The walls and the ceiling of the hall have been covered with sheets of black marble. The white veins running through it form a pattern that starts spinning before your eyes when you look at it too long.
+
+>x patterns
+You can't see such a thing, or it is not important to interact with it.
+
+>x doors
+Two bronze doors block the exit to the south. The likeness of a burning man has been engraved on them.
+
+>x man
+Instead of the pain you would expect on the face of a burning man, the graven figure's expression speaks of craving and desire. It is as if the flames drive him towards the object of his lust, whatever that may be.
+
+>open them
+The doors have been bolted from the other side, and not even your strength can open them. It has been agreed that you will knock when you have defeated the dragon.
+
+>knock on the doors
+Before you have even tried to kill the dragon? Only a coward would do that.
+
+>x bones
+Everywhere on the ground lie bones and skulls, blackened by the all-devouring fire that proved fatal to their owners.
+
+>smell
+The penetrating smell of sulphur fills the entire cave.
+
+>pray
+"For the glory of God!", you exclaim.
+
+>i
+You are carrying:
+  a helmet (being worn)
+  a full suit of armour (being worn)
+  a battle axe
+
+>x helmet
+The helmet is functional, not decorative, and fits neatly with the rest of the armour. The visor is open, leaving your sight unobstructed but exposing your face to attack.
+
+>close visor
+You close the helmet's visor.
+
+>x armour
+A full suit of armour made of shiny steel, generously oiled, grants excellent protection against external threats. The suit has been fastened with leather straps at the back, which can only be undone by others.
+
+>x axe
+The battle axe is razor-sharp and so heavy that few can lift it, but you can handle it with lethal speed and precision.
+
+>hear
+From the north you hear restless snarling.
+
+>n
+You try to step around the human bones, but with each step several are crushed under the weight of you and your armour.
+
+A low passage
+The cave is low, and you have to stoop to walk through. The floor is covered by a thick layer of ashes. The flames that erupt from the many cracks in the ground of the large hall to the north have an almost blinding intensity, and the heat if nigh unendurable. You are sweating heavily. In the south lies the relative coolness of the vestibule.
+
+>x flames
+Flames several meters high illuminate the hall to the north.
+
+>x ash
+A layer of tamped down ashes covers the ground; your feet leave hardly an impression.
+
+>n
+Holding the axe tightly, the visor of your helmet closed--less honourable, but prudent--, you approach the dragon.
+
+An underground hall
+The hall is dozens of meters high and hundreds of meters wide and deep. The floor is covered with a thick layer of ash, except where cracks and fissures cleave the rock. Huge flames shoot upwards out of these cracks. The heat is almost unbearable.
+
+In the middle of the hall is the dragon, an enormous, red, scaly monster. It turns its head towards you, and stares at you with two big yellow eyes.
+
+>x dragon
+Thirty meters from the tip of its tail to its head, coloured in an angry red, with scales that blink like they were made of the hardest steel; but it is the fire in the eyes and the throat of the dragon, the play of flames behind its rows of pale teeth, that is truly horrifying. This is more than a monster with a fiery breath; it is fire itself that stands before you. Fighting the dragon suddenly seems like doing battle with the all-devouring flames, like waging war against a force of nature that with indomitable force will destroy all men, one by one, and can never be defeated.
+
+The dragon turns towards you, and approaches you with heavy steps. It opens its mouth and emits a cry that makes the entire cave shake. For a moment you stagger, but then regain your balance.
+
+>talk to dragon
+You wouldn't know what to say.
+
+An immense jet of fire spews forth from the mouth of the dragon, past its sharp teeth, and surrounds you completely. The pain makes you gasp.
+
+>attack dragon
+You fight off the pain and charge again--even if you have to pay for it with your own life, the monster must die. Through the flames you see the two big yellow eyes; you raise your axe to plant it right between them. But suddenly the dragon's tail hits you from your left, with such forces that you fly many meters through the hall before your head hits a wall. The helmet softens the blow and you do not loose consciousness. When you open your eyes, you see the head of the dragon approaching you, its mouth wide open--once again it breaths its deadly fire at you, and after a short scream you can no longer hear yourself the darkness falls over you like a cool blanket.
+
+
+[Press a key.]
+
+
+
+
+
+
+
+
+
+   THE BARON
+
+   An interactive story by Victor Gijsbers.
+
+
+
+
+ Chi l'anima mi lacera?
+ Chi m'agita le viscere?
+ Che strazio, ohimè, che smania!
+ Che inferno, che terror!
+
+
+ "Who lacerates my soul?
+  Who tortures my body?
+  What torment, oh me, what agony!
+  What a Hell! What a terror!"
+
+
+
+
+    From the opera "Don Giovanni"
+    Text: Lorenzo da Ponte
+    Music: Wolfgang A. Mozart
+
+
+
+A penetrating, dissonant sound twice breaks the silence of the night, waking you from restless sleep. After the second note the church bell falls silent, and the stillness of the winter night settles over the village once again. You rub the sleep from your eyes. Very carefully, because you do not wish to wake your wife Hilde, you step out of the bed. She would certainly try to stop you.
+
+
+
+
+
+
+In your bedroom
+The weak light of the moon, which enters the room through the window, envelops the furniture of the bedroom in a cloak of unworldly beauty. Only the soft breathing of your wife in the large bed breaches the silence. The door next to the heavy oaken wardrobe leads to the landing to the north. It is ice cold in the unheated room.
+
+On the chair are your work clothes.
+
+You can see a pine night table here.
+
+>x wife
+You lean forward to better see Hilde's face; for just a moment she seems to go rigid and her breathing falters before resuming its steady rhythm. But you know enough--she is awake! She knows where you are going, but pretends to be asleep. A quiet approval she'd never be able to express in words? Or is she simply too afraid to confront you?
+
+>x clothes
+These are the clothes you wear when you go to fell trees in the woods on weekdays: tough jeans, a red-blue checkered shirt and two heavy leather boots. A faint smell of sweat hangs around the shirt.
+
+>take them
+Taken.
+
+>wear them
+You put on your work clothes.
+
+>x table
+A simple night table made of pinewood, the very first piece of furniture you ever made. On the night table is a family photo.
+
+>x photo
+This photograph, made for the tenth anniversary of your marriage to Hilde, is a few years old. Solemnly, you stand next to each other like two black-and-white statues, once again clad in your wedding clothes. In the foreground, close against you, stands your daughter Maartje--little Maartje, in her beautiful white dress, a radiant smile on her face. In the picture you have laid a protective arm across her shoulder--but now she has been kidnapped by the evil baron. Once again you vow to do everything possible to free her.
+
+>x door
+The close-fitting door separates your bedroom from the landing, and hence from the rest of the house.
+
+>open it
+You open the door to the landing.
+
+>n
+
+On the landing
+The landing is enveloped by uneven darkness. Moonlight enters through the open door to your bedroom in the south. A red door to the north leads to the room of your daughter Maartje. Next to the stairs down stands an elegant cupboard, above which hangs a large ornate mirror in a gilded frame.
+
+>n
+(opening the door to Maartje's room)
+
+In Maartje's room
+Without Maartje's radiant presence, her room seems dead and empty. It is a dreary sight: a bed in which nobody sleeps, a dollhouse with which nobody plays, a desk behind which nobody studies. The gay colours in which you painted her ceiling and furniture appear in the pale light of the stars as a pallet of greys. The door to the south leads back to the landing.
+
+On the desk is a diary.
+
+You can see a teddy here.
+
+>x diary
+The book, bound in fake red leather, must be a diary, since it is locked by a small copper lock. But although you burn with curiosity, you will not damage Maartje's diary.
+
+>x teddy
+Brown has been Maartje's favourite toy animal and most loyal companion for years. The smile on his face is reassuring, and even if his eyes are merely buttons, some kind of intelligence seems to reside in them.
+
+>take it
+Taken.
+
+>s
+
+On the landing
+The landing is enveloped by uneven darkness. Moonlight enters through the open door to your bedroom in the south. To the north, the red door to Maartje's room is slightly ajar. Next to the stairs down stands an elegant cupboard, above which hangs a large ornate mirror in a gilded frame.
+
+>d
+Cautiously you seek your way downwards through the darkness. In the hall you grab your winter coat and put it on, then you open the front door and step outside into the garden.
+
+
+In the garden
+Your front garden too has been buried by a thick layer of snow, which hides all plants from view. Only a few bare bushes that crouch against the garden fence penetrate the white blanket. Behind you, the front door leads back into the house, while the road to the east winds through the village and the forest to the baron's castle. From his unreachable heights the moon looks reproachfully down on you. The tip of the church tower can be seen above the houses on the other side of the road.
+
+You can see a letterbox (which is closed) and an axe here.
+
+>x axe
+This is your most important tool. Without doubt you have felled thousands of trees with it. The axe is well-honed, has a good balance, and with your muscles the weight is no problem at all. You will probably be able to cleave the baron's head in a single blow.
+
+>take it
+Taken.
+
+>x letterbox
+A small letterbox hangs on the outside of the garden fence.
+
+>open it
+You open the letterbox, revealing a letter from the baron.
+
+>read letter
+In elegant handwriting, a message has been written on the parchment:
+
+To Maartje's parents,
+
+With this letter I want to tell you that your daughter Maartje has been taken from your home and brought to my castle at my command. Do not worry: she is safe here and is well taken care of. Do not try to visit Maartje or take her away from me; my castle is heavily guarded and you would only risk your own well-being.
+
+I understand that it must be difficult for you to lose your daughter, and I apologise for your suffering. What is my motive? I love her, and I cannot live without her at my side. With me she will be happy, I promise that on my honour and my hope of salvation. Someday you will understand that this is the best possible situation.
+
+The Baron.
+
+Trembling with anger you stare at the signature at the bottom of the page.
+
+>x church
+The top of the church tower just peeks above the houses on the other side of the street, like a black finger against the star-filled sky.
+
+>e
+A second you hesitate, but then you determinedly step onto the road towards the dark forest. No sign of life is apparent in the village. Slowly you become angry at all your neighbours and fellow villagers. Where are they when you need them? Why is there not a single one among them with the guts to free Maartje? A lack of love--that is what enables people to ignore the problems of others. Everybody knows what has happened--but nobody does anything, because nobody feels responsible.
+
+After several minutes you reach the edge of the woods. It is like walking into the dark jaws of a gigantic and evil beast to follow the path under the overhanging foliage of the coniferous trees. The light of the moon hardly reaches the ground, and several times you stumble over large branches that lie in wait under the snow like traps.
+
+But you firmly step onwards while you try to devise a plan for entering the baron's castle. Then, suddenly, the howling of wolves starts you out of your reflections. It is hard to judge, but you would be surprised if they are more than a kilometer away from you. And it is at least another ten kilometers eastward to the baron's castle.
+
+
+Walking on a path through the forest
+Even on the sunniest days, this coniferous forest is dim and gloomy, and in the dead of this winter night it is pitch dark. A path, hardly recognisable as such, leads from the village in the west to the castle in the east. The howls of a pack of wolves rise from nearby. In this season game is scarce, and the wolves are hungry, bold and dangerous even to men.
+
+>e
+
+On a path in the forest
+Here the path is narrow and winding, and hardly recognisable under the snow. Moonlight penetrates the dense foliage only sporadically. Eastwards lies the baron's castle; to the west, your own footprints lead back to the village.
+
+From the trees to the left, a dark shape suddenly jumps forward. It is a she-wolf; she stops a stone's throw away from you, in the middle of the path, fixating you with two eyes that mirror the moon. From her throat comes a fierce growl.
+
+>x wolf
+For a wolf she is large and extraordinarily ferocious, but winter has clearly taken its toll: she is lean and scrawny, and her fur dirty and dull.
+
+The she-wolf opens her mouth, revealing two rows of sharp teeth. From the woods, a second shape skulks towards her: a young wolf, very lean.
+
+>e
+Are you sure you want to try to walk past the ferocious she-wolf?
+y
+
+Step by step you inch forward, keeping as close to the trees as possible. The she-wolf growls dangerously, and keeps her eyes fixed on your face.
+
+"Show no fear!", you counsel yourself. Dogs can smell fear, and wolves are really just wilder and smarter dogs. Or so you tell yourself.
+
+You keep your face straight, and slowly, making no fearful movement, steal past the wolf and then a few steps further. Your heart is beating so wildly that you are surprised not to hear your ribs cracking. Backwards, still facing the she-wolf, you keep walking along the path -- calmly -- without running -- as if you hadn't been afraid for a single moment.
+
+She holds her ground, and watches you until you've vanished from sight. But she does not pursue you.
+
+On a path in the forest
+From this part of the winding path, you can see the baron's castle rising in the east. The silhouette with the three leaning towers is outlined against the starry sky. A trail of footprints--yours--indicate the path to the west. Here, so close to the baron's domain, even the wolves are silent.
+
+>e
+
+Before the castle's gate
+The castle's drawbridge has been lowered, twenty meters of wooden boards that allow you to cross the deep moat to the north. On the other side a massive gate guards the entrance to the keep, but the doors are wide open. From where you are standing, the three towers appear to reach to the heavens, and the hordes of gargoyles that people the walls stare down at you disapprovingly.
+
+The sound of flapping wings makes you look up, where the battlements, towers and monstrous gargoyles of the castle are outlined against the star-filled sky. One of the gargoyles has spread his wings, and with slow flaps sails down to the drawbridge. A few steps in front of you, he lands, a stone demon as big as a man. Two ink black eyes stare at you intently.
+
+Then the gargoyle says with a voice like tearing rock: "It takes courage not to be diverted from the path you have chosen. But won't you just keep going in circles if you never confront the threat?"
+
+(1) "If your life is satisfactory and pleasant, why would you want to confront threats? What is wrong with going in circles, as long as the circle is easy going?"
+(2) "My aim is clear, my path is straight. I am here to get my daughter, and I will not shun a confrontation with the baron."
+(3) "The most important thing is to remain true to one's self, and to make sure that external forces do not divert you from the path your soul has determined for you. Authenticity trumps everything, even it it leads to circles."
+
+Select an option >> 1
+
+The gargoyle regards you thoughtfully, as if considering your answer. The he nods, once.
+
+"Again you come here," he goes on to say, "to fail once more. Do you still believe that it will once end differently?"
+
+(1) "You are mistaken. This is the first time I've come here."
+(2) "'Again'? You mean that I have already been here, that I have penetrated the baron's castle before?"
+(3) "Again and again and again, and so on throughout eternity, until I manage to bring it to an end. There is always another chance."
+(4) "No, I cannot change. I have tried, as you well know. But the circle of fate is too strong: I am doomed to walk for eternity, and with each circuit I paint my soul a blacker shade."
+
+Select an option >> 1
+"So you have forgotten again." In the unearthly bass of the gargoyle, you hear tiredness and pity. "You come here every night, I speak to you every night, every night you lose the fight, and the next night you once again stand before me with filled with naive courage. If you keep closing your eyes to your own deeds, you will never overcome yourself!"
+
+(1) [Firm] "Be silent, devil! I am here for the first time, and your lies cannot take my courage away from me."
+(2) [With a panicky voice] "No, no, you are mistaken or trying to deceive me! I have never been here before, and it will not be necessary for me to come here again!"
+(3) Try to remember whether you have been here before.
+
+Select an option >> 1
+"Ash you wish." With a cracking sound the stone monster respectfully bows its head. "I don't think you will succeed, but who knows--life has many surprises. Don't let me detain you...unless...unless I am allowed to ask you a question about my own problem?"
+
+(1) "I have no time for you and your un-life, vile creature. My daughter is waiting for me."
+(2) "I can spare a few moments. Get it off your chest."
+
+Select an option >> 1
+"Of course. As I said, I won't detain you any longer."
+
+He turns around, and with several beats of his wings he takes off, circles around the castle and then disappears into the darkness of the night.
+
+>x castle
+Almost as in a fairy tale, the white castle rises from the snow. An enormous gate guards the only entrance. Two smaller towers, to the left and to the right of the gate, lean frightfully forward, as if they could fall over any moment. But it is the middle tower that truly inspires awe: dozens of meters high it always seems to lean towards you, no matter where you stand, ready to crush you as soon as soon as it has the chance. Black gargoyles adorn the walls everywhere.
+
+>n
+
+The castle's hall
+Behind a facade of intactness a true ruin hides itself. Half the walls of the completely empty hall have fallen down, and the moonlight enters unhindered past the skeleton of a roof. The rest of the castle is in no better state: large, snow-covered heaps of stone indicate were buildings used to be. Only to the east a doorway leads to a hall that is mainly intact. A few walls of the building to the west still stand erect, and to the northwest a narrow path winds between a boulder and a massive statue to the castle's courtyard.
+
+>nw
+
+In the courtyard
+From here the state of the castle can be easily appraised. Both of the smaller towers have collapsed completely on the inside, and can no longer be climbed. In contrast, the large tower, which lies at the north side of the courtyard, seems mostly intact. Most of the buildings have been reduced to no more than rubble; only the ruin to the south and the two halls in the southeast retain some structure.
+
+>n
+
+At the bottom of the middle tower
+The circular room is full of stacks of paper that have been put down without any apparent order. Several stacks have toppled over, but they don't quite block the way to the staircase that winds upwards from the middle of the room. Two pairs of muddy footsteps--one of an adult wearing boots, the other of a child on bare feet--lead from the door to the south all the way to the stairs.
+
+>u
+You run up the stairs, which turn and turn until you must be almost at the tower's top. There they lead into a large room.
+
+In the baron's chamber
+The room is sparsely furnished and dark, illuminated only by the candles of a single chandelier. In the middle of the room lies a bear skin; on the walls hang the stuffed heads of wolves, reindeer and other large mammals. In the back of the room is a large stone throne, inlaid with fierce rubies that reflect the light of the chandelier thousandfold. Behind it, on the northern side of the chamber, are two large bronze doors.
+
+On the throne is the baron.
+
+>x baron
+A muscled man, in his late forties, has pulled an ermine cloak tightly around him. A sardonic smile plays around his lips as he drums with his fingers on the throne. Now and then he reaches up to readjust the heavy crown on his head.
+
+>talk to baron
+"You have to understand," the baron says before you have been able to say anything, "that I have acted only from the most noble of motives. At each point, it has been my only wish to make your daughter happy."
+
+(1) [Enraged] "Happy? Even your beastly brain cannot be so perverted that you believe these lies!"
+(2) [Sadly] "No, that is not true. Her happiness has never been the aim of your actions."
+(3) [Tiredly] "Spare me your lies--our lies. I have heard them too often, and too often have I learnt to recognise them for the pathetic self-justifications they are."
+
+Select an option >> 1
+"All right, all right." The baron raises his hands, as if to clam you. "Perhaps her happiness was not the reason I kidnapped her. But nevertheless: could I help it? Could I have acted otherwise? Are you justified in being so angry at me?"
+
+(1) "Why? How could it possibly be the case that here--here!--condemnation is inappropriate?"
+(2) "Don't say a word. It are only my own fantasies and chimeras you put into words."
+(3) Kill the baron before he can convince you of anything.
+
+Select an option >> 3
+"I don't want to hear your lies any more," you say, and walk towards him. A fearful expression appears on his face. You tightly grab the axe you have brought from home for exactly this purpose, and then--a single blow is enough.
+
+Like the nothing he has always been the baron implodes, becomes smaller and smaller and then disappears entirely. All that remains is his crown.
+
+>x crown
+Dull metal forms a single round ring, without decorations, without gems, without engravings: only a simple band without interruptions that goes round and round eternally, made to fit a man's head.
+
+>take it
+Taken.
+
+>wear it
+You grab the metal circle with two hands, and carefully put it on your head. The crown is heavy and presses painfully on your mind.
+
+>x doors
+The wall to the north, behind the baron's throne, contains two large bronze doors. An image of a burning man has been engraved on them.
+
+>open them
+As soon as you walk towards the doors they start swinging open, away from you--behind them lies nothing but darkness. You walk onwards, and when you cross the threshold the left door falls crashes down, emitting the sound of a huge copper gong. Immediately afterwards, the right door falls down too and another tremendous, harrowing dissonance resounds. You take another step, and are standing...
+
+
+On the landing
+The landing is enveloped by uneven darkness. A red door to the north leads to the room of your daughter Maartje. Next to the stairs down stands a wooden cupboard, above which a large ornate mirror in a gilded frame beholds you accusingly.
+
+>x mirror
+The face of the baron stares at you from the mirror.
+
+>break it
+Furiously, you smash your fist against the baron's face as it is reflected by the mirror's glass. The mirror fractures, and falls down in many small fragments and one large shard.
+
+>x shard
+A large shard from the mirror, cold and sharp as ice.
+
+>take it
+Taken.
+
+>pray
+(1) "Merciful God, please forgive me the crime I am about to commit."
+(2) "Please, God, give me the strength to conquer my lust."
+(3) "Dear God, I don't ask anything for myself, but please save my daughter Maartje."
+
+Select an option >> 1
+Do you believe that God will forgive your crime?
+
+(1) Yes.
+(2) No.
+
+Select an option >> 2
+
+>kill me
+You stare at the razor-sharp piece of glass, but you know that there is nothing else to do. You put the point of the shard on the skin of your wrist, exactly where the artery is, and press. A drop of blood wells up from the small hole.
+
+Do you have the courage to go on with this?
+
+(1) Yes. I am strong enough.
+(2) No. I cannot do it.
+
+Select an option >> 1
+With a fierce slash you cut in the direction of your arm, opening the artery over a length of inches. Bright red blood spurts out, over your hands, over the shard, over your nightshirt, over the floor. You sink to your knees. Now it is only a matter of time.
+
+While your life flows away slowly, questions arise in your mind, questions to which the answers are suddenly very clear.
+
+Was this the easy way out?
+
+(1) Yes. I could not continue living with this guilt.
+(2) No. It was the hardest sacrifice I ever made.
+
+Select an option >> 1
+Will Maartje ever forgive you?
+
+(1) No. No matter whether I have ruined her life forever or not, she will always hate me.
+(2) Yes. With time the wounds will heal and her hate will diminish; and perhaps there will be a day when she will understand me, just a little, and when she will feel just a very tiny amount of pity--or perhaps, even of love.
+
+Select an option >> 1
+
+
+
+
+    *** THE END ***
+
+
+
+Do you want a RESTART, LOAD an old game, see the MENU (with information about the ideas behind "The baron") or QUIT reading the story?
+> q

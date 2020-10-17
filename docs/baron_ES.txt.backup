@@ -1,0 +1,137 @@
+
+Las puertas de bronce se cierran a tu espalda y escuchas el chirrido de los pesados cerrojos deslizándose en su interior. Está bien; te puedes encargar de esto tú solo. Sosteniendo el hacha con firmeza das un paso hacia adelante, hacia el calor.
+
+
+EL BARÓN
+Una historia interactiva. Escrita por Victor Gijsbers y publicada bajo la Licencia Pública General de GNU, en su versión 3 (o cualquier versión posterior). La presente edición ha sido desarrollada por J. Francisco Martín.
+
+Se recomienda teclear 'INFORMACIÓN'.
+
+Versión 2.0 / Núm. serie 190204 / Inform v6.34 - Librería 6/11
+
+Vestíbulo de la gruta
+Esta pequeña sala rectangular ha sido excavada cuidadosamente en la propia roca y sus paredes y su techo han sido recubiertos después con planchas de **mármol** negro. Dos **puertas** de bronce sellan la única salida. Al otro lado del vestíbulo un estrecho *pasadizo* conduce hasta la ardiente guarida del dragón. Lecho de **huesos** y cráneos ennegrecidos.
+
+
+	> mármol
+Las paredes y el techo del vestíbulo están cubiertos por planchas de mármol negro muy pulido. Vetas blancas formando intrincados **patrones** sobre su superficie.
+
+
+	> patrones
+Al estudiar esas estrías irregulares sobre el mármol se apodera de ti el presentimiento de que, de algún modo, esconden un significado oculto.
+
+Mientras observas los patrones te despierta la idea de que, de algún modo, esconden un significado oculto. Que bajo su aparente caos yace la respuesta de algún importante misterio. Pero antes de que puedas siquiera empezar a comprenderlos, las ondulantes líneas comienzan a moverse y a girar y a arremolinarse y te sientes desbordado y mareado y te apresuras en enfocar la mirada en otra parte.
+
+> puertas
+	Dos imponentes [self] bloquean la salida de la gruta. Una tosca figura tallada en su superficie. La figura de un hombre en llamas.
+
+> hombre en llamas
+	En lugar de la expresión de profundo dolor que cabría esperar de un hombre ardiendo, en el rostro de la figura tallada en bronce se aprecia otra cosa; ansia. Y deseo. El hombre no agoniza en las llamas, parece deleitarse con ellas.
+
+> abre puertas
+	Las [self](puertas) han sido trancadas desde el otro lado y ni siquiera el dragón podría abrirlas desde aquí. Afortunadamente. El acuerdo es que llamarás con un golpe para que te abran, una vez hayas derrotado al dragón.
+
+> llama a las puertas
+	¿Sin haberte enfrentado antes al dragón? No eres un cobarde.
+
+> huesos
+	El suelo está cubierto de esqueletos despedazados. Negros por el fuego que en algún momento consumió sus cuerpos.
+
+> huele
+	El penetrante olor del azufre llena la cueva.
+
+> hacha
+	Para esta gesta has traído el más pesado de tus hachas de guerra. Pocos pueden levantar su peso, y son menos aún quienes pueden manejarlo con tu misma velocidad y precisión letales.
+
+> armadura
+	Jamás te enfrentarías al monstruo sin [un self]. Gruesas placas de acero sobre cota de mallas, todo bien engrasado. Ofrece protección óptima contra cualquier tipo de ataque físico. El conjunto está ajustado por unas cintas de cuero, a la espalda.
+
+> casco
+	Un casco funcional, sin adornos de ningún tipo. El visor está abierto, dejando libre el campo visual pero exponiendo el rostro ante posibles ataques.
+
+> cierra el visor
+	Cierras el visor del casco.
+
+> n
+	Haces lo posible por evitar la alfombra de restos humanos. Con cada paso, sin embargo, chasquido de huesos aplastados por el peso de tu armadura.
+
+Un pequeño pasadizo
+	El techo del corredor es muy bajo, lo que obliga a que tengas que inclinarte para pasar por él. Una gruesa capa de cenizas amortigua tus pasos. Una luz cegadora y oleadas de un calor inmenso llegan desde el norte, provocadas por las enormes llamas de la cueva del dragón. Notas el sudor en el interior de la armadura. Al sur se encuentra el frescor del vestíbulo.
+
+> llamas
+	Llamas más altas que un hombre proyectan su luz desde el norte.
+
+> n
+Sujetando el hacha con firmeza, la visera del casco cerrada —menos heroico pero más prundente—, te diriges al dragón.
+
+Enorme salón subterráneo
+	Esta estancia —una cueva natural en apariencia— es enorme, mucho mayor incluso que la sala del trono del Emperador. El suelo está cubierto de gruesas capas de ceniza, salvo en los lugares en los que llamas gigantescas surgen desde las grietas y fisuras abiertas en la roca. Un calor tan intenso que se hace insoportable.
+
+Y el dragón. Una mole roja y escamosa descansando en mitad de la estancia. Te mira fijamente con un gran ojo amarillo.
+
+> dragón
+Creías haberte preparado para lo peor. Pero no estabas preparado para esto.
+
+Es grande, sí; calculas por lo menos una treintena de metros desde la punta de su cola hasta la vil testa. Pero ya has luchado contra monstruos enormes antes. Sí, sus rojas escamas brillan como el acero endurecido y pareciera que ningún arma corriente sería capaz de atravesarlas. Pero el tuyo no es ningún hacha corriente. Sin embargo es el fuego que se adivina en sus ojos y en su garganta, el baile de las llamas tras la hilera de blancos dientes, esa imagen es la que te llena de un horror como nunca lo ha hecho nada antes. No se trata de otro monstruo escupe-fuego más. No se parece siquiera a un elemental, esas criaturas irracionales en las que se encarnan las fuerzas primordiales de la naturaleza. No, esto resulta más aterrador. Más insondable. Más malvado. Sabes que esto es algo que nunca podrá ser sometido. A diferencia de las leyes de la naturaleza, el hombre jamás podrá doblegarlo para que ceda a sus deseos, pues reconoces este fuego, a este monstruo, esta bestia, y todos los hombres lo reconocerían también pues habita en el interior más profundo del alma de todos nosotros y siempre lo ha hecho y siempre lo hará, y sabes que no hay modo de derrotarlo. Y aún así debes intentarlo.
+
+El dragón se incorpora sobre sus enormes patas y se acerca a ti, provocando el temblor de toda la cueva y amenazando con desequilibrarte. Pero unos rápidos reflejos y décadas de experiencia con armaduras pesadas te permiten permanecer en pie; y cuando levantas un furioso puño hacia el monstruo, desafiando su semblante amenazador, el gesto parece heroico. El gesto de un caballero verdadero. Sacado de un cuento de hadas.
+
+> ataca al dragón
+Levantas el hacha sobre tu cabeza y avanzas hacia el dragón. "Ha llegado tu hora", le escupes, sorprendido de la seguridad detrás de tus propias palabras. "Es hora de morir".
+
+El monstruo te observa impasible mientras cargas contra él. Sus dientes largos como una braza. Pero cargas a pesar de todo, gritando con rabia justificada. Entonces, tan rápido y repentino como un relámpago, un chorro de fuego estalla desde la boca del dragón y te envuelve por completo. El dolor supera cualquier límite de la comprensión.
+
+> ataca al dragón
+Con la consciencia embotada por el dolor tu cuerpo parece actuar solo, instintivamente, y ataca de nuevo. El monstruo debe morir, aunque el precio a pagar sea tu propia vida. A través de las llamas puedes ver los orbes malicioso de sus ojos y tus brazos levantan el hacha con intención de descargarlo directamente entre ellos. Entonces, de repente, la cola del dragón se agita y te golpea en un lateral, enviándote volando por el salón en un vertiginoso arco que acaba con tu cabeza impactando contra la pared. Tu casco amortigua el golpe, de modo que no llegas a perder el sentido. Aún llegas a ver la grotesca cabeza del dragón acercándose hacia ti, con la boca abierta por completo. Ua nueva tempestad de fuego. La muerte es rápida.
+
+
+[Pulsa una tecla.]
+
+
+
+
+
+
+
+
+
+	EL BARÓN
+
+	Una historia interactiva de Victor Gijsbers.
+	Traducción de J. Francisco Martín.
+
+
+
+
+
+
+
+
+
+Chi l'anima mi lacera?
+Chi m'agita le viscere?
+Che strazio, ohimè, che smania!
+Che inferno, che terror!
+
+
+«¿Quién es aquel que lacera mi alma?
+¿Quién aquel que tortura mi cuerpo?
+¡Qué tormento! ¡Oh! ¡Qué agonía!
+¡Qué Infierno! ¡Qué terror!»
+
+
+
+
+	De la ópera "Don Giovanni"
+	Texto: Lorenzo da Ponte
+	Música: Wolfgang A. Mozart
+
+
+
+
+
+
+
+
+
+Un sonido penetrante y disonante rompe el silencio de la noche en dos ocasiones, despertándote de un sueño agitado. Tras el segundo tañido la campana de la iglesia queda en silencio y la quietud de la noche invernal se asienta en el pueblo de nuevo. Te frotas los restos del sueño de los párpados. Con mucho cuidado para no despertar a tu mujer sales de la cama. Sin duda Hilda intentaría detenerte.
