@@ -1,0 +1,684 @@
+
+
+!!==============================================================================
+!!
+!!	EL BARÓN
+!!	Definiciones gramaticales personalizadas
+!!
+!!==============================================================================
+!!
+!!	Archivo:		baronGrammar.inf
+!!	Autor(es):		Victor Gijsbers
+!!					J. Francisco Martín <jfm.lisaso@gmail.com>
+!!	Idioma:			ES (Español)
+!!	Sistema:		Inform-INFSP 6
+!!	Plataforma:		Máquina-Z/Glulx
+!!	Versión:		0.0
+!!	Fecha:			2020/11/XX
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	Este archivo forma parte de la ficción interactiva EL BARÓN.
+!!
+!!	EL BARÓN es software libre: usted puede redistribuirlo y/o
+!!	modificarlo bajo los términos de la Licencia Pública General
+!!	GNU publicada por la Fundación para el Software Libre, ya
+!!	sea la versión 3 de la Licencia, o (a su elección) cualquier
+!!	versión posterior.
+!!
+!!	EL BARÓN se distribuye con la esperanza de que sea útil,
+!!	pero SIN GARANTÍA ALGUNA; ni siquiera la garantía implícita
+!!	MERCANTIL o de APTITUD PARA UN PROPÓSITO DETERMINADO.
+!!	Consulte los detalles de la Licencia Pública General GNU
+!!	para más información.
+!!
+!!	Debería haber recibido una copia de la Licencia Pública
+!!	General GNU junto a EL BARÓN. En caso contrario, consulte
+!!	<http://www.gnu.org/licenses/>.
+!!
+!!	Copyright (c) 2004, Victor Gijsbers
+!!	Copyright (c) 2020, J. Francisco Martín
+!!
+!!------------------------------------------------------------------------------
+!!
+!!	TABLA DE CONTENIDOS
+!!
+!!	<>	##Audio / ##AudioOn / ##AudioOff	
+!!	<>	##ConfigureHighlights
+!!	<>	##ConfigureHyperlinks
+!!	<>	##DefaultAction
+!!	<>	##Dig
+!!	<>	##Enter
+!!	<>	##GetDressed
+!!	<>	##LMode2
+!!	<>	##NoSuchVerb
+!!	<>	##SelectScene
+!!	<>	##TalkOn / ##TalkTo
+!!
+!!------------------------------------------------------------------------------
+
+
+!! Elemento gramático que permite contemplar sólo el primer término de la
+!! entrada de usuario:
+[ Anything;
+	while (NextWordStopped() ~= -1);
+	return GPR_PREPOSITION;
+];
+
+!!------------------------------------------------------------------------------
+!! ##Audio / ##AudioOn / ##AudioOff
+!!------------------------------------------------------------------------------
+
+#Ifdef TARGET_GLULX;
+#Ifdef USE_DAMUSIX;
+Verb meta 'audio' 'music' 'musica' 'sonido' 'sonidos'
+	*								-> Audio
+	* 'on' / 'si'					-> AudioOn
+	* 'encendido' / 'activado'		-> AudioOn
+	* 'off' / 'no'					-> AudioOff
+	* 'apagado' / 'desactivado'		-> AudioOff
+;
+VerboIrregular "establecer la reproducción de audio" with imperativo
+	'audio' 'music' 'musica' 'sonido' 'sonidos';
+
+[ AudioSub;
+	if (Damusix.HayAudio()) <<AudioOff>>;
+	else <<AudioOn>>;
+];
+
+[ AudioOnSub;
+	if (Damusix.HayAudio())
+		print_ret (parser) "La reproducción de audio ya estaba activada.";
+	Damusix.ActivarAudio();
+	print_ret (parser) "Reproducción de audio activada.";
+];
+
+[ AudioOffSub;
+	if (~~Damusix.HayAudio())
+		print_ret (parser) "La reproducción de audio ya estaba desactivada.";
+	Damusix.DesactivarAudio();
+	print_ret (parser) "Reproducción de audio desactivada.";
+];
+#Endif; ! USE_DAMUSIX;
+#Endif; ! TARGET_GLULX;
+
+!!------------------------------------------------------------------------------
+!! ##ConfigureHighlights
+!!------------------------------------------------------------------------------
+
+#Ifdef TARGET_GLULX;
+#Ifdef VERSION_DESKTOP;
+Verb meta 'destacado' 'resaltado'
+	*								-> ConfigureHighlights
+;
+
+VerboIrregular "establecer configuración de palabras resaltadas"
+ with	imperativo 'destacado' 'resaltado',
+;
+
+[ ConfigureHighlightsSub
+	done highlight_code i number_of_classes previous_style temp txt;
+	number_of_classes = 4;
+	txt = "INTRO";
+	Utils.set_status_bar_contents("Resaltado");
+	while (~~done) {
+		Utils.erase_window();
+		new_line;
+		print "Los nombres de los distintos objetos interactivos presentes en la obra se pueden imprimir con un estilo de texto resaltado para facilitar su identificación. Introduce el número de una clase de objeto para rotar entre los distintos estilos de resaltado disponibles:";
+		new_line;
+		new_line;
+		for (i = 1 : i <= number_of_classes : i++) {
+			switch (i) {
+				1:	print "1) Objetos importantes: ";
+				2:	print "2) Salidas y direcciones: ";
+				3:	print "3) Temas de conversación: ";
+				4:	print "4) Otros objetos: ";
+			}
+			highlight_code = Utils.get_highlight_style(i+1);
+			if (i == 4) highlight_code = Utils.get_highlight_style(1);
+			switch (highlight_code) {
+				TEXT_STYLE_HEADER:		temp = "enfatizado (c)";
+				TEXT_STYLE_IMPORTANT:	temp = "negrita";
+				TEXT_STYLE_MONOSPACED:	temp = "monoespaciado";
+				TEXT_STYLE_NOTE:		temp = "enfatizado (a)";
+				TEXT_STYLE_QUOTE:		temp = "enfatizado (b)";
+				TEXT_STYLE_STRESSED:	temp = "cursiva";
+				TEXT_STYLE_UPRIGHT, -1:	temp = "sin estilo";
+				TEXT_STYLE_USER1:		temp = "color de fondo";
+			}
+			previous_style = Utils.set_text_style(highlight_code);
+			print (string) temp;
+			Utils.set_text_style(previous_style);
+			print ".";
+			new_line;
+		}
+		new_line;
+		print "NOTA: El repertorio de estilos es más limitado cuando los
+		hipervínculos están activados. Puedes igualmente modificar su
+		configuración tecleando HIPERVÍNCULOS en la pantalla principal de la
+		aplicación.";
+		new_line;
+		new_line;
+		previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+		print (string) TEXT_STYLE_PARSER_PREFIX;
+		print "Pulsa @<<", (string) txt, "@>> para aceptar.";
+		print (string) TEXT_STYLE_PARSER_SUFIX;
+		Utils.set_text_style(previous_style);
+		i = 0;
+		switch (Utils.press_any_key()) {
+			32, -6: ! INTRO/ESPACIO
+				done = true;
+			'1':
+				i = 2;
+			'2':
+				i = 3;
+			'3':
+				i = 4;
+			'4':
+				i = 1;
+		}
+		if (i ~= 0) {
+			highlight_code = Utils.get_highlight_style(i);
+			switch (highlight_code) {
+				TEXT_STYLE_IMPORTANT:
+					highlight_code = TEXT_STYLE_NOTE;
+				TEXT_STYLE_MONOSPACED:
+					highlight_code = TEXT_STYLE_USER1;
+				TEXT_STYLE_NOTE:
+					highlight_code = TEXT_STYLE_QUOTE;
+				TEXT_STYLE_QUOTE:
+					highlight_code = TEXT_STYLE_MONOSPACED;
+				TEXT_STYLE_STRESSED:
+					highlight_code = TEXT_STYLE_IMPORTANT;
+				TEXT_STYLE_UPRIGHT, -1:
+					highlight_code = TEXT_STYLE_STRESSED;
+				TEXT_STYLE_USER1:
+					highlight_code = TEXT_STYLE_UPRIGHT;
+			}
+			Utils.set_highlight_style(i, highlight_code);
+		}
+	}
+	Utils.erase_window();
+	Utils.write_configuration_file(CONFIG_FILE_NAME);
+	Utils.set_status_bar_contents(0);
+	<<Look>>;
+];
+#Ifnot; ! VERSION_WEB_MOBILE;
+Verb meta 'destacado' 'resaltado'
+	* Anything						-> NoSuchVerb
+;
+
+VerboIrregular "establecer configuración de palabras resaltadas"
+ with	imperativo 'destacado' 'resaltado',
+;
+#Endif; ! VERSION_
+#Endif; ! TARGET_GLULX;
+
+!!------------------------------------------------------------------------------
+!! ##ConfigureHyperlinks
+!!------------------------------------------------------------------------------
+
+#Ifdef TARGET_GLULX;
+#Ifdef VERSION_DESKTOP;
+Verb meta 'enlace' 'enlaces' 'hiperenlace' 'hiperenlaces' 'hipervinculo'
+	'hipervinculos' 'vinculo' 'vinculos'
+	*								-> ConfigureHyperlinks
+;
+
+VerboIrregular "establecer configuración de hipervínculos"
+ with	imperativo 'enlace' 'enlaces' 'hiperenlace' 'hiperenlaces'
+			'hipervinculo' 'hipervinculos' 'vinculo' 'vinculos',
+;
+
+[ ConfigureHyperlinksSub
+	done i number_of_classes previous_style txt;
+	number_of_classes = 4;
+	txt = "INTRO";
+	Utils.set_status_bar_contents("Hipervínculos");
+	while (~~done) {
+		Utils.erase_window();
+		new_line;
+		print "La obra permite interactuar con los distintos objetos presentes
+		en el mundo utilizando un sistema de hipervínculos (haciendo ~clic~ con
+		el ratón sobre los enlaces que vayan apareciendo). Existen cuatro
+		clases de hipervínculo: 1) asociado a objetos importantes en la
+		historia; 2) salidas y direcciones hacia las que puedes intentar
+		desplazarte; 3) temas de conversación; y 4) otros objetos interactivos.
+		Puedes activar o desactivar cada tipo de hipervínculo introduciendo el
+		número de su clase:";
+		new_line;
+		new_line;
+		for (i = 1 : i <= number_of_classes : i++) {
+			switch (i) {
+				1:	print "1) Objetos importantes: ";
+				2:	print "2) Salidas y direcciones: ";
+				3:	print "3) Temas de conversación: ";
+				4:	print "4) Otros objetos: ";
+			}
+			if (Utils.get_hyperlinks_status(i)) {
+				print "@<<activados@>>";
+			} else {
+				print (user2) "@<<desactivados@>>";
+			}
+			print ".";
+			new_line;
+		}
+		new_line;
+		previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+		print (string) TEXT_STYLE_PARSER_PREFIX;
+		print "Pulsa @<<", (string) txt, "@>> para aceptar.";
+		print (string) TEXT_STYLE_PARSER_SUFIX;
+		Utils.set_text_style(previous_style);
+		switch (Utils.press_any_key()) {
+			32, -6: ! INTRO/ESPACIO
+				done = true;
+			'1':
+				i = 1;
+			'2':
+				i = 2;
+			'3':
+				i = 3;
+			'4':
+				i = 4;
+		}
+		Utils.set_hyperlinks_status(i, ~~Utils.get_hyperlinks_status(i));
+	}
+	Utils.erase_window();
+	Utils.write_configuration_file(CONFIG_FILE_NAME);
+	Utils.set_status_bar_contents(0);
+	<<Look>>;
+];
+#Ifnot; ! VERSION_WEB_MOBILE;
+Verb meta 'enlace' 'enlaces' 'hiperenlace' 'hiperenlaces' 'hipervinculo'
+	'hipervinculos' 'vinculo' 'vinculos'
+		* Anything						-> NoSuchVerb
+;
+
+VerboIrregular "establecer configuración de hipervínculos"
+ with	imperativo 'enlace' 'enlaces' 'hiperenlace' 'hiperenlaces'
+			'hipervinculo' 'hipervinculos' 'vinculo' 'vinculos',
+;
+#Endif; ! VERSION_
+#Endif; ! TARGET_GLULX;
+
+!!------------------------------------------------------------------------------
+!! ##DefaultAction
+!!------------------------------------------------------------------------------
+!!	Los objetos pueden definir una propiedad: 'action_set', con un array de
+!!	acciones evidentes que pueden realizarse sobre ese objeto. Si definen esta
+!!	propiedad, la acción por defecto imprime el listado de acciones. En caso
+!!	contrario, la acción por defecto se limita a invocar la acción ##Examine
+!!	sobre ese objeto.
+!!------------------------------------------------------------------------------
+
+Verb 'no.verb'
+	* noun							-> DefaultAction
+;
+
+[ DefaultActionSub;
+	!! Por evitar redundancias, cuando la instrucción por defecto lanza
+	!! ##Examine sobre objetos generales, o ##Enter sobre objetos que
+	!! representan salidas, no se imprime la aclaración de la entrada.
+	!! 		previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+	!! 		print (string) TEXT_STYLE_PARSER_PREFIX;
+	!! 		print "examina / ve";
+	!! 		PrintToBuffer(utility_array_a, INPUT_BUFFER_LEN, self);
+	!! 		PrintCharacterArray(utility_array_a);
+	!! 		print (string) TEXT_STYLE_PARSER_SUFIX;
+	!! 		Utils.set_text_style(previous_style);
+	!! 		new_line;
+	if (noun ofclass AdjacentRoom) <<Enter noun>>;
+	else <<Examine noun>>;
+];
+
+!!------------------------------------------------------------------------------
+!! ##Dig
+!!------------------------------------------------------------------------------
+
+Extend 'cava' first
+	*								-> Dig
+;
+
+!!------------------------------------------------------------------------------
+!! ##Enter
+!!------------------------------------------------------------------------------
+
+Verb	'escapa' 'huye'
+	*								-> VagueGo
+	* noun=ADirection				-> Go
+	* 'a//' noun=ADirection			-> Go
+	* 'hacia' noun=ADirection		-> Go
+	* noun							-> Enter
+	* 'a//' noun					-> Enter
+	* 'hacia' noun					-> Enter
+	* 'por' noun					-> Enter
+;
+VerboIrregular "huir" with imperativo 'huye';
+
+!!------------------------------------------------------------------------------
+!! ##GetDressed
+!!------------------------------------------------------------------------------
+!! Simplificación de la acción ##Wear que permite no incluir un objeto
+!! objetivo. Comprueba si hay algún objeto de vestuario sin poner al alcance
+!! del PC y lanza ##Wear sobre él en caso de encontrarlo, o imprime un mensaje
+!! de error adecuado en caso contrario.
+!!------------------------------------------------------------------------------
+
+[ PresentClothes
+	held_clothes i obj result;
+	result = nothing;
+	objectloop(obj has clothing
+		&& TestScope(obj, player)) {
+		result = obj;
+		i++;
+		if (parent(obj) == player) {
+			result = obj;
+			held_clothes++;
+		}
+	}
+	if (held_clothes > 1 || (i-held_clothes) > 1) {
+		result = GPR_FAIL;
+	}
+	return result;
+];
+
+Extend	only 'viste' 'vistete' 'vestirse' 'vestirte' 'vestirme' 'visteme' first
+	* PresentClothes				-> GetDressed
+;
+
+[ GetDressedSub;
+	!! 1) No hay ningún objeto de vestuario disponible:
+	if (noun == nothing) {
+		switch (Utils.get_grammatical_inflection()) {
+			FIRST_PERSON_PRESENT:
+				if (IsPluralNoun(player)) "No tenemos qué ponernos.";
+				else "No tengo qué ponerme.";
+			SECOND_PERSON_PRESENT:
+				if (IsPluralNoun(player)) "No tenéis qué poneros.";
+				else "No tienes qué ponerte.";
+			THIRD_PERSON_PRESENT:
+				if (IsPluralNoun(player)) "No tienen qué ponerse.";
+				else "No tiene qué ponerse.";
+			FIRST_PERSON_PAST:
+				if (IsPluralNoun(player)) "No teníamos qué ponernos.";
+				else "No tenía qué ponerme.";
+			SECOND_PERSON_PAST:
+				if (IsPluralNoun(player)) "No teníais qué poneros.";
+				else "No tenías qué ponerte.";
+			THIRD_PERSON_PAST:
+				if (IsPluralNoun(player)) "No tenían qué ponerse.";
+				else "No tenía qué ponerse.";
+			FIRST_PERSON_FUTURE:
+				if (IsPluralNoun(player)) "No tendremos qué ponernos.";
+				else "No tendré qué ponerme.";
+			SECOND_PERSON_FUTURE:
+				if (IsPluralNoun(player)) "No tendréis qué poneros.";
+				else "No tendrás qué ponerte.";
+			THIRD_PERSON_FUTURE:
+				if (IsPluralNoun(player)) "No tendrán qué ponerse.";
+				else "No tendrá qué ponerse.";
+		}
+	}
+
+	!! 2) El PC ya lleva puesto el objeto de vestuario:
+	if (parent(noun) == player && noun has worn) {
+		switch (Utils.get_grammatical_inflection()) {
+			FIRST_PERSON_PRESENT:
+				if (IsPluralNoun(player)) print "Ya llevamos";
+				else print "Ya llevo";
+			SECOND_PERSON_PRESENT:
+				if (IsPluralNoun(player)) print "Ya lleváis";
+				else print "Ya llevas";
+			THIRD_PERSON_PRESENT:
+				if (IsPluralNoun(player)) print "Ya llevan";
+				else print "Ya lleva";
+			FIRST_PERSON_PAST:
+				if (IsPluralNoun(player)) print "Ya llevábamos";
+				else print "Ya llevaba";
+			SECOND_PERSON_PAST:
+				if (IsPluralNoun(player)) print "Ya llevabais";
+				else print "Ya llevabas";
+			THIRD_PERSON_PAST:
+				if (IsPluralNoun(player)) print "Ya llevaban";
+				else print "Ya llevaba";
+			FIRST_PERSON_FUTURE:
+				if (IsPluralNoun(player)) print "Ya llevaremos";
+				else print "Ya llevaré";
+			SECOND_PERSON_FUTURE:
+				if (IsPluralNoun(player)) print "Ya llevaréis";
+				else print "Ya llevarás";
+			THIRD_PERSON_FUTURE:
+				if (IsPluralNoun(player)) print "Ya llevarán";
+				else print "Ya llevará";
+		}
+		" ", (the) noun, " puest", (o) noun, ".";
+	}
+
+	!! 3) El objeto de vestuario está en posesión del PC pero no lo lleva
+	!! puesto:
+	if (parent(noun) == player && noun hasnt worn) {
+		<<Wear noun>>;
+	}
+
+	!! 4) El objeto de vestuario no está en posesión del PC:
+	if (parent(noun) ~= player) {
+		print "(Primero";
+		switch (Utils.get_grammatical_inflection()) {
+			FIRST_PERSON_PRESENT:
+				if (~~IsPluralNoun(player)) print " trato";
+				else print " tratamos";
+			SECOND_PERSON_PRESENT:
+				if (~~IsPluralNoun(player)) print " tratas";
+				else print " tratáis";
+			THIRD_PERSON_PRESENT:
+				if (~~IsPluralNoun(player)) print " trata";
+				else print " tratan";
+			FIRST_PERSON_PAST:
+				if (~~IsPluralNoun(player)) print " traté";
+				else print " tratamos";
+			SECOND_PERSON_PAST:
+				if (~~IsPluralNoun(player)) print " trataste";
+				else print " tratasteis";
+			THIRD_PERSON_PAST:
+				if (~~IsPluralNoun(player)) print " trató";
+				else print " trataron";
+			FIRST_PERSON_FUTURE:
+				if (~~IsPluralNoun(player)) print " trataré";
+				else print " trataremos";
+			SECOND_PERSON_FUTURE:
+				if (~~IsPluralNoun(player)) print " tratarás";
+				else print " trataréis";
+			THIRD_PERSON_FUTURE:
+				if (~~IsPluralNoun(player)) print " tratará";
+				else print " tratarán";
+		}
+		print " de coger ", (the) noun, ".)";
+		new_line;
+		keep_silent = true;
+		if (~~TakeSub()) {
+			keep_silent = false;
+			return true;
+		}
+		keep_silent = false;
+		<<Wear noun>>;
+	}
+];
+
+!! Extend 'ponte' first
+!! 	* clothing					-> Wear
+!! 	* 'con' clothing			-> Wear
+!! ;
+!!
+!! Extend 'viste' first
+!! 	*							-> GetDressed
+!! 	* clothing					-> Wear
+!! 	* 'con' clothing			-> Wear
+!! ;
+
+!!------------------------------------------------------------------------------
+!! ##Go
+!!
+!!	@see ##Enter
+!!------------------------------------------------------------------------------
+
+!!------------------------------------------------------------------------------
+!! ##LMode2
+!!------------------------------------------------------------------------------
+
+Extend only 'normal' replace
+    *								-> LMode2
+;
+
+!!------------------------------------------------------------------------------
+!! ##NoSuchVerb
+!!------------------------------------------------------------------------------
+!! Permite eliminar acciones definidas automáticamente por la librería Inform.
+!! Código extraído de <http://www.firthworks.com/roger/informfaq/vv.html#6>.
+!!------------------------------------------------------------------------------
+
+Extend 'nx' replace
+	* Anything						-> NoSuchVerb
+;
+
+Extend 'perdona' replace
+	* Anything						-> NoSuchVerb
+;
+
+Extend 'saborea' replace
+	* Anything						-> NoSuchVerb
+;
+
+[ NoSuchVerbSub; return ParserError(VERB_PE); ];
+
+!!------------------------------------------------------------------------------
+!! ##SelectScene
+!!------------------------------------------------------------------------------
+
+#Ifdef DEBUG;
+Verb meta 'escena'
+	* number -> SelectScene
+;
+
+VerboIrregular "seleccionar escena"
+	with imperativo 'escena';
+
+[ SelectSceneSub;
+	switch (noun) {
+		1:
+			PlayerTo(GrutaSombras);
+		2:
+			PlayerTo(DormitorioBaron);
+		3:
+			!! TODO
+			PlayerTo(DormitorioBaron);
+		4:
+			!! TODO
+			PlayerTo(DormitorioBaron);
+		5:
+			PlayerTo(Galeria);
+		6:
+			!! TODO
+			PlayerTo(DormitorioBaron);
+		7:
+			!! TODO
+			PlayerTo(DormitorioBaron);
+	}
+	return true;
+];
+#Endif; ! DEBUG;
+
+!!------------------------------------------------------------------------------
+!! ##TalkOn / ##TalkTo
+!!------------------------------------------------------------------------------
+
+Extend	'habla' replace
+	* noun							-> TalkTo
+	* 'a'/'con' noun				-> TalkTo
+	* creature						-> TalkTo
+	* 'a'/'con' creature			-> TalkTo
+	* 'por' noun					-> TalkOn
+	* 'por' creature				-> TalkOn
+;
+
+Verb	'conversa' 'platica'
+	* noun							-> TalkTo
+	* 'a'/'con' noun				-> TalkTo
+	* creature						-> TalkTo
+	* 'a'/'con' creature			-> TalkTo
+	* 'por' noun					-> TalkOn
+	* 'por' creature				-> TalkOn
+;
+
+[ TalkOnSub
+	previous_style;
+	previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
+	print (string) TEXT_STYLE_PARSER_PREFIX;
+	print "Hablar con ", (name) noun;
+	print (string) TEXT_STYLE_PARSER_SUFIX;
+	Utils.set_text_style(previous_style);
+	new_line;
+	<<TalkTo noun second>>;
+];
+
+[ TalkToSub;
+	!! 1) El personaje intenta hablar consigo mismo:
+	if ( noun == player ) {
+		print "Hablar con un", (o) player, " mism", (o) player, " ";
+		switch (Utils.get_grammatical_inflection()) {
+			FIRST_PERSON_PRESENT,
+			SECOND_PERSON_PRESENT,
+			THIRD_PERSON_PRESENT:
+				"no resulta especialmente interesante.";
+			FIRST_PERSON_PAST,
+			SECOND_PERSON_PAST,
+			THIRD_PERSON_PAST:
+				"no resultaba especialmente interesante.";
+			FIRST_PERSON_FUTURE,
+			SECOND_PERSON_FUTURE,
+			THIRD_PERSON_FUTURE:
+				"no resultará especialmente interesante.";
+		}
+	}
+	!! 2) El personaje intenta hablar con un objeto inanimado:
+	if ( noun hasnt animate ) {
+		switch (Utils.get_grammatical_inflection()) {
+			FIRST_PERSON_PRESENT,
+			SECOND_PERSON_PRESENT,
+			THIRD_PERSON_PRESENT:
+				"Sería más interesante intentar hablar con cosas que puedan
+				devolver una respuesta.";
+			FIRST_PERSON_PAST,
+			SECOND_PERSON_PAST,
+			THIRD_PERSON_PAST:
+				"Hubiese sido más interesante intentar hablar con cosas que
+				pudiesen devolver una respuesta.";
+			FIRST_PERSON_FUTURE,
+			SECOND_PERSON_FUTURE,
+			THIRD_PERSON_FUTURE:
+				"Será más interesante intentar hablar con cosas que puedan
+				devolver una respuesta.";
+		}
+	}
+	!! 3) El personaje intenta hablar con un objeto animado:
+	switch (Utils.get_grammatical_inflection()) {
+		FIRST_PERSON_PRESENT:
+		SECOND_PERSON_PRESENT,
+		THIRD_PERSON_PRESENT:
+			print (The) noun, " no parecen", (n) noun;
+		FIRST_PERSON_PAST,
+		SECOND_PERSON_PAST,
+		THIRD_PERSON_PAST:
+			print (The) noun, " no parecía", (n) noun;
+		FIRST_PERSON_FUTURE,
+		SECOND_PERSON_FUTURE,
+		THIRD_PERSON_FUTURE:
+			print (The) noun, " no parecerá", (n) noun;
+	}
+	" interesad", (o) noun, " en hablar ", (contigo) player, ".";
+];
+
+!!------------------------------------------------------------------------------
+!! ##VagueGo
+!!
+!!	@see ##Enter
+!!------------------------------------------------------------------------------

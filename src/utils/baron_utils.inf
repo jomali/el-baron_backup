@@ -1026,6 +1026,8 @@ Object	Utils "(Utilities)"
 		!!----------------------------------------------------------------------
 		!! Navegación a través de los puntos cardinales:
 		compass_mode false,
+		!! Escena actual
+		current_scene 0,
 		!! Estilos de texto resaltado:
 		highlight_styles 0 0 0 0,
 		!! Estados de los hipervínculos:

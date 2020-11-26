@@ -48,42 +48,50 @@
 !!
 !!------------------------------------------------------------------------------
 
-!! @CastilloEstrellas
-Atrezzo	CastilloEstrellas "estrellas" Limbo
- has	female pluralname,
- with	name_f 'estrella',
+!!@CastilloEstrellas
+Atrezzo CastilloEstrellas "estrellas" Limbo
+	has female pluralname,
+	with
+		found_in Edificio PatioArmas TorreExterior,
+		!!
+		name_f 'estrella',
 		name_fp 'estrellas',
 		name_m 'astro',
 		name_mp 'astros',
 		gender G_FEMENINO + G_PLURAL,
-		!!------------------
+		!!
 		description [;
-			print "En la distancia cósmica, las almas de los mayores guerreros del pasado arden salvajemente en eterna lucha con las fuerzas desconocidas del más allá. Aquí, en la tierra, su luz lejana adorna el firmamento como hermosas velas contra terciopelo negro.";
+			print "En la distancia cósmica, las lamas de los mayores guerreros del pasado arden salvajemente en eterna lucha con fuerzas desconocidas del más allá. Aquí, en la tierra, su luz lejana adorna el firmamento como hermosas velas contra terciopelo negro.";
 			new_line;
 			return true;
 		],
 ;
 
 !! @CastilloLuna
-Atrezzo	CastilloLuna "luna" Limbo
- has	female,
- with	found_in PatioArmas TorreExterior,
+Atrezzo CastilloLuna "luna" Limbo
+	has female,
+	with
+		found_in Edificio PatioArmas TorreExterior,
+		!!
 		name_f 'luna',
 		gender G_FEMENINO,
-		!!------------------
+		!!
 		description [;
-			print "La luz de la luna emborrona los contornos de las cosas, arrebatándoles su nitidez; parecen fluir entre sí, como los bloques de un sueño en el que nada es lo que parece y todos los significados y significantes se entremezclan unos con otros.";
+			print "Las luz de la luna emborrona los contornos de las cosas, arrebatándoles su nitidez; parecen fluir entre sí, como los bloques de un sueño en el que nada es lo que parece y todos los significados y significantes se entremezclan unos con otros.";
 			new_line;
 			return true;
 		],
 ;
 
 !! @CastilloNieve
-Atrezzo	CastilloNieve "nieve" Limbo
- has	female,
- with	name_f 'nieve',
+Atrezzo CastilloNieve "nieve" Limbo
+	has female,
+	with
+		found_in Edificio PatioArmas TorreExterior,
+		!!
+		name_f 'nieve',
 		gender G_FEMENINO,
-		!!------------------
+		!!
 		before [;
 			Dig,
 			LookUnder:
@@ -102,7 +110,7 @@ Atrezzo	CastilloNieve "nieve" Limbo
 		],
 		description [;
 			if (self has described) {
-				print "La gruesa capa de nieve parece intentar asfixiar el pasado bajo su peso.";
+				print "La gruesa capa de nieve parece estar intentando asfixiar el pasado bajo su peso.";
 			} else {
 				print "A veces la nieve otorga a los objetos una cualidad de cuento de hadas al posarse sobre ellos. Hoy no, no esta nieve. Esta nieve parece querer asfixiarlos y enterrarlos para siempre.";
 			}
@@ -116,6 +124,8 @@ Atrezzo	CastilloNieve "nieve" Limbo
 				}
 		],
 ;
+
+
 
 !! @CastilloParedes
 Atrezzo	CastilloParedes "paredes" Limbo
@@ -147,6 +157,36 @@ Atrezzo	CastilloParedes "paredes" Limbo
 !!
 !!------------------------------------------------------------------------------
 
+!! @DirGaleria
+AdjacentRoom DirGaleria "entrada"
+	has female,
+	with
+		found_in PatioArmas,
+		name_f 'galeria',
+		gender G_FEMENINO,
+		!!
+		adjacent_room Galeria,
+		before [;
+			Enter:
+				self.AdjacentRoom::before();
+				return true;
+			],
+;
+
+!! @Galeria
+Indoors Galeria "Galería"
+	has female,
+	with
+		name_f 'galeria',
+		name_m 'corredor' 'pasillo',
+		gender G_FEMENINO,
+		!!
+		description [;
+			print "Las enormes puertas dan paso a una galería hasta la que no llega luz alguna. Todo cuanto puedes ver a tu alrededor es de un negro impenetrable, silencioso y frío, salvo por un arco de luz plateada algo más adelante.";
+			new_line;
+			return true;
+		],
+;
 
 !!==============================================================================
 !!

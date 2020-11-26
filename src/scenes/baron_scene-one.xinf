@@ -428,13 +428,10 @@ AdjacentRoom	-> DirGrutaSombrasAdelante
 		before [ previous_style;
 			Enter:
 				self.AdjacentRoom::onChangeLocation();
-				if (GrutaSombrasOscuridad has described) {
-					print "Ha llegado el momento. Tú eres el único que puede acabar con esto.
-					^^";
-				} else {
+				if (GrutaSombrasOscuridad hasnt described) {
 					print "Puedes distinguir un resplandor entre las sombras. ";
 				}
-				print "Tan pronto das un paso en la dirección de la que proviene la luz, las dos grandes [GrutaPuertas](puertas) de bronce se cierran a tu espalda con un golpe atronador seguido por el chirrido de los cerrojos deslizándose en su interior. Ahora ya no hay marcha atrás, te has quedado encerrado junto a la bestia. Aferras el [Percunos](hacha) con firmeza y das otro paso adelante, hacia el calor…";
+				print "Tan pronto das un paso en la dirección de la que proviene la luz, las dos grandes [GrutaPuertas](puertas) de bronce se cierran a tu espalda con un golpe atronador seguido por el chirrido de los cerrojos deslizándose en su interior. Ahora ya no hay marcha atrás, ha llegado el momento de enfrentarte a la bestia. Aferras el [Percunos](hacha) con firmeza y das otro paso adelante, hacia el calor…";
 				new_line;
 
 !				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
@@ -854,42 +851,6 @@ Atrezzo	-> -> MarmolVetas "vetas"
 				print "Al estudiar las líneas del mármol se apodera de ti el presentimiento de que, de algún modo, esas estrías blancas codifican un significado oculto. Como si bajo el aparente caos se hayase la respuesta a un profundo misterio. Pero al esforzarte por desentrañarlo los patrones comienzan a ondular ante tus ojos; y se retuercen y giran y se arremolinan unos con otros. Mareado, tienes que apartar la mirada.";
 			} else {
 				print "Las ondulante líneas blancas parecen retorcerse en la superficie [del Marmol]. No eres capaz de mirarlas fijamente sin marearte.";
-			}
-			new_line;
-			return true;
-		],
-;
-
-!! @Oscuridad
-Array darknessFlagsA -> 2; ! hasta (N-1) * 8 flags
-Array darknessFlagsB -> 2; ! hasta (N-1) * 8 flags
-Atrezzo	-> Oscuridad "oscuridad"
- class	Background,
- has	female,
- with	name_f 'negrura' 'oscuridad' 'sombra' 'tiniebla',
-		name_fp 'sombras' 'tinieblas',
-		gender G_FEMENINO,
-		adjectives 'temblorosa' 'temblorosas' 'titilante' 'titilantes',
-		!!------------------
-		description [;
-			if (GrutaVestibulo.brighter(self)) return true;
-			print "Las sombras dibujan formas macabras y temblorosas entre [los Huesos] del suelo.";
-			new_line;
-			return true;
-		],
- private
-		cant_see [;
-			switch (Shuffle(4, darknessFlagsA)) {
-				1:	print "No puedes ver nada parecido";
-				2:	print "No puedes ver nada así";
-				3:	print "No ves nada parecido";
-				4:	print "No ves nada semejante";
-			}
-			switch (Shuffle(4, darknessFlagsB)) {
-				1:	print " entre las [self](sombras).";
-				2:	print " entre las [self](tinieblas).";
-				3:	print " en la [self](oscuridad).";
-				4:	print " en la penumbra.";
 			}
 			new_line;
 			return true;
