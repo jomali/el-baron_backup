@@ -7,7 +7,7 @@
 !!
 !!==============================================================================
 !!
-!!	Archivo:		baron_classes.inf
+!!	Archivo:		baronClasses.inf
 !!	Autor(es):		Victor Gijsbers
 !!					J. Francisco Martín <jfm.lisaso@gmail.com>
 !!	Idioma:			ES (Español)
@@ -49,6 +49,7 @@
 !!	<>	Thing:Atrezzo
 !!	<>	Thing:Atrezzo:AdjacentRoom
 !!	<>	Thing:Atrezzo:Background
+!!	<>	Thing:Atrezzo:Background:Darkness
 !!	<>	Thing:Atrezzo:Room
 !!	<>	Thing:Atrezzo:Room:Indoors
 !!	<>	Thing:Atrezzo:Room:Outdoors
@@ -634,6 +635,93 @@ Class	Atrezzo
 ;
 
 !!------------------------------------------------------------------------------
+!! Thing:Atrezzo:AdjacentRoom
+!!------------------------------------------------------------------------------
+!! Representa un objeto dentro del modelo de mundo hacia el que el PC se puede
+!! desplazar.
+!!
+!!	@dependency arrays.h
+!!	@dependency textStyles.h
+!!	@dependency vorple.h
+!!	@version 2020/06/06
+!!------------------------------------------------------------------------------
+Class	AdjacentRoom
+ class	Atrezzo
+ has	open,
+ with	adjacent_room 0,
+		before [
+			obj;
+			Enter,
+			Go:
+				if (self.adjacent_room ~= 0) {
+					if (metaclass(self.adjacent_room) == Routine) {
+						obj = self.adjacent_room();
+					}
+					if (metaclass(self.adjacent_room) == Object) {
+						obj = self.adjacent_room;
+					}
+					new_line;
+					PlayerTo(obj);
+				} else {
+					switch (Utils.get_grammatical_inflection()) {
+						FIRST_PERSON_PRESENT:
+							if (IsPluralNoun(player)) print "No podemos";
+							else print "No puedo";
+							print " llegar hasta ", (the) self, " desde aquí.";
+						SECOND_PERSON_PRESENT:
+							if (IsPluralNoun(player)) print "No podéis";
+							else print "No puedes";
+							print " llegar hasta ", (the) self, " desde aquí.";
+						THIRD_PERSON_PRESENT:
+							if (IsPluralNoun(player)) print "No pueden";
+							else print "No puede";
+							print " llegar hasta ", (the) self, " desde aquí.";
+						FIRST_PERSON_PAST:
+							if (IsPluralNoun(player)) print "No podíamos";
+							else print "No podía";
+							print " llegar hasta ", (the) self, " desde allí.";
+						SECOND_PERSON_PAST:
+							if (IsPluralNoun(player)) print "No podíais";
+							else print "No podías";
+							print " llegar hasta ", (the) self, " desde allí.";
+						THIRD_PERSON_PAST:
+							if (IsPluralNoun(player)) print "No podían";
+							else print "No podía";
+							print " llegar hasta ", (the) self, " desde allí.";
+						FIRST_PERSON_FUTURE:
+							if (IsPluralNoun(player)) print "No podremos";
+							else print "No podré";
+							print " llegar hasta ", (the) self, " desde allí.";
+						SECOND_PERSON_FUTURE:
+							if (IsPluralNoun(player)) print "No podréis";
+							else print "No podrás";
+							print " llegar hasta ", (the) self, " desde allí.";
+						THIRD_PERSON_FUTURE:
+							if (IsPluralNoun(player)) print "No podrán";
+							else print "No podrá";
+							print " llegar hasta ", (the) self, " desde allí.";
+					}
+					new_line;
+				}
+				return true;
+		],
+		description [;
+			return L__M(##Look, 7, self);
+		],
+		onChangeLocation [;
+			!! Elimina todos los hipervínculos impresos previamente:
+			#Ifdef USE_VORPLE;
+			VorpleExecuteJavaScriptCommand(BuildCommand("
+				ifjs.clearHyperlinks();
+			"));
+			VorpleCloseHTMLTag();
+			VorpleOpenHTMLTag("div", "current-location");
+			#Endif; ! USE_VORPLE;
+			return true;
+		],
+;
+
+!!------------------------------------------------------------------------------
 !! Thing:Atrezzo:Background
 !!------------------------------------------------------------------------------
 !! Objetos de decorado con la interactividad más restringida; objetos lejanos,
@@ -728,91 +816,81 @@ Class	Background
 ;
 
 !!------------------------------------------------------------------------------
-!! Thing:Atrezzo:AdjacentRoom
+!! Thing:Atrezzo:Background:Darkness
 !!------------------------------------------------------------------------------
-!! Representa un objeto dentro del modelo de mundo hacia el que el PC se puede
-!! desplazar.
+!! Objetos oscuridad que modifican las respuestas por defecto de la librería 
+!! al intentar actuar sobre cualesquiera otros objetos presentes en la misma 
+!! localidad.
 !!
-!!	@dependency arrays.h
-!!	@dependency textStyles.h
-!!	@dependency vorple.h
-!!	@version 2020/06/06
+!!	@version 2020/11/28
 !!------------------------------------------------------------------------------
-Class	AdjacentRoom
- class	Atrezzo
- has	open,
- with	adjacent_room 0,
-		before [
-			obj;
-			Enter,
-			Go:
-				if (self.adjacent_room ~= 0) {
-					if (metaclass(self.adjacent_room) == Routine) {
-						obj = self.adjacent_room();
-					}
-					if (metaclass(self.adjacent_room) == Object) {
-						obj = self.adjacent_room;
-					}
-					new_line;
-					PlayerTo(obj);
-				} else {
-					switch (Utils.get_grammatical_inflection()) {
-						FIRST_PERSON_PRESENT:
-							if (IsPluralNoun(player)) print "No podemos";
-							else print "No puedo";
-							print " llegar hasta ", (the) self, " desde aquí.";
-						SECOND_PERSON_PRESENT:
-							if (IsPluralNoun(player)) print "No podéis";
-							else print "No puedes";
-							print " llegar hasta ", (the) self, " desde aquí.";
-						THIRD_PERSON_PRESENT:
-							if (IsPluralNoun(player)) print "No pueden";
-							else print "No puede";
-							print " llegar hasta ", (the) self, " desde aquí.";
-						FIRST_PERSON_PAST:
-							if (IsPluralNoun(player)) print "No podíamos";
-							else print "No podía";
-							print " llegar hasta ", (the) self, " desde allí.";
-						SECOND_PERSON_PAST:
-							if (IsPluralNoun(player)) print "No podíais";
-							else print "No podías";
-							print " llegar hasta ", (the) self, " desde allí.";
-						THIRD_PERSON_PAST:
-							if (IsPluralNoun(player)) print "No podían";
-							else print "No podía";
-							print " llegar hasta ", (the) self, " desde allí.";
-						FIRST_PERSON_FUTURE:
-							if (IsPluralNoun(player)) print "No podremos";
-							else print "No podré";
-							print " llegar hasta ", (the) self, " desde allí.";
-						SECOND_PERSON_FUTURE:
-							if (IsPluralNoun(player)) print "No podréis";
-							else print "No podrás";
-							print " llegar hasta ", (the) self, " desde allí.";
-						THIRD_PERSON_FUTURE:
-							if (IsPluralNoun(player)) print "No podrán";
-							else print "No podrá";
-							print " llegar hasta ", (the) self, " desde allí.";
-					}
-					new_line;
+Class Darkness
+	class Background
+	has female on,
+	private
+		is_interactive_object [ obj
+			current i result;
+			result = false;
+			for (i = 0 : i < (self.#interactive_objects)/WORDSIZE : i++) {
+				current = self.&interactive_objects-->i;
+				if (obj == current) {
+					result = true;
+					break;
 				}
-				return true;
+			}
+			return result;
 		],
-		description [;
-			return L__M(##Look, 7, self);
-		],
-		onChangeLocation [;
-			!! Elimina todos los hipervínculos impresos previamente:
-			#Ifdef USE_VORPLE;
-			VorpleExecuteJavaScriptCommand(BuildCommand("
-				ifjs.clearHyperlinks();
-			"));
-			VorpleCloseHTMLTag();
-			VorpleOpenHTMLTag("div", "current-location");
-			#Endif; ! USE_VORPLE;
+	with
+		short_name [;
+			print "[](oscuridad)";
 			return true;
 		],
-;
+		name_f 'negrura' 'oscuridad' 'penumbra' 'sombra' 'tiniebla',
+		name_fp 'penumbras' 'sombras' 'tinieblas',
+		gender G_FEMENINO,
+		article "la",
+		!!
+		!! Array de objetos con los que se puede interactuar a oscuras:
+		interactive_objects 0,
+		react_before [
+			i obj;
+			if (self hasnt on) {
+				return false;
+			}
+			Consult,
+			Examine,
+			Look,
+			LookUnder,
+			Read,
+			Search:
+				if (noun == nothing) return false;
+				if (noun == self) return false;
+				if (noun == parent(self)) return false;
+				if (noun ofclass AdjacentRoom) return false;
+				if (self.is_interactive_object(noun)) return false;
+				<<Examine self>>;
+			DefaultAction:
+				return false;
+			Drop:
+				if (noun == nothing) return false;
+				if (~~IndirectlyContains(player, noun)) return false;
+				print "Si dejas [el noun] aquí es posible que más tarde no puedas encontrar", (lo) noun, " de nuevo en [la self].";
+				new_line;
+				return true;
+			Inv,
+			InvTall,
+			InvWide:
+				<<Examine self>>;
+			Rub:
+				if (noun == nothing) return false;
+				if (noun == self) return false;
+				if (noun == parent(self)) return false;
+				if (noun ofclass Atrezzo) return false;
+				if (self.is_interactive_object(noun)) return false;
+				return true;
+		],
+; 
+
 
 !!------------------------------------------------------------------------------
 !! Thing:Atrezzo:Room

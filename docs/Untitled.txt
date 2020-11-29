@@ -1,0 +1,132 @@
+[Iniciando transcripción?]
+
+El Barón
+Una historia interactiva. Escrita por Victor Gijsbers y publicada bajo la Licencia Pública General de GNU en su versión 3 (o cualquier versión posterior). La presente edición ha sido desarrollada por J. Francisco Martín.
+BETA 1.0 / Núm. de serie 201126 / Creado con Inform 6.34 S
+Versión de la librería Inform 6/11 / Núm. de serie librería 040227
+Librería Española INFSP 0.9 [901.21], basada en InformATE!
+Versión del intérprete 1.2.9 / VM 3.1.2
+
+
+- escena 5
+
+GALERÍA
+Las puertas de la entrada dan paso a una galería sombría. Apenas logra colarse algo de claridad del exterior, de modo que todo cuanto puedes ver a tu alrededor es de un negro impenetrable, silencioso y frío. Salvo por una boca de luz plateada algo más adelante.
+
+- 
+Las puertas de la entrada dan paso a una galería sombría. Apenas logra colarse algo de claridad del exterior, de modo que todo cuanto puedes ver a tu alrededor es de un negro impenetrable, silencioso y frío. Salvo por una boca de luz plateada algo más adelante.
+
+- adelante
+No puedes ir por ahí.
+
+- acciones
+acciones
+[Action listing on.]
+
+- xir patio
+xir patio
+[Setting (Parsing preprocessor).selected_object to 0]
+[¿Cuál concretamente: la entrada o el Patio de armas?]
+
+- xir patio armas
+xir patio
+[Setting (Parsing preprocessor).selected_object to 0]
+[¿Cuál concretamente: la entrada o el Patio de armas?]
+
+- 
+xir patio armas
+[Setting (Parsing preprocessor).selected_object to 0]
+[¿Cuál concretamente: la entrada o el Patio de armas?]
+
+- 
+xir       patio armas
+[Setting (Parsing preprocessor).selected_object to 0]
+[¿Cuál concretamente: la entrada o el Patio de armas?]
+
+- 
+xir             patio armas
+[Setting (Parsing preprocessor).selected_object to 0]
+[¿Cuál concretamente: la entrada o el Patio de armas?]
+
+- 
+xir                   patio armas
+[Setting (Parsing preprocessor).selected_object to 0]
+[¿Cuál concretamente: la entrada o el Patio de armas?]
+
+- 
+xir                         patio armas
+[Setting (Parsing preprocessor).selected_object to 0]
+[¿Cuál concretamente: la entrada o el Patio de armas?]
+
+- 
+xir                               patio armas
+[Setting (Parsing preprocessor).selected_object to 0]
+[¿Cuál concretamente: la entrada o el Patio de armas?]
+
+- 
+xir                                     patio armas
+[Setting (Parsing preprocessor).selected_object to 0]
+[¿Cuál concretamente: la entrada o el Patio de armas?]
+
+- 
+xir                                           patio armas
+[ Action Look (from < > statement) ]
+Las puertas de la entrada dan paso a una galería sombría. Apenas logra colarse algo de claridad del exterior, de modo que todo cuanto puedes ver a tu alrededor es de un negro impenetrable, silencioso y frío. Salvo por una boca de luz plateada algo más adelante.
+
+- xir patio armas
+xir                                           patio armas
+[Setting (Parsing preprocessor).selected_object to 0]
+[¿Cuál concretamente: la entrada o el Patio de armas?]
+
+- q
+xir patio      
+[Setting (Parsing preprocessor).selected_object to 0]
+[Setting (Parsing preprocessor).selected_object to 457411]
+[ Action Quit ]
+[¿Realmente quieres abandonar el relato? (SÍ/NO)] n
+n
+
+- restart
+restart
+[Setting (Parsing preprocessor).selected_object to 0]
+[La instrucción «restart» no está definida.]
+
+- reiniciar
+reiniciar
+[Setting (Parsing preprocessor).selected_object to 0]
+[Setting (Parsing preprocessor).selected_object to 457475]
+[ Action Restart ]
+[¿Realmente quieres reiniciar el relato? (SÍ/NO)] s
+s
+
+
+
+
+Todo es oscuridad a tu alrededor. El mundo entero reducido a un vacío negro e impenetrable.
+
+[Tutorial: Mantén pulsada la tecla «Shift/Mayús.» para ver los objetos con los que se puede interactuar. Puedes hacer clic con el ratón sobre cualquiera de las palabras que aparezcan destacadas.]
+
+-  escena 5
+ escena 5
+
+GALERÍA
+Las puertas de la entrada dan paso a una galería sombría. Apenas logra colarse algo de claridad del exterior, de modo que todo cuanto puedes ver a tu alrededor es de un negro impenetrable, silencioso y frío. Salvo por una boca de luz plateada algo más adelante.
+
+- xir patio armas
+xir patio armas
+[¿Cuál concretamente: la entrada o el Patio de armas?]
+
+- entrada
+xir patio armas
+
+OSCURIDAD
+Está demasiado oscuro como para poder ver algo.
+
+- l
+l
+Está demasiado oscuro como para poder ver algo.
+
+- q
+q
+[¿Realmente quieres abandonar el relato? (SÍ/NO)] s
+s

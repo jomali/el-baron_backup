@@ -365,31 +365,39 @@ Replace MyVorplePrompt;			! Rutina que imprime el inductor en Vorple
 
 #Ifdef TARGET_GLULX;
 #Ifdef USE_GWINDOWS;
-Include "gwindefs.h";			! GWindows: Definiciones
+!! GWindows: Definiciones generales:
+Include "gwindefs.h";
 #Endif; ! USE_GWINDOWS;
 #Endif; ! TARGET_GLULX;
 
 #Ifdef TARGET_GLULX;
 #Ifdef USE_VORPLE;
-Include "vorple.h";				! Funcionalidades básicas de Vorple UI
+!! Funcionalidades básicas de Vorple UI:
+Include "vorple.h";
 #Endif; ! USE_VORPLE;
 #Endif; ! TARGET_GLULX;
 
-Include "Parser.h";				! Decodifica la entrada del teclado
-Include "textStyles.h";			! Selección de estilo de los textos
+!! Decodifica la entrada del teclado:
+Include "Parser.h";
+!! Selección de estilo de los textos:
+Include "textStyles.h";
 
 #Ifdef USE_SPANISH_LM;
-Include "SpanishLM.h";			! Mensajes de la librería
+!! Mensajes de la librería:
+Include "SpanishLM.h";
 #Endif; ! USE_SPANISH_LM;
 
 #Ifdef USE_EXTENDED_LIBRARY;
-Include ">utils/baron_lib.inf";		! Personalizaciones de la librería
+!! Personalizaciones a la librería:
+Include ">baronLib.inf";
 #Endif; ! USE_EXTENDED_LIBRARY;
 
-Include ">utils/baron_langLM.inf";	! Mensajes personalizados de la librería
+!! Mensajes personalizados de la librería:
+Include ">baronLangLM.inf";
 
 #Ifdef USE_GWINDOWS;
-Include "gwincls.h";			! GWindows: Window Class Framework
+!! GWindows: Window Class Framework:
+Include "gwincls.h";
 #Endif; ! USE_GWINDOWS;
 
 
@@ -969,7 +977,7 @@ Include "vorple-screen-effects.h";
 
 	!! Menú principal:
 	!! location = MainMenu.run(true);
-	location = GrutaSombras;
+	location = Galeria;
 	print "^^";
 
 	!! Se evita la impresión inicial del banner
@@ -1086,16 +1094,16 @@ Include ">baronGrammar.inf";
 !!
 !!------------------------------------------------------------------------------
 
-Include ">utils/baron_classes.inf";
-Include ">utils/baron_menu.inf";
-Include ">utils/baron_tutorial.inf";
-Include ">utils/baron_utils.inf";
+Include ">baronClasses.inf";
+Include ">baronMenu.inf";
+Include ">baronTutorial.inf";
+Include ">baronUtils.inf";
 
 Include ">scenes/baron_scene-zero.inf";
 Include ">scenes/baron_scene-one.inf";
 Include ">scenes/baron_scene-two.inf";
 Include ">scenes/baron_scene-three.inf";
 Include ">scenes/baron_scene-four.inf";
-Include ">scenes/baron_scene-five.inf";
+Include ">scenes/baronSceneFive.inf";
 Include ">scenes/baron_scene-six.inf";
 Include ">scenes/baron_scene-seven.inf";

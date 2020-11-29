@@ -157,22 +157,6 @@ Atrezzo	CastilloParedes "paredes" Limbo
 !!
 !!------------------------------------------------------------------------------
 
-!! @DirGaleria
-AdjacentRoom DirGaleria "entrada"
-	has female,
-	with
-		found_in PatioArmas,
-		name_f 'galeria',
-		gender G_FEMENINO,
-		!!
-		adjacent_room Galeria,
-		before [;
-			Enter:
-				self.AdjacentRoom::before();
-				return true;
-			],
-;
-
 !! @Galeria
 Indoors Galeria "Galería"
 	has female,
@@ -181,28 +165,44 @@ Indoors Galeria "Galería"
 		name_m 'corredor' 'pasillo',
 		gender G_FEMENINO,
 		!!
+		b_to [;
+			<<Enter DirPortonesCastillo>>;
+		],
 		description [;
-			print "Las enormes puertas dan paso a una galería hasta la que no llega luz alguna. Todo cuanto puedes ver a tu alrededor es de un negro impenetrable, silencioso y frío, salvo por un arco de luz plateada algo más adelante.";
+			if (false) {
+				print "La luz de la antorcha es débil, pero resulta suficiente como para alumbrar el interior de la galería. A tu alrededor hay amontonados unos fajos de papel en innumerables pilas de diferente altura; anudados escrupulosamente unos y sueltos y sin orden aparente otros, bien ajustados, tambaleantes o caídos y desperdigados por el suelo. Ocupan prácticamente todo el espacio, salvo por el paso despejado en línea recta que lleva desde las [DirPortonesCastillo](puertas) del castillo hasta [el DirPatioArmas].";
+			} else if (PatioArmas has visited) {
+				print "No llega luz alguna hasta este lugar. Rodeado por las tinieblas, el silencio y el frío, todo cuanto alcanzas a distinguir es la abertura tenuemente iluminada que conduce de vuelta [al DirPatioArmas].";				
+			} else {
+				print "[Los DirPortonesCastillo] da[n DirPortonesCastillo] paso a una corta galería hasta la que no llega luz alguna. Rodeado por las tinieblas, el silencio y el frío, todo cuanto alcanzas a distinguir es una abertura tenuemente iluminada, algo más [f_obj].";				
+			}
 			new_line;
 			return true;
 		],
+		f_to [;
+			<<Enter DirPatioArmas>>;
+		],
+		in_to [;
+			<<Enter DirPatioArmas>>;
+		],
+		out_to [;
+			<<Enter DirPortonesCastillo>>;
+		],
 ;
 
-!!==============================================================================
-!!
-!!	2)	Patio de armas
-!!
-!!------------------------------------------------------------------------------
-
 !! @DirPatioArmas
-AdjacentRoom	DirPatioArmas "entrada"
- has	female,
- with	found_in TorreExterior,
- 		name_f 'entrada',
+AdjacentRoom -> DirPatioArmas
+	has
+		male,
+	with
+		short_name [;
+			print "[](patio) de armas";
+			return true;
+		],
 		name_m 'claustro' 'patio',
-		gender G_FEMENINO,
+		gender G_MASCULINO,
 		adjectives 'armas' 'castillo' 'fortaleza' 'interior',
-		!!------------------
+		!!
 		adjacent_room PatioArmas,
 		before [;
 			Enter:
@@ -211,43 +211,18 @@ AdjacentRoom	DirPatioArmas "entrada"
 		],
 ;
 
-!! @PatioArmas
-Outdoors	PatioArmas
- has	male,
- with	short_name [;
-			print "[](Patio) de armas";
-			return true;
-		],
-		name_m 'claustro' 'patio',
-		gender G_MASCULINO,
-		adjectives 'armas' 'interior',
-		!!------------------
-		b_to [;
-			<<Enter DirCastilloEntrada>>;
-		],
-		before [;
-			Listen:
-				print "El viento murmura nostálgico entre las piedras caídas.";
-				new_line;
-				return true;
-		],
-		description [;
-			print "Detrás de la fachada aparentemente intacta se oculta una auténtica ruina. Casi todas las construcciones de la fortaleza han sucumbido y en su lugar quedan tan solo montones desperdigados de escombros entre los cuáles las tres torres parecen brotar como hongos gigantescos de sillería y argamasa. Alguien ha abierto un estrecho [PatioArmasCamino](paso) en [la CastilloNieve]. Lo ves zigzaguear entre las piedras caídas, en dirección a la gran [DirTorreExterior] central.";
-			new_line;
-			return true;
-		],
-		f_to [;
-			<<Enter DirTorreExterior>>;
-		],
-;
-
-!! @DirPatioArmas
-AdjacentRoom	-> DirCastilloEntrada "entrada"
- has	female,
- with	name_f 'entrada',
-		gender G_FEMENINO,
+!! @DirPortonesCastillo
+AdjacentRoom -> DirPortonesCastillo "portones"
+	has
+		male pluralname,
+	with
+		name_f 'entrada' 'puerta',
+		name_fp 'puertas',
+		name_m 'porton',
+		name_mp 'portones',
+		gender G_MASCULINO + G_PLURAL,
 		adjectives 'castillo' 'fortaleza',
-		!!------------------
+		!!
 		before [;
 			Enter:
 				print "No sin María.";
@@ -256,19 +231,81 @@ AdjacentRoom	-> DirCastilloEntrada "entrada"
 		],
 ;
 
-!! @PatioArmasCamino
-Atrezzo	-> PatioArmasCamino "camino"
- has	male,
- with	name_f 'pista',
-		name_m 'camino' 'paso' 'sendero' 'rastro',
-		gender G_FEMENINO,
-		adjectives 'improvisado',
-		!!------------------
+!! @GaleriaOscuridad
+Darkness -> GaleriaOscuridad "oscuridad"
+	has	female,
+	with
 		description [;
-			print "Un rastro dejado por alguien al cruzar el patio. Lleva desde [la DirCastilloEntrada] del castillo en dirección a la gruesa [DirTorreExterior] del homenaje.";
+			print "No ves nada en la oscuridad, aparte de";
+			if (PatioArmas has visited) {
+				print " la salida [al DirPatioArmas]";
+			} else {
+				print " la abertura de más [f_obj]";
+			}
+			print ".";
 			new_line;
 			return true;
 		],
+;
+
+
+!!==============================================================================
+!!
+!!	2)	Patio de armas
+!!
+!!------------------------------------------------------------------------------
+
+!! @PatioArmas
+Outdoors PatioArmas
+	has	male,
+	with
+		short_name [;
+			print "[](Patio) de armas";
+			return true;
+		],
+		name_m 'claustro' 'patio',
+		gender G_MASCULINO,
+		adjectives 'armas' 'interior',
+		!!
+		b_to [;
+			<<Enter DirEntradaCastillo>>;
+		],
+		before [;
+			Listen:
+				print "El viento murmura nostálgico entre las piedras caídas.";
+				new_line;
+				return true;
+		],
+		description [;
+			print "Detrás de la fachada aparentemente intacta de la fortaleza se oculta una verdadera ruina. Casi todas las construcciones han sucumbido y en su lugar quedan tan solo montones desperdigados de escombros, entre los cuáles las tres torres parecen brotar como hongos gigantescos de sillería.";
+			new_line;
+			return true;
+		],
+		f_to [;
+			<<Enter DirTorreExterior>>;
+		],
+;
+
+!! @DirEntradaCastillo
+AdjacentRoom -> DirEntradaCastillo
+	has female,
+	with
+		short_name [;
+			print "[](entrada) del castillo";
+			return true;
+		],
+		name_f 'entrada' 'galeria',
+		gender G_FEMENINO,
+		adjectives 'castillo' 'fortaleza',
+		!!
+		adjacent_room Galeria,
+		before [;
+			Enter:
+				print "Regresas a la galería.";
+				new_line;
+				self.AdjacentRoom::before();
+				return true;
+			],
 ;
 
 !! @PatioArmasEstatua
@@ -300,7 +337,7 @@ HeavyItem	-> PatioArmasEstatua "estatua"
 		],
 		describe [;
 			new_line;
-			print "[Una self] domina el centro del patio.";
+			print "Alguien ha abierto un paso en la nieve. Rodea una gran [self] en el centro del patio y zigzaguea entre las piedras caídas, desde [if:true][la DirEntradaCastillo][else]la [DirTorreExterior] del homenaje[fi] en dirección [if:true]a la [DirTorreExterior] del homenaje[else][al DirEntradaCastillo][fi].";
 			new_line;
 			return true;
 		],
@@ -314,6 +351,21 @@ HeavyItem	-> PatioArmasEstatua "estatua"
 		],
  private
  		tried_to_talk false,
+;
+
+!! @PatioArmasCamino
+Atrezzo	-> PatioArmasCamino "camino"
+ has	male,
+ with	name_f 'pista',
+		name_m 'camino' 'paso' 'sendero' 'rastro',
+		gender G_FEMENINO,
+		adjectives 'improvisado',
+		!!------------------
+		description [;
+			print "Un rastro dejado por alguien al cruzar el patio. Lleva desde [la DirEntradaCastillo] en dirección a la gruesa [DirTorreExterior](torre) del homenaje.";
+			new_line;
+			return true;
+		],
 ;
 
 !! @PatioArmasEscombros
@@ -391,7 +443,7 @@ Outdoors	TorreExterior "Frente a la torre del homenaje"
 			<<Enter DirPatioArmas>>;
 		],
 		description [;
-			print "Imponente y amenazadora, la gran torre principal se eleva ante ti bloqueando completamente la luz de la luna. En este punto, el estrecho camino abierto en la nieve se bifurca formando una T nerviosa que comunica el interior de la torre con [el DirPatioArmas] del castillo y con el otro único [DirEdificio] que aún pemanece en pie, pegado al muro exterior.";
+			print "Imponente y amenazadora, la gran torre principal se eleva ante ti bloqueando completamente la luz de la luna. En este punto, el estrecho camino abierto en la nieve se bifurca formando una T nerviosa que comunica el interior de la torre con [el DirPatioArmas] y con el otro único [DirEdificio] que aún pemanece en pie, pegado al muro exterior.";
 			new_line;
 			return true;
 		],
@@ -418,40 +470,6 @@ Atrezzo	-> TorreExteriorEscombros
 			return true;
 		],
 ;
-
-!! @Escotilla
-Item	-> Escotilla "escotilla"
- has	female ~open openable,
- with	name_f 'escotilla',
-		gender G_FEMENINO,
-		!!------------------
-		after [;
-			Open:
-				print "La escotilla se abre al mundo de arriba.";
-				new_line;
-				return true;
-		],
-		before [;
-			Burn:
-				print "La trampilla es de hierro, y el hierro no arde.";
-				new_line;
-				return true;
-		],
-		description [;
-			print "Una pesada trampilla conduce a las catacumbas subterráneas.";
-			new_line;
-			return true;
-		],
-;
-
-!! # kasteel_ruine_stenen
-!! 1. "montón de piedras"
-!! 2. "En un rincón de las ruinas hay un montón de piedras que no está cubierto de nieve."
-!! 3. "Un montón de piedras yace en el suelo junto a una escotilla".
-!! 4. "Las piedras del tamaño de la cabeza forman un montón desordenado. Apenas hay nieve en él, mientras que el resto del castillo está cubierto por una capa de varios centímetros."
-!! 5. "Las piedras forman un montón desordenado. Ya no cubren la escotilla".
-!! 6. "Las piedras son pesadas, pero con alguna dificultad logras empujarlas y hacerlas rodar a un lado. Bajo el montón descubres una escotilla de metal en el suelo."
-!! 7. "No vas a volver a mover las piedras".
 
 
 !!==============================================================================
@@ -555,13 +573,7 @@ HeavyItem	-> EdificioRastro "rastro"
 		],
 		describe [;
 			new_line;
-			print "A través del gran hueco abierto en el muro";
-			if (true) {
-				print " a tu espalda";
-			} else {
-				print " a tu derecha";
-			}
-			print " se puede salir de vuelta al patio. Hay [un self] que empieza allí y llega hasta [un DirComedor]";
+			print "A través del gran hueco abierto en el muro [if:true]a tu espalda[else]a tu derecha[fi] se puede salir de vuelta al patio. Hay [un self] que empieza allí y llega hasta [un DirComedor]";
 			if (true) {
 				print " sin puerta";
 			} else {

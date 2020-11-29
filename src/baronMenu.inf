@@ -2,11 +2,11 @@
 !!==============================================================================
 !!
 !!	EL BARÓN
-!!	Menú de opciones
+!!	Menú de opciones principal
 !!
 !!==============================================================================
 !!
-!!	Archivo:		baron_menu.inf
+!!	Archivo:		baronMenu.inf
 !!	Autor(es):		Victor Gijsbers
 !!					J. Francisco Martín <jfm.lisaso@gmail.com>
 !!	Idioma:			ES (Español)
@@ -42,15 +42,17 @@
 
 
 !! @Menu
-Object	Menu
- has	light male,
- with	short_name [;
-			print (string) Story, " - ";
+Object Menu
+	has
+		light male,
+	with
+		short_name [;
+			print (string) Story, " — ";
 			PrintVersionNumber();
 			return true;
 		],
 		gender G_MASCULINO,
-		!!------------------
+		!!
 		description [;
 			ChoiceSetManager.start(MenuRaiz);
 			print "
@@ -105,7 +107,17 @@ ChoiceSetItem	MenuPrefacio
 		append_choice_set false,
 		final_choice true,
 		reaction [;
-			print "Prefacio.";
+			print (strong) "PREFACIO", "^";
+			print (strong) "Elecciones temáticas en lugar de desafíos lógicos", "^";
+			new_line;
+			print (strong) "El Barón", " no es un videojuego en el sentido tradicional de la palabra; no cuenta con puzzles o desafíos lógicos que haya que resolver para continuar, ni situaciones que desemboquen en éxito o fracaso, ni sistemas de puntuación de ningún tipo; no se trata de una obra que pueda ganarse o perderse, con independencia de cualesquiera sean las acciones del usuario. Se trata, en sentido literal, de una ", (stressed) "ficción interactiva", " antes que de un juego y su objetivo es ofrecer un universo ficticio que resulte inmersivo y que el usuario pueda explorar libremente junto a los diferentes temas planteados.^";
+			new_line;
+			!! TODO - revisar texto a partir de este punto
+			print "Hay varias cuestiones de las que el usuario debe ser consciente mientras experimenta la narración. En primer lugar, no es posible llevar la historia a un estado en el que resulte imposible completarla. Tampoco es posible llegar a un final repentino antes de que la historia haya alcanzado su final real. Además, la narración ha sido diseñada de tal modo que casi todas las acciones con sentido en el contexto de la ficción la hacen avanzar; no hay ningún obstáculo real en el camino hasta el final. Lo que se plantea no es si el usuario alcanzará el final de la historia, sino cómo lo hará.^";
+			new_line;
+			print "La cuestión que aquellos que experimenten la obra deben plantearse no es; ¿esta acción me ayudará a finalizar la historia? sino, ¿creo que esta acción es apropiada, bella, perturbadora o de algún modo interesante desde un punto de vista temático? Cuando uno se encuentra con un hacha puede cogerlo o no cogerlo; en cualquier caso la historia avanzará hasta alcanzar su final. La elección es temática: ¿quieres experimentar una historia en la que el protagonista se enfrentan a sus conflictos con un arma en la mano, o más bien una en el que el protagonista obtiene lo que busca desarmado?^";
+			new_line;
+			print "La narración cuenta con varios encuentros clave que pueden ser resueltos de muchas maneras diferentes. Las decisiones que tome el usuario durante estos encuentros tendrán un impacto importante en el significado de la historia. De esto último es de lo que trata ", (strong) "El Barón", ": el usuario entra en escena como un agente creativo que interactúa con los temas planteados seleccionando símbolos y acciones a través de los que puede expresarse y reflejar sus propias preferencias y experiencia personal.^";
 			new_line;
 			return true;
 		],
