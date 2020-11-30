@@ -433,17 +433,19 @@ AdjacentRoom	DirTorreExterior "torre"
 ;
 
 !! @TorreExterior
-Outdoors	TorreExterior "Frente a la torre del homenaje"
- has	female
- with	name_f 'torre',
+Outdoors TorreExterior "Frente a la torre del homenaje"
+	has
+		female,
+	with
+		name_f 'torre',
  		gender G_FEMENINO,
 		adjectives 'central' 'homenaje' 'principal',
-		!!------------------
+		!!
 		b_to [;
 			<<Enter DirPatioArmas>>;
 		],
 		description [;
-			print "Imponente y amenazadora, la gran torre principal se eleva ante ti bloqueando completamente la luz de la luna. En este punto, el estrecho camino abierto en la nieve se bifurca formando una T nerviosa que comunica el interior de la torre con [el DirPatioArmas] y con el otro único [DirEdificio] que aún pemanece en pie, pegado al muro exterior.";
+			print "Imponente y amenazadora, la gran torre principal se eleva ante ti bloqueando completamente la luz de la luna. En este punto, el estrecho camino abierto en la nieve se bifurca formando una T nerviosa que comunica el interior de la torre con [el DirPatioArmas] y con el otro único [DirEdificioDesdeTorre] que aún pemanece en pie, pegado al muro exterior.";
 			new_line;
 			return true;
 		],
@@ -452,10 +454,43 @@ Outdoors	TorreExterior "Frente a la torre del homenaje"
 		],
 ;
 
+!! @DirEdificioDesdeTorre
+AdjacentRoom -> DirEdificioDesdeTorre "edificio"
+	has
+		male,
+	with
+		name_m 'agujero' 'construccion' 'edificio',
+		gender G_MASCULINO,
+		adjectives 'enorme' 'pared' 'paredes' 'semiderruido',
+		!!
+		adjacent_room Edificio,
+		before [;
+			Enter:
+				Edificio.PC_from_castle_grounds = true;
+				if (Edificio hasnt visited) {
+					print "Entras en la construcción a través de un agujero enorme abierto en una de las paredes.";
+					new_line;
+				}
+				if (Edificio has visited) {
+					print "Entras en la construcción a través del enorme agujero abierto en la pared.";
+					new_line;
+				}
+				self.AdjacentRoom::before();
+				return true;
+		],
+		description [;
+			print "Un edificio de piedra de una sola planta que parece mantenerse en pie solo a duras penas. Tiene un enorme [self](agujero) en una de sus paredes.";
+			new_line;
+			return true;
+		],
+;
+
 !! @TorreExteriorEscombros
-Atrezzo	-> TorreExteriorEscombros
- has	male pluralname,
- with	short_name [;
+Atrezzo -> TorreExteriorEscombros
+	has
+		male pluralname,
+	with
+		short_name [;
  			print "montones de [](piedra:OTHER_OBJECT)";
 			return true;
 		],
@@ -463,7 +498,7 @@ Atrezzo	-> TorreExteriorEscombros
 		name_fp 'piedras',
 		name_m 'escombro',
 		name_mp 'escombros',
-		!!------------------
+		!!
 		description [;
 			print "Las viejas piedras descansan inertes, semienterradas por [la CastilloNieve].";
 			new_line;
@@ -478,48 +513,20 @@ Atrezzo	-> TorreExteriorEscombros
 !!
 !!------------------------------------------------------------------------------
 
-!! @DirEdificio
-AdjacentRoom	DirEdificio "edificio"
- has	male,
- with	found_in Comedor TorreExterior,
-		name_m 'agujero' 'construccion' 'edificio',
-		gender G_MASCULINO,
-		adjectives 'enorme' 'pared' 'paredes' 'semiderruido',
-		!!------------------
-		adjacent_room Edificio,
-		before [;
-			Enter:
-				if (location == TorreExterior
-					&& Edificio hasnt visited) {
-					print "Entras en la construcción a través de un agujero enorme abierto en una de las paredes.";
-					new_line;
-				}
-				if (location == TorreExterior
-					&& Edificio has visited) {
-					print "Entras en la construcción a través del enorme agujero abierto en la pared.";
-					new_line;
-				}
-				self.AdjacentRoom::before();
-				return true;
-		],
-		description [;
-			print "Un edificio de piedra de una sola planta que parece mantenerse en pie solo a duras penas. Tiene un enorme [self](agujero) en una de sus paredes.";
-			new_line;
-			return true;
-		],
-;
-
 !! @Edificio
-Outdoors	Edificio
- has	male,
- with	short_name [;
+Outdoors Edificio
+	has
+		male,
+	with
+		short_name [;
 			print "[](Edificio) semiderruido";
 			return true;
 		],
 		name_m 'construccion' 'edificio',
 		gender G_MASCULINO,
 		adjectives 'semiderruido',
-		!!------------------
+		!!
+		PC_from_castle_grounds false,
 		before [;
 			Listen:
 				print "Cierras los ojos y escuhas. La voz de las piedras que repiten su historia eternamente.
@@ -537,13 +544,40 @@ Outdoors	Edificio
 		],
 		out_to [;
 			<<Enter DirTorreExterior>>;
-		]
+		],
+		reset [;
+			self.PC_from_castle_grounds = false;
+		],
+;
+
+!! @DirUmbral
+AdjacentRoom -> DirUmbral "umbral"
+	has
+		male,
+	with
+		name_f 'puerta',
+		name_m 'comedor' 'umbral' 'salon',
+		gender G_MASCULINO,
+		!!
+		adjacent_room Comedor,
+		before [;
+			Enter:
+				self.AdjacentRoom::before();
+				return true;
+		],
+		description [;
+			print "[if:Comedor.is_lit_up()]Puedes distinguir una luz parpadeante, muy tenue, más allá [del self].[else]Hace tiempo que ninguna puerta ocupa ese [self]. Incluso el marco ha desaparecido.[fi]";
+			new_line;
+			return true;
+		],
 ;
 
 !! @EdificioRastro
-HeavyItem	-> EdificioRastro "rastro"
- has	male static,
- with	short_name [;
+HeavyItem -> EdificioRastro "rastro"
+	has
+		male static,
+	with
+		short_name [;
  			print "[](rastro:OTHER_OBJECT) de barro";
 			return true;
 		],
@@ -551,7 +585,7 @@ HeavyItem	-> EdificioRastro "rastro"
 		name_fp 'huellas',
 		name_m 'barro' 'rastro',
 		gender G_MASCULINO,
-		!!------------------
+		!!
 		before [
 			previous_style;
 			Pull,
@@ -573,14 +607,14 @@ HeavyItem	-> EdificioRastro "rastro"
 		],
 		describe [;
 			new_line;
-			print "A través del gran hueco abierto en el muro [if:true]a tu espalda[else]a tu derecha[fi] se puede salir de vuelta al patio. Hay [un self] que empieza allí y llega hasta [un DirComedor]";
-			if (true) {
+			print "A través del gran hueco abierto en el muro [if:Edificio.PC_from_castle_grounds]a tu espalda[else]a tu derecha[fi] se puede salir de vuelta al patio. Hay [un self] que empieza allí y llega hasta [un DirUmbral]";
+			if (Comedor.is_lit_up()) {
 				print " sin puerta";
 			} else {
 				print " oscuro, como un rectángulo de tinta negra";
 			}
 			print ", en una de las paredes que aún siguen en pie";
-			if (true) {
+			if (Comedor.is_lit_up()) {
 				print ". Más allá se distingue un débil resplandor";
 			}
 			print ".";
@@ -595,9 +629,11 @@ HeavyItem	-> EdificioRastro "rastro"
 ;
 
 !! @EdificioEscombros
-Atrezzo	-> EdificioEscombros
- has	male pluralname,
- with	short_name [;
+Atrezzo -> EdificioEscombros
+	has
+		male pluralname,
+	with
+		short_name [;
  			print "montones de [](piedra:OTHER_OBJECT)";
 			return true;
 		],
@@ -605,7 +641,7 @@ Atrezzo	-> EdificioEscombros
 		name_fp 'piedras',
 		name_m 'escombro',
 		name_mp 'escombros',
-		!!------------------
+		!!
 		description [;
 			print "El suelo está cubierto con los restos del tejado y los cascotes desprendidos de las paredes. Una delgada capa de nieve se ha ido asentando sobre ellos, enterrándolos lentamente, igual que al resto del castillo.";
 			new_line;
@@ -614,14 +650,16 @@ Atrezzo	-> EdificioEscombros
 ;
 
 !! @EdificioTejado
-Atrezzo	-> EdificioTejado "tejado"
- has	male,
- with	name_f 'techumbre' 'teja' 'viga',
+Atrezzo -> EdificioTejado "tejado"
+	has
+		male,
+	with
+		name_f 'techumbre' 'teja' 'viga',
 		name_fp 'tejas' 'vigas',
 		name_m 'techo' 'tejado',
 		gender G_MASCULINO,
 		adjectives 'caido' 'derrumbado',
-		!!------------------
+		!!
 		description [;
 			print "Todo cuanto queda aún en su sitio son un par de vigas negras recortadas contra el cielo salpicado de estrellas. El resto se ha hundido por completo y yace desperdigado por el suelo.";
 			new_line;
@@ -636,62 +674,44 @@ Atrezzo	-> EdificioTejado "tejado"
 !!
 !!------------------------------------------------------------------------------
 
-!! @DirComedor
-AdjacentRoom	DirComedor "umbral"
- has	male,
- with	found_in Edificio,
-		name_f 'puerta',
-		name_m 'comedor' 'umbral' 'salon',
-		gender G_MASCULINO,
-		!!------------------
-		adjacent_room Comedor,
-		before [;
-			Enter:
-				self.AdjacentRoom::before();
-				return true;
-		],
-		description [;
-			if (true) {
-				print "Puedes distinguir una luz parpadeante, muy tenue, más allá [del self].";
-			} else {
-				print "Hace tiempo que ninguna puerta ocupa ese [self]. Incluso el marco ha desaparecido.";
-			}
-			new_line;
-			return true;
-		],
-;
-
 !! @Comedor
-Indoors	Comedor
- has	male,
- with	short_name [;
+Indoors Comedor
+	has
+		male,
+	with
+		short_name [;
 			print "En el [](comedor)";
 			return true;
 		],
 		name_f 'estancia' 'sala',
 		name_m 'comedor' 'salon',
 		gender G_MASCULINO,
-		!!------------------
+		!!
 		b_to [;
-			<<Enter DirComedorHabitacion>>;
+			<<Enter DirEdificioDesdeComedor>>;
 		],
 		description [;
-			print "Este salón se ha mantenido en mejores condiciones que [la DirComedorHabitacion] contigu[o DirComedorHabitacion]. Aún así, hay varios agujeros en el techo por los que se cuela la luz de la luna y, directamente bajo ellos, pequeños montones de nieve semifundida han comenzado a formarse en el suelo. El único mobiliario a la vista es una larga mesa de madera con una silla en cada extremo.";
+			print "Este salón se ha mantenido en mejores condiciones que [la DirEdificioDesdeComedor] contigu[o DirEdificioDesdeComedor]. Aún así, hay varios agujeros en el techo por los que se cuela la luz de la luna y bajo los que han comenzado a formarse unos pequeños montones de nieve semifundida. El único mobiliario a la vista es una larga mesa de madera con una silla en cada extremo.";
 			new_line;
 			return true;
 		],
+		is_lit_up [;
+			return (Antorcha has light && IndirectlyContains(self, Antorcha));
+		],
 		out_to [;
-			<<Enter DirComedorHabitacion>>;
+			<<Enter DirEdificioDesdeComedor>>;
 		],
 ;
 
-!! @DirComedorHabitacion
-AdjacentRoom	-> DirComedorHabitacion "habitación"
- has	female,
- with	name_f 'habitación',
+!! @DirEdificioDesdeComedor
+AdjacentRoom -> DirEdificioDesdeComedor "habitación"
+	has
+		female,
+	with
+		name_f 'habitación',
 		name_m 'cuarto' 'edificio' 'umbral',
 		gender G_FEMENINO,
-		!!------------------
+		!!
 		adjacent_room Edificio,
 		before [;
 			Enter:
@@ -700,28 +720,115 @@ AdjacentRoom	-> DirComedorHabitacion "habitación"
 		],
 ;
 
-!! @Antorcha
-Item	-> Antorcha "antorcha"
- has	female on,
- with	name_f 'antorcha' 'tea',
-		gender G_FEMENINO,
-		adjectives 'apagada' 'encendida',
-		!!------------------
-		describe [;
-			if (self in Comedor) {
-				new_line;
-				if (self has on) {
-					print "Sujet[a self] a un aplique en la pared, [una self] arde débilmente y arroja algo de luz y calor en la fría estancia.";
+!! @Aplique
+Atrezzo -> Aplique "aplique"
+	has
+		container male open ~scenery static,
+	private
+		loose false,
+	with
+		name_f 'abrazadera' 'sujeccion',
+		name_m 'aplique',
+		gender G_MASCULINO,
+		adjectives 'hierro' 'oxidada' 'oxidado' 'pared',
+		!!
+		after [;
+			LetGo:
+				if (~~self.loose) {
+					self.loose = true;
+					print "[La Antorcha] está trabada en las sujecciones. Tiras con fuerza hasta que consigues hacer que se desprenda con un chasquido, y la sacas del aplique.";
 				} else {
-					print "Ya apagad[a self] y frí[a self], [la self] vuelve a descansar de nuevo en el aplique de la pared.";
+					print "Sacas [la Antorcha] de la abrazadera de hierro.";
 				}
+				new_line;
+				return true;
+			Receive:
+				print "Colocas de nuevo [el noun] en el aplique de la pared.";
+				new_line;
+				return true;
+		],
+		before [;
+			Pull:
+				if (child(self) == Antorcha && ~~self.loose) {
+					self.loose = true;
+					print "Tiras con fuerza de [la Antorcha] hasta que notas cómo se libera de la sujección con un chasquido.";
+					new_line;
+					return true;
+				} else {
+					<<Turn self>>;
+				}
+			Push:
+				if (child(self) == Antorcha && ~~self.loose) {
+					self.loose = true;
+					print "Forcejeas con [la Antorcha] hasta que notas cómo se libera de la sujección con un chasquido.";
+					new_line;
+					return true;
+				} else {
+					<<Turn self>>;
+				}
+			PushDir,
+			Take,
+			Turn,
+			Wave:
+				print "El aplique está firmemente sujeto a la pared.";
+				new_line;
+				return true;
+			Receive:
+				if (noun ~= Antorcha) {
+					print "No puedes sujetar [el noun] en el aplique.";
+					new_line;
+					return true;
+				}
+		],
+		describe [;
+			if (child(self) ~= Antorcha) {
+				return true;
+			} else {
+				new_line;
+				print "[if:Antorcha has light]Sujet[a Antorcha] a un aplique en la pared, [una Antorcha] arde débilmente y arroja algo de luz y calor en la fría estancia.[else]Ya apagad[a Antorcha] y frí[a Antorcha], [la Antorcha] vuelve a descansar de nuevo en el aplique de la pared.[fi]";
 				new_line;
 				return true;
 			}
 		],
 		description [;
-			if (self has on) {
-				print "La luz amarillenta de su llama contrasta en el blanco y negro de la noche.";
+			print "Una abrazadera de hierro oxidado.";
+			new_line;
+			return true;
+		],
+		react_before [;
+			Drop:
+				if ((noun == Antorcha)
+					&& (IndirectlyContains(player, noun))
+					&& (second == nothing)) {
+					<<Insert noun self>>;
+				}
+			Pull:
+				if ((noun == Antorcha) && (IndirectlyContains(self, noun))) {
+					<<Pull self>>;
+				} 
+			Push:
+				if ((noun == Antorcha) && (IndirectlyContains(self, noun))) {
+					<<Push self>>;
+				} 
+		],
+		reset [;
+			self.loose = false;
+			move Antorcha to self;
+		],
+;
+
+!! @Antorcha
+Item -> -> Antorcha "antorcha"
+	has
+		female light,
+	with
+		name_f 'antorcha' 'tea',
+		gender G_FEMENINO,
+		adjectives 'apagada' 'encendida',
+		!!
+		description [;
+			if (self has light) {
+				print "Su luz amarillenta contrasta en el blanco y negro de la noche.";
 			} else {
 				print "El lienzo engrasado del extremo se ha consumido por completo. Ahora es sólo un pedazo de madera ennegrecida y fría.";
 			}
