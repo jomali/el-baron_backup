@@ -485,6 +485,23 @@ AdjacentRoom -> DirEdificioDesdeTorre "edificio"
 		],
 ;
 
+!! @DirTorreInterior
+AdjacentRoom -> DirTorreInterior "torre"
+	has
+		male,
+	with
+		name_m 'torre',
+		gender G_MASCULINO,
+		adjectives 'central' 'homenaje' 'principal',
+		!!
+		adjacent_room TorreInterior,
+		before [;
+			Enter:
+				self.AdjacentRoom::before();
+				return true;
+		],
+;
+
 !! @TorreExteriorEscombros
 Atrezzo -> TorreExteriorEscombros
 	has
@@ -736,7 +753,7 @@ Atrezzo -> Aplique "aplique"
 			LetGo:
 				if (~~self.loose) {
 					self.loose = true;
-					print "[La Antorcha] está trabada en las sujecciones. Tiras con fuerza hasta que consigues hacer que se desprenda con un chasquido, y la sacas del aplique.";
+					print "[La Antorcha] está trabada en las sujecciones. Tiras de ella con fuerza hasta que notas cómo se desprende con un chasquido, y la sacas del aplique.";
 				} else {
 					print "Sacas [la Antorcha] de la abrazadera de hierro.";
 				}
@@ -1033,65 +1050,124 @@ Item	Duquesa Limbo
 !!
 !!------------------------------------------------------------------------------
 
-!! @DirTorreInterior
-AdjacentRoom	DirTorreInterior "torre"
- has	male,
- with	found_in TorreExterior,
-		name_m 'torre',
-		gender G_MASCULINO,
-		adjectives 'central' 'homenaje' 'principal',
-		!!------------------
-		adjacent_room TorreInterior,
-		before [;
-			Enter:
-				if (location == PatioArmas) {
-					print "Atraviesas el patio en dirección a la torre del homenaje.";
-					new_line;
-				}
-				self.AdjacentRoom::before();
-				return true;
-		],
-;
-
 !! @TorreInterior
-Indoors	TorreInterior "Al pie de la torre principal"
- has	male,
- with	name_f 'torre',
-		gender G_MASCULINO,
-		adjectives 'homenaje' 'principal',
-		!!------------------
+Indoors TorreInterior
+	has
+		female,
+	with
+		short_name [;
+			print "[](Torre) del homenaje";
+			return true;
+		],
+		name_f 'estancia' 'habitacion' 'torre',
+		name_m 'torreon',
+		gender G_FEMENINO,
+		adjectives 'circular' 'homenaje' 'principal',
+		!!
 		b_to [;
 			<<Enter DirTorreExterior>>;
 		],
-		description [;
-			print "Grandes fajos de papel abarrotan la sala circular. Amontonados unos sobre otros en innumerables pilas de diferente altura; anudados escrupulosamente unos y sueltos y sin orden aparente otros, bien ajustados, tambaleantes o caídos y desperdigados por el suelo. Ocupan prácticamente toda la habitación, dejando apenas el paso justo entre la salida al [DirPatioArmas](patio) y la escalera de caracol que asciende hasta las plantas superiores de la torre.";
+		description [
+			lightObject;
+			lightObject = self.is_lit_up();
+			print "La planta baja de la torre la conforma una única sala circular, vacía casi por completo";
+			if (~~lightObject) {
+				print ". Bajo la débil luz que se cuela por las troneras sin cristales";
+			} else {
+				print ". Bajo la luz temblorosa [del lightObject]";
+			}
+			print " todo cuanto se distingue son [las DirEscalerasCaracol] que ascienden hacia las plantas superiores, justo enfrente de la entrada, y un viejo tapiz, oscuro de sombras, de moho y de humedad, que cubre parte de una de las paredes.";
 			new_line;
 			return true;
 		],
 		f_to [;
-			<<Enter DirCamara>>;
+			<<Enter DirEscalerasCaracol>>;
+		],
+		is_lit_up [
+			result;
+			result = false;
+			if (Antorcha has light && IndirectlyContains(self, Antorcha)) {
+				result = Antorcha;
+			}
+			return result;
+		],
+		u_to [;
+			<<Enter DirEscalerasCaracol>>;
 		],
 ;
 
-!! @DirCamara
-AdjacentRoom	-> DirCamara
- has	female
- with	short_name [;
-			print "[](escalera:DIRECTION_OBJECT) de caracol";
+!! @DirEscalerasCaracol
+AdjacentRoom -> DirEscalerasCaracol
+	has
+		female pluralname,
+	private
+		tried_to_enter false,
+	with
+		short_name [;
+			print "[](escaleras:DIRECTION_OBJECT) de caracol";
 			return true;
 		],
 		name_f 'escalera',
 		name_fp 'escaleras',
 		name_m 'escalon',
 		name_mp 'escalones',
-		gender G_FEMENINO,
+		gender G_FEMENINO + G_PLURAL,
 		adjectives 'caracol',
-		!!------------------
+		!!
 		adjacent_room Camara,
 		before [;
 			Enter:
+				if (~~self.tried_to_enter) {
+					self.tried_to_enter = true;
+					print "Te asomas al hueco de la [self](escalera) y miras hacia arriba, con el corazón palpitándote con violencia en el pecho. Lo estabas deseando, el momento de enfrentarte al barón. Pero ahora que ya estás aquí, tus piernas parecen negarse a responder…";
+					new_line;
+					return true;
+				}
+				print "Luchas contra la gravedad que parece tirar de tu cuerpo con más fuerza que nunca, y empiezas a subir. Las escaleras giran. Y giran. Y giran, hasta que alcanzas finalmente la cumbre.";
+				new_line;
 				self.AdjacentRoom::before();
 				return true;
+		],
+		reset [;
+			self.tried_to_enter = false;
+		],
+;
+
+HeavyItem -> tapiz "tapiz"
+	has
+		concealed male,
+	with
+		name_m 'tapiz',
+		gender G_MASCULINO,
+		!!
+		description [;
+			print "Es un tapiz de buenas proporciones, de al menos dos varas de ancho por quizá cuatro de alto, fijado a la pared por una barra horizontal en la parte superior. En algún momento del pasado serviría para aislar la estancia del exterior y evitar que se escapse el calor, pero resulta evidente que esa batalla la perdió hace ya mucho tiempo. Igual que se ha perdido irremediablemente cualquier escena llena de colores que pueda haber exhibido. Ahora mismo los motivos del tapiz no son más que borrones parduscos, prácticamente negros, cubierto por el moho y las manchas de humedad.";
+			if (IndirectlyContains(player, Antorcha)) {
+				new_line;
+				new_line;
+				print "Si bien al examinarlo de cerca con ayuda [de la Antorcha], sí puede adivinarse parte al menos del motivo central que lo adornaba. Una representación clásica de la escena del tribuno anónimo, siendo devorado por el dragón. Y el caballo blanco muerto sobre un charco de sangre en el suelo.";
+			}
+			new_line;
+			return true;
+		],
+;
+
+Atrezzo -> -> MotivosTapiz
+	has
+		male pluralname,
+	with
+		name_m 'adorno' 'motivo',
+		name_mp 'adornos' 'motivos',
+		gender G_MASCULINO + G_PLURAL,
+		adjectives 'tapiz',
+		!!
+		before [
+			obj;
+			DefaultAction,
+			Examine:
+				return false;
+		],
+		description [;
 		],
 ;
 
