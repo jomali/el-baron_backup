@@ -12,7 +12,7 @@ bresc_location=~/.bin
 zcode_interpreter=gargoyle-free
 glulx_interpreter=gargoyle-free
 
-inform_path=,/usr/local/share/inform/lib/,/usr/local/share/inform/extensions/,/usr/local/share/inform/extensions/gwindows/,/usr/local/share/inform/extensions/vorple/
+inform_path=,/usr/share/inform6/library/,/usr/share/inform6/extensions/,/usr/share/inform6/extensions/gwindows/,/usr/share/inform6/extensions/vorple/
 
 #-------------------------------------------------------------------------------
 

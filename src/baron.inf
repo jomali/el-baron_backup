@@ -43,7 +43,7 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2004, Victor Gijsbers
-!!	Copyright (c) 2020, J. Francisco Martín
+!!	Copyright (c) 2021, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -977,7 +977,7 @@ Include "vorple-screen-effects.h";
 
 	!! Menú principal:
 	!! location = MainMenu.run(true);
-	location = Comedor;
+	location = TorreInterior;
 	print "^^";
 
 	!! Se evita la impresión inicial del banner

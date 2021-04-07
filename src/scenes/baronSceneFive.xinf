@@ -14,7 +14,7 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2020/XX/XX
+!!	Fecha:			2021/XX/XX
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -37,7 +37,7 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2004, Victor Gijsbers
-!!	Copyright (c) 2020, J. Francisco Martín
+!!	Copyright (c) 2021, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ Atrezzo CastilloEstrellas "estrellas" Limbo
 		gender G_FEMENINO + G_PLURAL,
 		!!
 		description [;
-			print "En la distancia cósmica, las lamas de los mayores guerreros del pasado arden salvajemente en eterna lucha con fuerzas desconocidas del más allá. Aquí, en la tierra, su luz lejana adorna el firmamento como hermosas velas contra terciopelo negro.";
+			print "En la distancia cósmica, las almas de los mayores guerreros del pasado arden salvajemente en eterna lucha con fuerzas desconocidas del más allá. Aquí, en la tierra, su luz lejana adorna el firmamento como hermosas velas contra terciopelo negro.";
 			new_line;
 			return true;
 		],
@@ -172,9 +172,9 @@ Indoors Galeria "Galería"
 			if (false) {
 				print "La luz de la antorcha es débil, pero resulta suficiente como para alumbrar el interior de la galería. A tu alrededor hay amontonados unos fajos de papel en innumerables pilas de diferente altura; anudados escrupulosamente unos y sueltos y sin orden aparente otros, bien ajustados, tambaleantes o caídos y desperdigados por el suelo. Ocupan prácticamente todo el espacio, salvo por el paso despejado en línea recta que lleva desde las [DirPortonesCastillo](puertas) del castillo hasta [el DirPatioArmas].";
 			} else if (PatioArmas has visited) {
-				print "No llega luz alguna hasta este lugar. Rodeado por las tinieblas, el silencio y el frío, todo cuanto alcanzas a distinguir es la abertura tenuemente iluminada que conduce de vuelta [al DirPatioArmas].";				
+				print "No llega luz alguna hasta aquí. Todo cuanto puedes ver a tu alrededor es de un negro impenetrable, silencioso y frío, salvo por el arco de luz que has dejado a tu espalda.";
 			} else {
-				print "[Los DirPortonesCastillo] da[n DirPortonesCastillo] paso a una corta galería hasta la que no llega luz alguna. Rodeado por las tinieblas, el silencio y el frío, todo cuanto alcanzas a distinguir es una abertura tenuemente iluminada, algo más [f_obj].";				
+				print "Las enormes [DirPortonesCastillo](puertas) dan paso a una galería hasta la que no llega luz alguna. Todo cuanto puedes ver a tu alrededor es de un negro impenetrable, silencioso y frío, salvo por un arco de luz algo más adelante.";
 			}
 			new_line;
 			return true;
@@ -277,7 +277,7 @@ Outdoors PatioArmas
 				return true;
 		],
 		description [;
-			print "Detrás de la fachada aparentemente intacta de la fortaleza se oculta una verdadera ruina. Casi todas las construcciones han sucumbido y en su lugar quedan tan solo montones desperdigados de escombros, entre los cuáles las tres torres parecen brotar como hongos gigantescos de sillería.";
+			print "Detrás de la fachada aparentemente intacta se oculta una verdadera ruina. Casi todas las construcciones de la fortaleza han sucumbido y en su lugar quedan tan solo montones desperdigados de escombros, entre los cuáles las tres torres brotan como hongos gigantescos de sillería y argamasa. Alguien ha abierto un estrecho paso entre la nieve. Lo ves zigzaguear entre las piedras caídas, desde [if:true]la entrada del castillo[else]la gran torre central[fi] en dirección [if:true]a la gran torre central[else]a la entrada del castillo[fi].";
 			new_line;
 			return true;
 		],
@@ -337,7 +337,7 @@ HeavyItem	-> PatioArmasEstatua "estatua"
 		],
 		describe [;
 			new_line;
-			print "Alguien ha abierto un paso en la nieve. Rodea una gran [self] en el centro del patio y zigzaguea entre las piedras caídas, desde [if:true][la DirEntradaCastillo][else]la [DirTorreExterior] del homenaje[fi] en dirección [if:true]a la [DirTorreExterior] del homenaje[else][al DirEntradaCastillo][fi].";
+			print "[Una self] domina el centro del patio.";
 			new_line;
 			return true;
 		],
