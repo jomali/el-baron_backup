@@ -125,8 +125,6 @@ Atrezzo CastilloNieve "nieve" Limbo
 		],
 ;
 
-
-
 !! @CastilloParedes
 Atrezzo	CastilloParedes "paredes" Limbo
  class	Background,
@@ -145,6 +143,33 @@ Atrezzo	CastilloParedes "paredes" Limbo
 				print ", salvo allí donde hay [CastilloNieve] acumulada";
 			}
 			print ". Están ennegrecidos y cascados por culpa de algún antiguo fuego.";
+			new_line;
+			return true;
+		],
+;
+
+!! @DirTorrePasadizo
+AdjacentRoom DirTorrePasadizo "pasadizo" Limbo
+	has
+		male ~scenery,
+	with
+		name_m 'pasadizo' 'pasillo',
+		gender G_MASCULINO,
+		adjectives 'secreto' 'torre',
+		!!
+		adjacent_room Sotano,
+		before [;
+			Enter:
+				self.AdjacentRoom::before();
+				return true;
+		],
+		describe [;
+			new_line;
+			if (Sotano has visited) {
+				print "[Un self] conduce hacia las profundidades.";
+			} else {
+				print "[Un self] parece conducir hacia las profundidades.";
+			}
 			new_line;
 			return true;
 		],
@@ -1065,25 +1090,25 @@ Indoors TorreInterior
 		adjectives 'circular' 'homenaje' 'principal',
 		!!
 		b_to [;
-			<<Enter DirTorreExterior>>;
+			<<Enter DirEntradaTorre>>;
 		],
 		description [
 			lightObject;
-			lightObject = self.is_lit_up();
-			print "La planta baja de la torre la conforma una única sala circular, vacía casi por completo";
+			lightObject = self.get_lit_object();
+			print "Una única sala circular conforma la planta baja de la torre. Está vacía casi por completo";
 			if (~~lightObject) {
 				print ". Bajo la débil luz que se cuela por las troneras sin cristales";
 			} else {
 				print ". Bajo la luz temblorosa [del lightObject]";
 			}
-			print " todo cuanto se distingue son [las DirEscalerasCaracol] que ascienden hacia las plantas superiores, justo enfrente de la entrada, y un viejo tapiz, oscuro de sombras, de moho y de humedad, que cubre parte de una de las paredes.";
+			print ", todo cuanto se distingue son [unas DirEscalerasCaracol], justo enfrente [de la DirEntradaTorre], y un [Tapiz](tapiz) raído que cubre buena parte de la pared.";
 			new_line;
 			return true;
 		],
 		f_to [;
 			<<Enter DirEscalerasCaracol>>;
 		],
-		is_lit_up [
+		get_lit_object [
 			result;
 			result = false;
 			if (Antorcha has light && IndirectlyContains(self, Antorcha)) {
@@ -1091,8 +1116,38 @@ Indoors TorreInterior
 			}
 			return result;
 		],
+		initial [
+			lightObject;
+			print "XXX^^";
+			lightObject = self.get_lit_object();
+			if (~~lightObject) {
+				give TorreBarro concealed;
+			} else {
+				give TorreBarro ~concealed;
+			}
+		],
+		out_to [;
+			<<Enter DirEntradaTorre>>;
+		],
 		u_to [;
 			<<Enter DirEscalerasCaracol>>;
+		],
+;
+
+!! @DirEntradaTorre
+AdjacentRoom -> DirEntradaTorre "entrada"
+	has
+		female,
+	with
+		name_f 'entrada' 'salida',
+		gender G_FEMENINO,
+		adjectives 'torre',
+		!!
+		adjacent_room TorreExterior,
+		before [;
+			Enter:
+				self.AdjacentRoom::before();
+				return true;
 		],
 ;
 
@@ -1119,11 +1174,11 @@ AdjacentRoom -> DirEscalerasCaracol
 			Enter:
 				if (~~self.tried_to_enter) {
 					self.tried_to_enter = true;
-					print "Te asomas al hueco de la [self](escalera) y miras hacia arriba, con el corazón palpitándote con violencia en el pecho. Lo estabas deseando, el momento de enfrentarte al barón. Pero ahora que ya estás aquí, tus piernas parecen negarse a responder…";
+					print "Te asomas al hueco de la [self](escalera) y miras hacia arriba, con el corazón palpitándote con violencia en el pecho. Maldices en voz baja. Ahora que ya estás aquí, después de todo el esfuerzo que has hecho por llegar, tus piernas parecen negarse a responder…";
 					new_line;
 					return true;
 				}
-				print "Luchas contra la gravedad que parece tirar de tu cuerpo con más fuerza que nunca, y empiezas a subir. Las escaleras giran. Y giran. Y giran, hasta que alcanzas finalmente la cumbre.";
+				print "Empiezas el lento ascenso, luchando contra una gravedad que parece tirar de tu cuerpo con más fuerza de lo que lo ha hecho nunca. Las escaleras giran. Y giran. Y giran. Hasta que dejan de hacerlo.";
 				new_line;
 				self.AdjacentRoom::before();
 				return true;
@@ -1133,26 +1188,85 @@ AdjacentRoom -> DirEscalerasCaracol
 		],
 ;
 
-HeavyItem -> tapiz "tapiz"
+!! @Tapiz
+Array moveFlags -> 2; ! hasta 8 flags
+HeavyItem -> Tapiz "tapiz"
 	has
-		concealed male,
+		concealed male openable transparent,
+	private
+		tried_to_open false,
 	with
 		name_m 'tapiz',
 		gender G_MASCULINO,
+		adjectives 'mohoso' 'raido',
 		!!
-		description [;
-			print "Es un tapiz de buenas proporciones, de al menos dos varas de ancho por quizá cuatro de alto, fijado a la pared por una barra horizontal en la parte superior. En algún momento del pasado serviría para aislar la estancia del exterior y evitar que se escapse el calor, pero resulta evidente que esa batalla la perdió hace ya mucho tiempo. Igual que se ha perdido irremediablemente cualquier escena llena de colores que pueda haber exhibido. Ahora mismo los motivos del tapiz no son más que borrones parduscos, prácticamente negros, cubierto por el moho y las manchas de humedad.";
-			if (IndirectlyContains(player, Antorcha)) {
+		after [;
+			Close:
+				move DirTorrePasadizo to Limbo;
+				switch (Shuffle(3, moveFlags)) {
+					1: 
+						print "Corres [el self] de nuevo.";
+					2:
+						print "Tiras [del self] para devolverlo a su posición inicial.";
+					3:
+						print "Corres [el self] otra vez.";
+				}
 				new_line;
+				return true;
+			Open:
+				move DirTorrePasadizo to location;
+				if (~~self.tried_to_open) {
+					self.tried_to_open = true;
+					print "Agarras la tela húmeda y tiras de ella hacia un lado. [El Tapiz] se desliza sobre la guía metálica que lo sostiene, dejando al descubierto la boca de [un DirTorrePasadizo] que se ocultaba detrás.";
+				} else {
+					switch (Shuffle(3, moveFlags)) {
+						1:
+							print "Descorres [el self] de nuevo.";
+						2:
+							print "Tiras [del self] para dejar descubierto el paso otra vez.";
+						3:
+							print "Descorres [el self] otra vez.";
+					}
+				}
 				new_line;
-				print "Si bien al examinarlo de cerca con ayuda [de la Antorcha], sí puede adivinarse parte al menos del motivo central que lo adornaba. Una representación clásica de la escena del tribuno anónimo, siendo devorado por el dragón. Y el caballo blanco muerto sobre un charco de sangre en el suelo.";
+				return true;
+		],
+		before [;
+			Pull, Push:
+				if (self has open) {
+					<<Close self>>;
+				} else {
+					<<Open self>>;
+				}
+		],
+		description [
+			lightObject;
+			lightObject = TorreInterior.get_lit_object();
+			print "Es un viejo tapiz oscuro de sombras, de moho y de humedad";
+			if (self has open) {
+				print ". Al apartarlo hacia un lado ha dejado al descubierto [un DirTorrePasadizo] que desciende hacia las profundidades de la torre.";
+			} else {
+				print ". [if:self has described]Hasta el punto que sus [MotivosTapiz][else]Hasta tal punto que [los MotivosTapiz] que lo adorna[n MotivosTapiz][fi]";
+				if (~~lightObject) {
+					print " son imposibles de descifrar en la penumbra";
+				} else {
+					print " son apenas discernibles a la luz [del lightObject]";
+				}
+				if (self hasnt described) {
+					print ". En épocas pasadas tal vez sirviese para ayudar a aislar la estancia del exterior y evitar que escapase el calor, pero esa es una batalla que perdió hace ya mucho tiempo";
+				}
+				print ".";
 			}
 			new_line;
 			return true;
 		],
+		reset [;
+			self.tried_to_open = false;
+			give self ~open;
+		],
 ;
 
-Atrezzo -> -> MotivosTapiz
+Atrezzo -> -> MotivosTapiz "motivos"
 	has
 		male pluralname,
 	with
@@ -1167,9 +1281,56 @@ Atrezzo -> -> MotivosTapiz
 			Examine:
 				return false;
 		],
-		description [;
+		description [
+			lightObject;
+			lightObject = TorreInterior.get_lit_object();
+			if (~~lightObject) {
+				print "No ", (es) self, " más que un borrón parduzco. Cualquier escena que pueda haber exhibido [el Tapiz] queda oculta tras el moho y la oscuridad de la estancia.";
+			} else {
+				print "A pesar de la suciedad, gracias a la luz [del lightObject] alcanzas a distinguir vagamente los motivos [del Tapiz]; parece una representación clásica de la primavera, con varias figuras infantiles formando un corro entre árboles en flor. Los colores de las ropas, sin duda vivos y alegres en el pasado, ahora están ennegrecidos por el moho y la podredumbre.";
+			}
+			new_line;
+			return true;
 		],
 ;
+
+!! @TorreBarro
+HeavyItem -> TorreBarro 
+	has
+		concealed female pluralname,
+	with
+		short_name [;
+			print "manchas de [](barro)";
+			return true;
+		],
+		name_f 'mancha' 'suciedad',
+		name_fp 'manchas',
+		name_m 'barro',
+		gender G_FEMENINO + G_PLURAL,
+		!!
+		describe [;
+			if (parent(self) == parent(DirTorrePasadizo) &&
+				DirTorrePasadizo hasnt concealed) {
+				return true;
+			} else {
+				new_line;
+				print "Hay [self] por todo el suelo.";
+				new_line;
+				return true;
+			}
+		],
+		description [
+			lightObject;
+			lightObject = TorreInterior.get_lit_object();
+			print "";
+			new_line;
+			return true;
+		],
+		reset [;
+			give self concealed;
+		],
+;
+
 
 
 !!==============================================================================

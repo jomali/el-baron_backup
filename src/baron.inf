@@ -977,7 +977,7 @@ Include "vorple-screen-effects.h";
 
 	!! Menú principal:
 	!! location = MainMenu.run(true);
-	location = Comedor;
+	location = TorreInterior;
 	print "^^";
 
 	!! Se evita la impresión inicial del banner
