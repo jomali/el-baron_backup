@@ -1094,7 +1094,7 @@ Indoors TorreInterior
 		],
 		description [
 			lightObject;
-			lightObject = self.get_lit_object();
+			lightObject = Narrador.get_lit_object();
 			print "Una única sala circular conforma la planta baja de la torre. Está vacía casi por completo";
 			if (~~lightObject) {
 				print ". Bajo la débil luz que se cuela por las troneras sin cristales";
@@ -1108,17 +1108,8 @@ Indoors TorreInterior
 		f_to [;
 			<<Enter DirEscalerasCaracol>>;
 		],
-		get_lit_object [
-			result;
-			result = false;
-			if (Antorcha has light && IndirectlyContains(self, Antorcha)) {
-				result = Antorcha;
-			}
-			return result;
-		],
 		initial [
 			lightObject;
-			print "XXX^^";
 			lightObject = self.get_lit_object();
 			if (~~lightObject) {
 				give TorreBarro concealed;
