@@ -1101,6 +1101,13 @@ Indoors TorreInterior
 		b_to [;
 			<<Enter DirEntradaTorre>>;
 		],
+		d_to [;
+			if (parent(DirTorrePasadizo) == self) {
+				<<Enter DirTorrePasadizo>>;
+			} else {
+				return self.cant_go();
+			}
+		],
 		description [
 			lightObject;
 			lightObject = Baron.get_closest_lit_object();
@@ -1114,7 +1121,7 @@ Indoors TorreInterior
 					print " que has posado a tus pies";
 				}
 			}
-			print ", todo cuanto se distingue son [unas DirEscalerasCaracol], justo enfrente [de la DirEntradaTorre]";
+			print ", todo cuanto se distingue es el inicio de [unas DirEscalerasCaracol], justo enfrente [de la DirEntradaTorre]";
 			if (Tapiz has open) {
 				print ", y el raído [Tapiz](tapiz) que has apartado a un lado";
 			} else {
@@ -1124,6 +1131,14 @@ Indoors TorreInterior
 			new_line;
 			return true;
 		],
+		e_to [;
+			if (Utils.is_compass_enabled() 
+				&& parent(DirTorrePasadizo) == self) {
+				<<Enter DirTorrePasadizo>>;
+			} else {
+				return self.cant_go();
+			}
+		],
 		f_to [;
 			<<Enter DirEscalerasCaracol>>;
 		],
@@ -1131,9 +1146,9 @@ Indoors TorreInterior
 			lightObject;
 			lightObject = Baron.get_closest_lit_object();
 			if (~~lightObject) {
-				give TorreBarro concealed;
+				give TorreBarro scenery;
 			} else {
-				give TorreBarro ~concealed;
+				give TorreBarro ~scenery;
 			}
 		],
 		out_to [;
@@ -1149,6 +1164,10 @@ Indoors TorreInterior
 				if (noun == Antorcha) {
 					give Antorcha ~concealed;
 				}
+		],
+		s_to [;
+			if (Utils.is_compass_enabled()) <<Enter DirEntradaTorre>>;
+			else return self.cant_go();
 		],
 		u_to [;
 			<<Enter DirEscalerasCaracol>>;
@@ -1238,7 +1257,7 @@ HeavyItem -> Tapiz "tapiz"
 				move DirTorrePasadizo to location;
 				if (~~self.tried_to_open) {
 					self.tried_to_open = true;
-					print "Agarras la tela húmeda y tiras de ella hacia un lado. [El Tapiz] se desliza sobre la guía metálica que lo sostiene, dejando al descubierto la boca de [un DirTorrePasadizo] que se ocultaba detrás.";
+					print "Agarras la tela húmeda y tiras de ella hacia un lado. [El Tapiz] se desliza sobre la guía metálica que lo sostiene, dejando al descubierto la boca de [un DirTorrePasadizo].";
 				} else {
 					switch (Shuffle(3, moveFlags)) {
 						1:
@@ -1316,18 +1335,18 @@ Atrezzo -> -> MotivosTapiz "motivos"
 ;
 
 !! @TorreBarro
-HeavyItem -> TorreBarro 
+Atrezzo -> TorreBarro
 	has
-		concealed female pluralname,
+		male scenery,
 	with
 		short_name [;
-			print "manchas de [](barro)";
+			print "[](barro:OTHER_OBJECT)";
 			return true;
 		],
 		name_f 'mancha' 'suciedad',
 		name_fp 'manchas',
 		name_m 'barro',
-		gender G_FEMENINO + G_PLURAL,
+		gender G_MASCULINO,
 		!!
 		describe [;
 			if (parent(self) == parent(DirTorrePasadizo) &&
@@ -1335,7 +1354,7 @@ HeavyItem -> TorreBarro
 				return true;
 			} else {
 				new_line;
-				print "Hay [self] por todo el suelo.";
+				print "Hay manchas de [self] por todo el suelo.";
 				new_line;
 				return true;
 			}
@@ -1343,12 +1362,16 @@ HeavyItem -> TorreBarro
 		description [
 			lightObject;
 			lightObject = Baron.get_closest_lit_object();
-			print "";
+			if (~~lightObject) {
+				print "El suelo está resbaladizo de barro.";
+			} else {
+				print "Gracias [al lightObject] puedes ver claramente los rastros de barro que parten desde [la DirEntradaTorre] y se esparcen por el resto de la habitación, hasta morir en las [DirEscalerasCaracol](escaleras) y justo debajo [del Tapiz].";
+			}
 			new_line;
 			return true;
 		],
 		reset [;
-			give self concealed;
+			give self scenery;
 		],
 ;
 

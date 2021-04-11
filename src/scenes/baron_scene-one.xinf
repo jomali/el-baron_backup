@@ -7,14 +7,14 @@
 !!
 !!==============================================================================
 !!
-!!	Archivo:		baron_scene-one.xinf
+!!	Archivo:		baronSceneOne.xinf
 !!	Autor(es):		Victor Gijsbers
 !!					J. Francisco Martín <jfm.lisaso@gmail.com>
 !!	Idioma:			ES (Español)
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2020/05/XX
+!!	Fecha:			2021/05/XX
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -37,7 +37,7 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2004, Victor Gijsbers
-!!	Copyright (c) 2020, J. Francisco Martín
+!!	Copyright (c) 2021, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
 
