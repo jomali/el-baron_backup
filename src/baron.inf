@@ -1099,7 +1099,7 @@ Include ">baronMenu.inf";
 Include ">baronTutorial.inf";
 Include ">baronUtils.inf";
 
-Include ">scenes/baron_scene-zero.inf";
+Include ">scenes/baronSceneZero.inf";
 Include ">scenes/baron_scene-one.inf";
 Include ">scenes/baron_scene-two.inf";
 Include ">scenes/baron_scene-three.inf";

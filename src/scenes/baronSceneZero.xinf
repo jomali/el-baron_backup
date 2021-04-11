@@ -66,27 +66,14 @@ Room	Limbo "En algún lugar…"
 		],
 ;
 
-!! @Narrador
-Object -> Narrador "(Narrador)"
-	with
-		!!	@returns {Object} el primer objeto encontrado que cumple con las
-		!!		condiciones: dar luz y encontrarse en el alcance del PC
-		get_lit_object [
-			obj;
-			objectloop(obj has light && TestScope(obj, player)) {
-				return obj;
-			}
-
-			return false;
-		],
-;
-
 !! @Baron
 Character	Baron "protagonista" Limbo
- has	male proper,
- with	name_m 'personaje' 'protagonista',
+	has
+		male proper,
+	with
+		name_m 'personaje' 'protagonista',
 		gender G_MASCULINO,
-		!!------------------
+		!!
 		become_a_wolf [;
 			if (self.is_a_wolf()) return true;
 			self.wolf = true;
@@ -134,12 +121,28 @@ Character	Baron "protagonista" Limbo
 			new_line;
 			return true;
 		],
+		!!	@returns {Object|boolean} el primer objeto encontrado que cumpla 
+		!!		con las condiciones: 1) dar luz 2) encontrarse en el alcance 
+		!!		del PC. `false` si no encuentra ninguno
+		get_closest_lit_object [
+			obj;
+			objectloop(obj has light 
+				&& obj ~= real_location
+				&& TestScope(obj, real_location)
+				&& TestScope(obj, player)) {
+				return obj;
+			}
+			return false;
+		],
+		!!	@returns {boolean} `true` si el PC se ha convertido en lobo
 		is_a_wolf [;
 			return self.wolf;
 		],
+		!!	@returns {boolean} `true` si el PC está ardiendo
 		is_burning [;
 			return self.burning;
 		],
+		!!	@returns {boolean} `true` si el PC está desnudo
 		is_naked [
 			n_clothes obj;
 			n_clothes = 0;
@@ -148,6 +151,7 @@ Character	Baron "protagonista" Limbo
 			}
 			return (n_clothes == 0);
 		],
+		!!	@returns {boolean} `true` si el PC está huyendo a la carrera
 		is_running_away [;
 			return self.running_away;
 		],
