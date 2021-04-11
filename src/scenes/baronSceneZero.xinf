@@ -7,14 +7,14 @@
 !!
 !!==============================================================================
 !!
-!!	Archivo:		baron_scene-zero.xinf
+!!	Archivo:		baronSceneZero.xinf
 !!	Autor(es):		Victor Gijsbers
 !!					J. Francisco Martín <jfm.lisaso@gmail.com>
 !!	Idioma:			ES (Español)
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2020/06/XX
+!!	Fecha:			2021/06/XX
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -37,7 +37,7 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2004, Victor Gijsbers
-!!	Copyright (c) 2020, J. Francisco Martín
+!!	Copyright (c) 2021, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
 
@@ -63,6 +63,21 @@ Room	Limbo "En algún lugar…"
 			}
 			new_line;
 			return true;
+		],
+;
+
+!! @Narrador
+Object -> Narrador "(Narrador)"
+	with
+		!!	@returns {Object} el primer objeto encontrado que cumple con las
+		!!		condiciones: dar luz y encontrarse en el alcance del PC
+		get_lit_object [
+			obj;
+			objectloop(obj has light && TestScope(obj, player)) {
+				return obj;
+			}
+
+			return false;
 		],
 ;
 
