@@ -66,16 +66,16 @@ echo "---------------------------------------------"
 preprocesa_textos
 inform +include_path=$inform_path -G $gameFile.inf $gameFile.ulx
 limpia_ficheros_temporales
-mv $gameFile.ulx ../$gameFile.ulx
-cd ..
-$glulx_interpreter $gameFile.ulx
+# mv $gameFile.ulx ../$gameFile.ulx
+# cd ..
+# $glulx_interpreter $gameFile.ulx
 # $bresc_location/bres $gameFile.res
 # inform +include_path=$inform_path -G $gameFile.inf
 # $bresc_location/bresc $gameFile.res
 # cp $gameFile.gblorb /var/www/html/$gameFile/resources/$gameFile.gblorb
 
 # cp $gameFile.ulx ../dist/server/resources/$gameFile.ulx
-# cp $gameFile.ulx ./web/resources/$gameFile.ulx
-# cp -r ./web/* /var/www/html/$gameFile
+cp $gameFile.ulx ./web/resources/$gameFile.ulx
+cp -r ./web/* /var/www/html/$gameFile
 
 exit 0

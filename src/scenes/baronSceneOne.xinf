@@ -14,7 +14,7 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2020/05/XX
+!!	Fecha:			2021/05/XX
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -37,7 +37,7 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2004, Victor Gijsbers
-!!	Copyright (c) 2020, J. Francisco Martín
+!!	Copyright (c) 2021, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
 
@@ -369,40 +369,42 @@ Object	-> -> E1_ExcavandoDemasiadoProfundo "Excavando demasiado profundo"
 
 !!==============================================================================
 !!
-!!	1)	Entre las sombras
+!!	1)	En el abismo
 !!
 !!------------------------------------------------------------------------------
 
-!! @GrutaSombras
-Indoors	GrutaSombras
- has	concealed male,
- with	short_name [;
-			print "Entre las sombras";
+!! @Abismo
+Indoors Abismo
+	has
+		concealed male,
+	with
+		short_name [;
+			print "En el abismo";
 			return true;
 		],
 		gender G_MASCULINO,
-		!!------------------
+		!!
 		description [;
 			Tutorial.hint_highlight_key_a();
-			if (GrutaSombrasOscuridad has described) {
-				print "Distingues un [GrutaSombrasResplandor](fulgor) anaranjado y muy débil entre las sombras.";
+			if (AbismoOscuridad has described) {
+				print "Distingues un [AbismoResplandor](fulgor) anaranjado y muy débil entre las sombras.";
 			} else {
-				print "Todo es [GrutaSombrasOscuridad] a tu alrededor. El mundo entero reducido a un vacío negro e impenetrable.";
+				print "Todo es [AbismoOscuridad] a tu alrededor. El mundo entero reducido a un vacío negro.";
 			}
 			new_line;
 			return true;
 		],
 		exits [;
-			if (GrutaSombrasOscuridad has described) {
-				print "No sabrías a dónde dirigirte en [la GrutaSombrasOscuridad].";
+			if (AbismoOscuridad has described) {
+				print "No sabrías a dónde dirigirte en [la AbismoOscuridad].";
 			} else {
-				print "Todo cuanto puedes distinguir en [la GrutaSombrasOscuridad] es ese [GrutaSombrasResplandor] indefinido que llega desde algún lugar más [f_obj].";
+				print "Todo cuanto puedes distinguir en [la AbismoOscuridad] es ese [AbismoResplandor] indefinido que llega desde algún lugar más [f_obj].";
 			}
 			new_line;
 			return true;
 		],
 		f_to [;
-			<<Enter DirGrutaSombrasAdelante>>;
+			<<Enter DirAbismoAdelante>>;
 		],
 		initial [;
 			if (self hasnt visited) {
@@ -415,41 +417,38 @@ Indoors	GrutaSombras
 			}
 		],
 		n_to [;
-			if (Utils.is_compass_enabled()) <<Enter DirGrutaSombrasAdelante>>;
+			if (Utils.is_compass_enabled()) <<Enter DirAbismoAdelante>>;
 			else return self.cant_go();
 		],
 ;
 
-!! @DirGrutaSombrasAdelante
-AdjacentRoom	-> DirGrutaSombrasAdelante
- has	male,
- with	!!------------------
+!! @DirAbismoAdelante
+AdjacentRoom -> DirAbismoAdelante
+	has
+		male,
+	with
 		adjacent_room GrutaVestibulo,
 		before [ previous_style;
 			Enter:
 				self.AdjacentRoom::onChangeLocation();
-				if (GrutaSombrasOscuridad hasnt described) {
+				if (AbismoOscuridad hasnt described) {
 					print "Puedes distinguir un resplandor entre las sombras. ";
+				} else {
+					print "Ha llegado el momento. Tú eres la única persona que puede acabar con esto.^^";
 				}
-				print "Tan pronto das un paso en la dirección de la que proviene la luz, las dos grandes [GrutaPuertas](puertas) de bronce se cierran a tu espalda con un golpe atronador seguido por el chirrido de los cerrojos deslizándose en su interior. Ahora ya no hay marcha atrás, ha llegado el momento de enfrentarte a la bestia. Aferras el [Percunos](hacha) con firmeza y das otro paso adelante, hacia el calor…";
+				print "Tan pronto das un paso en la dirección de la que proviene la luz, las dos grandes [GrutaPuertas](puertas) de bronce se cierran a tu espalda con un golpe atronador. Ya no hay marcha atrás. La idea queda subrayada por un chirrido prolongado de cerrojos deslizándose contra el bronce. Aferras el [Percunos](hacha) con firmeza y das otro paso adelante, hacia el calor…";
 				new_line;
-
-!				previous_style = Utils.set_text_style(TEXT_STYLE_PARSER);
-!				print (string) TEXT_STYLE_PARSER_PREFIX;
-!				VorplePlaceElement("a", nothing, "Continuar…");
-!				print (string) TEXT_STYLE_PARSER_SUFIX;
-!				Utils.set_text_style(previous_style);
 
 				self.AdjacentRoom::before();
 				return true;
 		],
 		description [;
-			<<Examine GrutaSombrasResplandor>>;
+			<<Examine AbismoResplandor>>;
 		],
 ;
 
-!! @GrutaSombrasOscuridad
-Background	-> GrutaSombrasOscuridad "oscuridad"
+!! @AbismoOscuridad
+Background	-> AbismoOscuridad "oscuridad"
  has	female on,
  with	name_f 'oscuridad' 'sombra' 'tiniebla',
 		name_fp 'sombras' 'tinieblas',
@@ -464,7 +463,7 @@ Background	-> GrutaSombrasOscuridad "oscuridad"
 				Tutorial.hint_highlight_key_b();
 				print "Las [self](sombras) te abrazan cómplices, como si formases parte de este lugar. Solo e inmóvil en mitad de la nada, casi desearías poder quedarte aquí para siempre; limitarte a cerrar los ojos, desentenderte de todo, descansar por fin. Pero no es más que una idea infantil, por supuesto.
 				^^
-				Desde algún lugar llega [un GrutaSombrasResplandor] impreciso.";
+				Desde algún lugar llega [un AbismoResplandor] impreciso.";
 			}
 			new_line;
 			return true;
@@ -480,7 +479,7 @@ Background	-> GrutaSombrasOscuridad "oscuridad"
 				if (noun == nothing) return false;
 				if (noun == self) return false;
 				if (noun == parent(self)) return false;
-				if (noun == GrutaSombrasResplandor) return false;
+				if (noun == AbismoResplandor) return false;
 				return self.cant_see();
 			DefaultAction:
 				return false;
@@ -506,7 +505,7 @@ Background	-> GrutaSombrasOscuridad "oscuridad"
  private
 		cant_see [;
 			if (self has described) {
-				print "No puedes ver nada en [la self], aparte de [un GrutaSombrasResplandor] muy débil que llega desde algún lugar más [f_obj].";
+				print "No puedes ver nada en [la self], aparte de [un AbismoResplandor] muy débil que llega desde algún lugar más [f_obj].";
 			} else {
 				print "No puedes ver nada en [la self].";
 			}
@@ -515,8 +514,8 @@ Background	-> GrutaSombrasOscuridad "oscuridad"
 		],
 ;
 
-!! @GrutaSombrasResplandor
-Background	-> GrutaSombrasResplandor "resplandor"
+!! @AbismoResplandor
+Background	-> AbismoResplandor "resplandor"
  has	male,
  with	name_f 'luz',
 		name_m 'fulgor' 'resplandor',

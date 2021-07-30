@@ -13,7 +13,7 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2020/01/XX
+!!	Fecha:			2021/01/XX
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -36,7 +36,7 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2004, Victor Gijsbers
-!!	Copyright (c) 2020, J. Francisco Martín
+!!	Copyright (c) 2021, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
 
@@ -47,40 +47,71 @@ Object Menu
 		light male,
 	with
 		short_name [;
-			print (string) Story, " — ";
-			PrintVersionNumber();
+			print "";
 			return true;
 		],
 		gender G_MASCULINO,
 		!!
-		description [;
-			ChoiceSetManager.start(MenuRaiz);
+		description [
+			avoid_choice_set_inventory;
+			avoid_choice_set_inventory = true;
+			ChoiceSetManager.start(MenuRaiz, avoid_choice_set_inventory);
+			print (strong) "EL BARÓN — Escena 1";
+			new_line;
+			print "De Victor Gijsbers
+			^Adapatación de J. Francisco Martín";
+			new_line;
+			new_line;
 			print "
-			^Revisar elecciones
+			^Revisar elecciones tomadas.
 			^
-			^Prefacio
-			^Empezar la historia
-			^Recuperar partida guardada
-			^Configuración
-			^Salir de la aplicación";
+			^Leer prefacio del autor.
+			^Leer nota sobre la adaptación.
+			^Cargar una partida guardada.
+			^Salir de la aplicación.
+			^
+			^Empezar la historia.";
 			new_line;
 			return true;
 		],
 ;
 
 ChoiceSet	MenuRaiz "(Opciones del menú)"
- with	fixed true,
+	with
+		fixed true,
 		initial_action [;
 			self.add_choice(MenuElecciones);
 			self.add_choice(MenuPrefacio);
 			self.add_choice(MenuEmpezar);
 			self.add_choice(MenuRecuperar);
-			self.add_choice(MenuConfiguracion);
 			self.add_choice(MenuSalir);
 		],
 ;
 
-ChoiceSetItem	MenuElecciones
+ChoiceSetItem MenuElecciones
+ with	entry [;
+			print "Leer nota sobre la ";
+			PRT__("adaptación", 0, OTHER_OBJECT);
+			return true;
+		],
+		keys 'adaptacion',
+		!!------------------
+		append_choice_set false,
+		final_choice false,
+		reaction [;
+			!! utils.erase_window();
+			print (strong) "NOTA DE LA ADAPTACIÓN", "^";
+			new_line;
+			print "La presente adaptación se toma algunas licencias sobre el material original. Además de llevar a cabo una traducción libre de los textos desde el inglés al castellano, se han introducido diversas modificaciones sobre la obra de Victor Gijsbers —como la adición de hipervínculos, cambios en el modo en que se llevan a cabo las conversaciones, la redistribución de algunas localidades o la reinterpretación de ciertas escenas y descripciones, entre otros—.^";
+			new_line;
+			print "Todas estas modificaciones se han añadido intentando enriquecer la experiencia final del usuario al tiempo que se procuraba ser respetuoso con el material de partida. A pesar de ello, es inevitable que el nuevo punto de vista arrojado sobre la obra difiera en algunos aspectos con la visión del autor original. Cualquier posible error de implementación o incongruencia en el tratamiento de símbolos y temas de la historia son, sin duda, responsabilidad del adaptador.^";
+			new_line;
+			new_line;
+			return true;
+		],
+;
+
+ChoiceSetItem MenuAdaptacion
  with	entry [;
 			print "Revisar ";
 			PRT__("elecciones", 0, REMARKABLE_OBJECT);
@@ -105,26 +136,27 @@ ChoiceSetItem	MenuPrefacio
 		keys 'prefacio',
 		!!------------------
 		append_choice_set false,
-		final_choice true,
+		final_choice false,
 		reaction [;
+			!! utils.erase_window();
 			print (strong) "PREFACIO", "^";
 			print (strong) "Elecciones temáticas en lugar de desafíos lógicos", "^";
 			new_line;
-			print (strong) "El Barón", " no es un videojuego en el sentido tradicional de la palabra; no cuenta con puzzles o desafíos lógicos que haya que resolver para continuar, ni situaciones que desemboquen en éxito o fracaso, ni sistemas de puntuación de ningún tipo; no se trata de una obra que pueda ganarse o perderse, con independencia de cualesquiera sean las acciones del usuario. Se trata, en sentido literal, de una ", (stressed) "ficción interactiva", " antes que de un juego y su objetivo es ofrecer un universo ficticio que resulte inmersivo y que el usuario pueda explorar libremente junto a los diferentes temas planteados.^";
+			print (strong) "El Barón", " no es un videojuego en el sentido tradicional de la palabra; no cuenta con puzzles o desafíos lógicos que resolver, no hay sistema de puntuación, no se puede ganar ni perder. Es, de forma literal, una ", (stressed) "ficción interactiva", " antes que un juego de texto. El objetivo de la obra es que el usuario explore su universo ficticio y los temas que se le plantean del modo más inmersivo posible.^";
 			new_line;
-			!! TODO - revisar texto a partir de este punto
 			print "Hay varias cuestiones de las que el usuario debe ser consciente mientras experimenta la narración. En primer lugar, no es posible llevar la historia a un estado en el que resulte imposible completarla. Tampoco es posible llegar a un final repentino antes de que la historia haya alcanzado su final real. Además, la narración ha sido diseñada de tal modo que casi todas las acciones con sentido en el contexto de la ficción la hacen avanzar; no hay ningún obstáculo real en el camino hasta el final. Lo que se plantea no es si el usuario alcanzará el final de la historia, sino cómo lo hará.^";
 			new_line;
-			print "La cuestión que aquellos que experimenten la obra deben plantearse no es; ¿esta acción me ayudará a finalizar la historia? sino, ¿creo que esta acción es apropiada, bella, perturbadora o de algún modo interesante desde un punto de vista temático? Cuando uno se encuentra con un hacha puede cogerlo o no cogerlo; en cualquier caso la historia avanzará hasta alcanzar su final. La elección es temática: ¿quieres experimentar una historia en la que el protagonista se enfrentan a sus conflictos con un arma en la mano, o más bien una en el que el protagonista obtiene lo que busca desarmado?^";
+			print "La cuestión que aquella persona que experimente la obra debe estar planteándose no es; ¿esta acción me ayudará a finalizar la historia? sino, ¿creo que esta acción es apropiada, bella, perturbardora o de algún modo interesante desde un punto de vista temático? Si en el transcurso de la historia el protagonista se encuentra con un hacha, por ejemplo, puede cogerlo o no cogerlo; en cualquier caso la historia avanzará hasta alcanzar su final. La elección es temática: ¿quieres experimentar una historia en la que el personaje protagonista se enfrenta a sus conflictos con un arma en la mano, o más bien una en el que el protagonista obtiene lo que busca desarmado?^";
 			new_line;
-			print "La narración cuenta con varios encuentros clave que pueden ser resueltos de muchas maneras diferentes. Las decisiones que tome el usuario durante estos encuentros tendrán un impacto importante en el significado de la historia. De esto último es de lo que trata ", (strong) "El Barón", ": el usuario entra en escena como un agente creativo que interactúa con los temas planteados seleccionando símbolos y acciones a través de los que puede expresarse y reflejar sus propias preferencias y experiencia personal.^";
+			print "La narración cuenta con varios encuentros clave que pueden ser resueltos de muchas maneras diferentes. Las decisiones que tome el usuario durante estos encuentros tendrán un impacto importante en el significado de la historia. De esto último es de lo que se trata ", (strong) "El Barón", ": el usuario entra en escena como un agente creativo que interactúa con los temas planteados, seleccionando símbolos y acciones a través de los que puede expresarse y reflejar sus propias preferencias y experiencia personal.^";
 			new_line;
 			return true;
 		],
 ;
 
 ChoiceSetItem	MenuEmpezar
- with	entry [;
+	with
+		entry [;
 			PRT__("Empezar", 0, REMARKABLE_OBJECT);
 			print " la historia";
 			return true;
@@ -134,7 +166,8 @@ ChoiceSetItem	MenuEmpezar
 		append_choice_set false,
 		final_choice true,
 		reaction [;
-			print "Empezar.";
+			!! utils.erase_window();
+			PlayerTo(Abismo);
 			new_line;
 			return true;
 		],
@@ -152,22 +185,6 @@ ChoiceSetItem	MenuRecuperar
 		final_choice true,
 		reaction [;
 			print "Cargar partida.";
-			new_line;
-			return true;
-		],
-;
-
-ChoiceSetItem	MenuConfiguracion
- with	entry [;
-			PRT__("Configuración", 0, REMARKABLE_OBJECT);
-			return true;
-		],
-		keys 'configuracion' 'config' 'opciones',
-		!!------------------
-		append_choice_set false,
-		final_choice true,
-		reaction [;
-			print "Configuración.";
 			new_line;
 			return true;
 		],

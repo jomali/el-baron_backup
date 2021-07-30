@@ -565,7 +565,7 @@ VerboIrregular "seleccionar escena"
 [ SelectSceneSub;
 	switch (noun) {
 		1:
-			PlayerTo(GrutaSombras);
+			PlayerTo(Abismo);
 		2:
 			PlayerTo(DormitorioBaron);
 		3:

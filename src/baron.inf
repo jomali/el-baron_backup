@@ -20,7 +20,7 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2020/XX/XX
+!!	Fecha:			2021/XX/XX
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -43,7 +43,7 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2004, Victor Gijsbers
-!!	Copyright (c) 2020, J. Francisco Martín
+!!	Copyright (c) 2021, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -101,7 +101,7 @@ Release 0;
 !!------------------------------------------------------------------------------
 
 !! Descomentar para compilar la versión Web/Móvil:
-!Constant VERSION_WEB_MOBILE;
+Constant VERSION_WEB_MOBILE;
 
 #Ifndef VERSION_WEB_MOBILE;
 !! Si no se está compilando para Web/Móvil, es que se compila para escritorio:
@@ -976,8 +976,7 @@ Include "vorple-screen-effects.h";
 	lookmode = 2;
 
 	!! Menú principal:
-	!! location = MainMenu.run(true);
-	location = TorreInterior;
+	location = Menu;
 	print "^^";
 
 	!! Se evita la impresión inicial del banner
@@ -1099,8 +1098,8 @@ Include ">baronMenu.inf";
 Include ">baronTutorial.inf";
 Include ">baronUtils.inf";
 
-Include ">scenes/baron_scene-zero.inf";
-Include ">scenes/baron_scene-one.inf";
+Include ">scenes/baronSceneZero.inf";
+Include ">scenes/baronSceneOne.inf";
 Include ">scenes/baron_scene-two.inf";
 Include ">scenes/baron_scene-three.inf";
 Include ">scenes/baron_scene-four.inf";
