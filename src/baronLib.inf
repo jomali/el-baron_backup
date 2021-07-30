@@ -702,10 +702,10 @@ Global _last_location = 0;
 !!		a imprimir en lugar de 'rtxt'. La rutina sigue utilizando 'rtxt', no
 !!		obstante, para determinar automáticamente el estilo de texto destacado
 !!		—cuando el parámetro 'style' es 0— y para asociar a él el hipervínculo
-!!	@param {integer} [type=0] - Código numérico forzando un tipo de objeto,
-!!		independientemente de la definición de 'rtxt': 0, objetos genéricos; 1,
-!!		objetos destacados; 2, puntos cardinales y otras direcciones de
-!!		desplazamiento; 3, elecciones
+!!	@param {integer} [object_type=0] - Código numérico forzando un tipo de 
+!!		objeto, independientemente de la definición de 'rtxt': 0, objetos 
+!!		genéricos; 1, objetos destacados; 2, puntos cardinales y otras 
+!!		direcciones de desplazamiento; 3, elecciones
 !!	@returns {boolean} Verdadero
 !!	@dependency baron.inf
 !!	@dependency baron_utils.inf

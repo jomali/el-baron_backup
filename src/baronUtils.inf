@@ -39,6 +39,40 @@
 !!	Copyright (c) 2021, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
+!!
+!!	Interfaz del objeto `Utils`:
+!!
+!!	- check_object_capacity
+!!	- clear_hyperlinks
+!!	- create_vorple_hiperlink
+!!	- erase_window
+!!	- fade_in
+!!	- fade_out
+!!	- get_grammatical_inflection
+!!	- get_highlight_style
+!!	- get_hyperlinks_status
+!!	- get_text_style
+!!	- get_top_holder
+!!	- initialize_glulx
+!!	- is_compass_enabled
+!!	- play_sfx
+!!	- press_any_key
+!!	- print_horizontal_rule
+!!	- print_spanish_nominative_pronoun
+!!	- read_configuration_file
+!!	- restart
+!!	- set_compass_mode
+!!	- set_grammatical_inflection
+!!	- set_highlight_style
+!!	- set_hyperlinks_status
+!!	- set_status_bar_alignment
+!!	- set_status_bar_contents
+!!	- set_text_style
+!!	- start_scene
+!!	- website_hyperlink
+!!	- write_configuration_file
+!!
+!!------------------------------------------------------------------------------
 
 #Ifdef TARGET_GLULX;
 #Ifdef USE_VORPLE;
@@ -70,6 +104,23 @@ Object	Utils "(Utilities)"
 		check_object_capacity [ obj second;
 			!! Rutina definida por la extensión 'capacities.h':
 			return CheckIfObjectFits(obj, second);
+		],
+		!!----------------------------------------------------------------------
+		!! Si es compilación para Vorple, limpia todos los hipervínculos 
+		!! impresos hasta el momento, cierra el último TAG HTML abierto, y 
+		!! abre uno nuevo con la clase `current-location`.
+		!!
+		!! Permite la definición de estilos y el uso de hipervínculos por 
+		!! localidad.
+		!!----------------------------------------------------------------------
+		clear_hyperlinks [;
+			#Ifdef USE_VORPLE;
+			VorpleExecuteJavaScriptCommand(BuildCommand("
+				ifjs.clearHyperlinks();
+			"));
+			VorpleCloseHTMLTag();
+			VorpleOpenHTMLTag("div", "current-location");
+			#Endif; ! USE_VORPLE;
 		],
 		!!----------------------------------------------------------------------
 		!! Crea un hipervínculo en Vorple.

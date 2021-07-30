@@ -642,8 +642,7 @@ Class	Atrezzo
 !!
 !!	@dependency arrays.h
 !!	@dependency textStyles.h
-!!	@dependency vorple.h
-!!	@version 2020/06/06
+!!	@version 2021/04/11
 !!------------------------------------------------------------------------------
 Class	AdjacentRoom
  class	Atrezzo
@@ -709,14 +708,7 @@ Class	AdjacentRoom
 			return L__M(##Look, 7, self);
 		],
 		onChangeLocation [;
-			!! Elimina todos los hipervínculos impresos previamente:
-			#Ifdef USE_VORPLE;
-			VorpleExecuteJavaScriptCommand(BuildCommand("
-				ifjs.clearHyperlinks();
-			"));
-			VorpleCloseHTMLTag();
-			VorpleOpenHTMLTag("div", "current-location");
-			#Endif; ! USE_VORPLE;
+			Utils.clear_hyperlinks();
 			return true;
 		],
 ;

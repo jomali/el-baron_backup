@@ -14,7 +14,7 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2020/XX/XX
+!!	Fecha:			2021/XX/XX
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -37,7 +37,7 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2004, Victor Gijsbers
-!!	Copyright (c) 2020, J. Francisco Martín
+!!	Copyright (c) 2021, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ Atrezzo CastilloEstrellas "estrellas" Limbo
 		gender G_FEMENINO + G_PLURAL,
 		!!
 		description [;
-			print "En la distancia cósmica, las lamas de los mayores guerreros del pasado arden salvajemente en eterna lucha con fuerzas desconocidas del más allá. Aquí, en la tierra, su luz lejana adorna el firmamento como hermosas velas contra terciopelo negro.";
+			print "En la distancia cósmica, las almas de los mayores guerreros del pasado arden salvajemente en eterna lucha con fuerzas desconocidas del más allá. Aquí, en la tierra, su luz lejana adorna el firmamento como hermosas velas contra terciopelo negro.";
 			new_line;
 			return true;
 		],
@@ -166,13 +166,22 @@ AdjacentRoom DirTorrePasadizo "pasadizo" Limbo
 		describe [;
 			new_line;
 			if (Sotano has visited) {
-				print "[Un self] conduce hacia las profundidades.";
+				print "Hay [un self] hacia los sótanos, abierto en la pared que quedaba oculta por [el Tapiz].";
 			} else {
-				print "[Un self] parece conducir hacia las profundidades.";
+				print "Hay [un self] abierto en la pared que quedaba oculta por [el Tapiz]. Parece descender a los subsuelos.";
 			}
 			new_line;
 			return true;
 		],
+		description [;
+			if (Tapiz has open) {
+				print "Al correr [el Tapiz] has dejado al descubierto la boca de [un self].";
+			} else {
+				print "[El self] queda oculto tras [el Tapiz].";
+			}
+			new_line;
+			return true;
+		]
 ;
 
 
@@ -197,9 +206,9 @@ Indoors Galeria "Galería"
 			if (false) {
 				print "La luz de la antorcha es débil, pero resulta suficiente como para alumbrar el interior de la galería. A tu alrededor hay amontonados unos fajos de papel en innumerables pilas de diferente altura; anudados escrupulosamente unos y sueltos y sin orden aparente otros, bien ajustados, tambaleantes o caídos y desperdigados por el suelo. Ocupan prácticamente todo el espacio, salvo por el paso despejado en línea recta que lleva desde las [DirPortonesCastillo](puertas) del castillo hasta [el DirPatioArmas].";
 			} else if (PatioArmas has visited) {
-				print "No llega luz alguna hasta este lugar. Rodeado por las tinieblas, el silencio y el frío, todo cuanto alcanzas a distinguir es la abertura tenuemente iluminada que conduce de vuelta [al DirPatioArmas].";				
+				print "No llega luz alguna hasta aquí. Todo cuanto puedes ver a tu alrededor es de un negro impenetrable, silencioso y frío, salvo por el arco de luz que has dejado a tu espalda.";
 			} else {
-				print "[Los DirPortonesCastillo] da[n DirPortonesCastillo] paso a una corta galería hasta la que no llega luz alguna. Rodeado por las tinieblas, el silencio y el frío, todo cuanto alcanzas a distinguir es una abertura tenuemente iluminada, algo más [f_obj].";				
+				print "Las enormes [DirPortonesCastillo](puertas) dan paso a una galería hasta la que no llega luz alguna. Todo cuanto puedes ver a tu alrededor es de un negro impenetrable, silencioso y frío, salvo por un arco de luz algo más adelante.";
 			}
 			new_line;
 			return true;
@@ -302,7 +311,7 @@ Outdoors PatioArmas
 				return true;
 		],
 		description [;
-			print "Detrás de la fachada aparentemente intacta de la fortaleza se oculta una verdadera ruina. Casi todas las construcciones han sucumbido y en su lugar quedan tan solo montones desperdigados de escombros, entre los cuáles las tres torres parecen brotar como hongos gigantescos de sillería.";
+			print "Detrás de la fachada aparentemente intacta se oculta una verdadera ruina. Casi todas las construcciones de la fortaleza han sucumbido y en su lugar quedan tan solo montones desperdigados de escombros, entre los cuáles las tres torres brotan como hongos gigantescos de sillería y argamasa. Alguien ha abierto un estrecho paso entre la nieve. Lo ves zigzaguear entre las piedras caídas, desde [if:true]la entrada del castillo[else]la gran torre central[fi] en dirección [if:true]a la gran torre central[else]a la entrada del castillo[fi].";
 			new_line;
 			return true;
 		],
@@ -362,7 +371,7 @@ HeavyItem	-> PatioArmasEstatua "estatua"
 		],
 		describe [;
 			new_line;
-			print "Alguien ha abierto un paso en la nieve. Rodea una gran [self] en el centro del patio y zigzaguea entre las piedras caídas, desde [if:true][la DirEntradaCastillo][else]la [DirTorreExterior] del homenaje[fi] en dirección [if:true]a la [DirTorreExterior] del homenaje[else][al DirEntradaCastillo][fi].";
+			print "[Una self] domina el centro del patio.";
 			new_line;
 			return true;
 		],
@@ -1092,33 +1101,73 @@ Indoors TorreInterior
 		b_to [;
 			<<Enter DirEntradaTorre>>;
 		],
+		d_to [;
+			if (parent(DirTorrePasadizo) == self) {
+				<<Enter DirTorrePasadizo>>;
+			} else {
+				return self.cant_go();
+			}
+		],
 		description [
 			lightObject;
-			lightObject = Narrador.get_lit_object();
+			lightObject = Baron.get_closest_lit_object();
 			print "Una única sala circular conforma la planta baja de la torre. Está vacía casi por completo";
 			if (~~lightObject) {
 				print ". Bajo la débil luz que se cuela por las troneras sin cristales";
 			} else {
-				print ". Bajo la luz temblorosa [del lightObject]";
+				print ". Bajo la luz temblorosa ", (del_) lightObject, " ";
+				PRT__(lightObject, 0, 2);
+				if (parent(lightObject) == self) {
+					print " que has posado a tus pies";
+				}
 			}
-			print ", todo cuanto se distingue son [unas DirEscalerasCaracol], justo enfrente [de la DirEntradaTorre], y un [Tapiz](tapiz) raído que cubre buena parte de la pared.";
+			print ", todo cuanto se distingue es el inicio de [unas DirEscalerasCaracol], justo enfrente [de la DirEntradaTorre]";
+			if (Tapiz has open) {
+				print ", y el raído [Tapiz](tapiz) que has apartado a un lado";
+			} else {
+				print ", y un [Tapiz](tapiz) raído que cubre buena parte de la pared";
+			}
+			print ".";			
 			new_line;
 			return true;
+		],
+		e_to [;
+			if (Utils.is_compass_enabled() 
+				&& parent(DirTorrePasadizo) == self) {
+				<<Enter DirTorrePasadizo>>;
+			} else {
+				return self.cant_go();
+			}
 		],
 		f_to [;
 			<<Enter DirEscalerasCaracol>>;
 		],
 		initial [
 			lightObject;
-			lightObject = self.get_lit_object();
+			lightObject = Baron.get_closest_lit_object();
 			if (~~lightObject) {
-				give TorreBarro concealed;
+				give TorreBarro scenery;
 			} else {
-				give TorreBarro ~concealed;
+				give TorreBarro ~scenery;
 			}
 		],
 		out_to [;
 			<<Enter DirEntradaTorre>>;
+		],
+		react_after [;
+			Drop:
+				if (noun == Antorcha) {
+					!! la descripción de la localidad ya alude a la antorcha:
+					give Antorcha concealed;
+				}
+			Take:
+				if (noun == Antorcha) {
+					give Antorcha ~concealed;
+				}
+		],
+		s_to [;
+			if (Utils.is_compass_enabled()) <<Enter DirEntradaTorre>>;
+			else return self.cant_go();
 		],
 		u_to [;
 			<<Enter DirEscalerasCaracol>>;
@@ -1208,7 +1257,7 @@ HeavyItem -> Tapiz "tapiz"
 				move DirTorrePasadizo to location;
 				if (~~self.tried_to_open) {
 					self.tried_to_open = true;
-					print "Agarras la tela húmeda y tiras de ella hacia un lado. [El Tapiz] se desliza sobre la guía metálica que lo sostiene, dejando al descubierto la boca de [un DirTorrePasadizo] que se ocultaba detrás.";
+					print "Agarras la tela húmeda y tiras de ella hacia un lado. [El Tapiz] se desliza sobre la guía metálica que lo sostiene, dejando al descubierto la boca de [un DirTorrePasadizo].";
 				} else {
 					switch (Shuffle(3, moveFlags)) {
 						1:
@@ -1232,7 +1281,7 @@ HeavyItem -> Tapiz "tapiz"
 		],
 		description [
 			lightObject;
-			lightObject = TorreInterior.get_lit_object();
+			lightObject = Baron.get_closest_lit_object();
 			print "Es un viejo tapiz oscuro de sombras, de moho y de humedad";
 			if (self has open) {
 				print ". Al apartarlo hacia un lado ha dejado al descubierto [un DirTorrePasadizo] que desciende hacia las profundidades de la torre.";
@@ -1274,7 +1323,7 @@ Atrezzo -> -> MotivosTapiz "motivos"
 		],
 		description [
 			lightObject;
-			lightObject = TorreInterior.get_lit_object();
+			lightObject = Baron.get_closest_lit_object();
 			if (~~lightObject) {
 				print "No ", (es) self, " más que un borrón parduzco. Cualquier escena que pueda haber exhibido [el Tapiz] queda oculta tras el moho y la oscuridad de la estancia.";
 			} else {
@@ -1286,18 +1335,18 @@ Atrezzo -> -> MotivosTapiz "motivos"
 ;
 
 !! @TorreBarro
-HeavyItem -> TorreBarro 
+Atrezzo -> TorreBarro
 	has
-		concealed female pluralname,
+		male scenery,
 	with
 		short_name [;
-			print "manchas de [](barro)";
+			print "[](barro:OTHER_OBJECT)";
 			return true;
 		],
 		name_f 'mancha' 'suciedad',
 		name_fp 'manchas',
 		name_m 'barro',
-		gender G_FEMENINO + G_PLURAL,
+		gender G_MASCULINO,
 		!!
 		describe [;
 			if (parent(self) == parent(DirTorrePasadizo) &&
@@ -1305,20 +1354,24 @@ HeavyItem -> TorreBarro
 				return true;
 			} else {
 				new_line;
-				print "Hay [self] por todo el suelo.";
+				print "Hay manchas de [self] por todo el suelo.";
 				new_line;
 				return true;
 			}
 		],
 		description [
 			lightObject;
-			lightObject = TorreInterior.get_lit_object();
-			print "";
+			lightObject = Baron.get_closest_lit_object();
+			if (~~lightObject) {
+				print "El suelo está resbaladizo de barro.";
+			} else {
+				print "Gracias [al lightObject] puedes ver claramente los rastros de barro que parten desde [la DirEntradaTorre] y se esparcen por el resto de la habitación, hasta morir en las [DirEscalerasCaracol](escaleras) y justo debajo [del Tapiz].";
+			}
 			new_line;
 			return true;
 		],
 		reset [;
-			give self concealed;
+			give self scenery;
 		],
 ;
 
