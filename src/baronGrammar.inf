@@ -14,7 +14,7 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2020/11/XX
+!!	Fecha:			2021/11/XX
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -37,7 +37,7 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2004, Victor Gijsbers
-!!	Copyright (c) 2020, J. Francisco Martín
+!!	Copyright (c) 2021, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -49,6 +49,7 @@
 !!	<>	##DefaultAction
 !!	<>	##Dig
 !!	<>	##Enter
+!!	<>	##Exits
 !!	<>	##GetDressed
 !!	<>	##LMode2
 !!	<>	##NoSuchVerb
@@ -338,6 +339,65 @@ Verb 'no.verb'
 Extend 'cava' first
 	*								-> Dig
 ;
+
+!!------------------------------------------------------------------------------
+!! ##Exits
+!!------------------------------------------------------------------------------
+
+Verb meta 'salidas'
+	*								-> Exits
+;
+VerboIrregular "consultar salidas visibles" with imperativo
+	'salidas'
+;
+
+[ ExitsSub;
+	if (real_location ofclass Room && real_location.exits ~= 0) {
+		return PrintOrRun(real_location, exits);
+	} else {
+		switch (Utils.get_grammatical_inflection()) {
+			FIRST_PERSON_PRESENT:
+				if (IsPluralNoun(player)) print "No podemos";
+				else print "No puedo";
+				print " ver ninguna salida desde aquí.";
+			SECOND_PERSON_PRESENT:
+				if (IsPluralNoun(player)) print "No podéis";
+				else print "No puedes";
+				print " ver ninguna salida desde aquí.";
+			THIRD_PERSON_PRESENT:
+				if (IsPluralNoun(player)) print "No pueden";
+				else print "No puede";
+				print " ver ninguna salida desde aquí.";
+			FIRST_PERSON_PAST:
+				if (IsPluralNoun(player)) print "No podíamos";
+				else print "No podía";
+				print " ver ninguna salida desde allí.";
+			SECOND_PERSON_PAST:
+				if (IsPluralNoun(player)) print "No podíais";
+				else print "No podías";
+				print " ver ninguna salida desde allí.";
+			THIRD_PERSON_PAST:
+				if (IsPluralNoun(player)) print "No podían";
+				else print "No podía";
+				print " ver ninguna salida desde allí.";
+			FIRST_PERSON_FUTURE:
+				if (IsPluralNoun(player)) print "No podremos";
+				else print "No podré";
+				print " ver ninguna salida desde allí.";
+			SECOND_PERSON_FUTURE:
+				if (IsPluralNoun(player)) print "No podréis";
+				else print "No podrás";
+				print " ver ninguna salida desde allí.";
+			THIRD_PERSON_FUTURE:
+				if (IsPluralNoun(player)) print "No podrán";
+				else print "No podrá";
+				print " ver ninguna salida desde allí.";
+		}
+		new_line;
+		return true;
+	}
+];
+
 
 !!------------------------------------------------------------------------------
 !! ##Enter

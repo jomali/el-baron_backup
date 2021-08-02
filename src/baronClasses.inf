@@ -14,7 +14,7 @@
 !!	Sistema:		Inform-INFSP 6
 !!	Plataforma:		Máquina-Z/Glulx
 !!	Versión:		0.0
-!!	Fecha:			2020/01/XX
+!!	Fecha:			2021/01/XX
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -37,7 +37,7 @@
 !!	<http://www.gnu.org/licenses/>.
 !!
 !!	Copyright (c) 2004, Victor Gijsbers
-!!	Copyright (c) 2020, J. Francisco Martín
+!!	Copyright (c) 2021, J. Francisco Martín
 !!
 !!------------------------------------------------------------------------------
 !!
@@ -889,12 +889,15 @@ Class Darkness
 !!------------------------------------------------------------------------------
 !! Representa un objeto localidad dentro del modelo de mundo.
 !!
-!!	@version 2020/01/25
+!!	@version 2021/08/02
 !!------------------------------------------------------------------------------
-Class	Room
- class	Atrezzo
- has	light,
- with	before [
+Class Room
+	class
+		Atrezzo,
+	has
+		light,
+	with
+		before [
 			previous_style;
 			if (noun ~= self) return false;
 			Climb:

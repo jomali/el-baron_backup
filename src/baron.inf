@@ -3,8 +3,10 @@
 !% -S
 !% -s
 !% +language_name=Spanish
+!% $MAX_OBJ_PROP_COUNT=100
 !% $MAX_PROP_TABLE_SIZE=100000
 !% $MAX_STATIC_DATA=25000
+!% $MAX_VERBS=160
 !% $MAX_VERBSPACE=4800
 
 !!==============================================================================
@@ -101,7 +103,7 @@ Release 0;
 !!------------------------------------------------------------------------------
 
 !! Descomentar para compilar la versión Web/Móvil:
-Constant VERSION_WEB_MOBILE;
+! Constant VERSION_WEB_MOBILE;
 
 #Ifndef VERSION_WEB_MOBILE;
 !! Si no se está compilando para Web/Móvil, es que se compila para escritorio:

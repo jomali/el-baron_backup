@@ -1,11 +1,10 @@
 
+**/inform
+
 # Ramas del árbol de directorios:
 /dist
-<<<<<<< HEAD
+
 #/docs
-=======
-# /docs
->>>>>>> ffcfbdf2e61c702e3aee55f1a9a04e740d1ba204
 /empaquetador
 /fonts
 /original

@@ -3,16 +3,18 @@
 #===============================================================================
 # Script para compilar y ejecutar relatos interactivos programados en Inform 6.
 # Herramientas utilizadas:
-#	<>	bresc: Blorb resource compiler (sólo en Glulx)
-#	<>	inform: Compilador Inform 6
-# <>	informPreprocessor: Preprocesador de Inform 
+# 
+# <> bresc: Blorb resource compiler (sólo en Glulx)
+# <> inform: Compilador Inform 6.34
+# <> informPreprocessor: Preprocesador de código con etiquetas de descripción. 
 #-------------------------------------------------------------------------------
+
+inform_compiler=./inform
+inform_path=./libs/Inform6/library611/,./libs/INFSP6/,./libs/Extensions/,./libs/DaGWindows/,./libs/Vorple6/
 
 bresc_location=~/.bin
 zcode_interpreter=gargoyle-free
 glulx_interpreter=gargoyle-free
-
-inform_path=,/usr/share/inform6/library/,/usr/share/inform6/extensions/,/usr/share/inform6/extensions/gwindows/,/usr/share/inform6/extensions/vorple/
 
 #-------------------------------------------------------------------------------
 
@@ -64,18 +66,18 @@ echo "============================================="
 echo "COMPILANDO PARA GLULX…"
 echo "---------------------------------------------"
 preprocesa_textos
-inform +include_path=$inform_path -G $gameFile.inf $gameFile.ulx
+$inform_compiler +include_path=$inform_path -G $gameFile.inf $gameFile.ulx
 limpia_ficheros_temporales
-# mv $gameFile.ulx ../$gameFile.ulx
-# cd ..
-# $glulx_interpreter $gameFile.ulx
+mv $gameFile.ulx ../$gameFile.ulx
+cd ..
+$glulx_interpreter $gameFile.ulx
 # $bresc_location/bres $gameFile.res
 # inform +include_path=$inform_path -G $gameFile.inf
 # $bresc_location/bresc $gameFile.res
 # cp $gameFile.gblorb /var/www/html/$gameFile/resources/$gameFile.gblorb
 
 # cp $gameFile.ulx ../dist/server/resources/$gameFile.ulx
-cp $gameFile.ulx ./web/resources/$gameFile.ulx
-cp -r ./web/* /var/www/html/$gameFile
+# cp $gameFile.ulx ./web/resources/$gameFile.ulx
+# cp -r ./web/* /var/www/html/$gameFile
 
 exit 0

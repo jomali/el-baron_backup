@@ -1386,13 +1386,13 @@ Atrezzo -> TorreBarro
 !! @DirSotano
 AdjacentRoom	DirSotano "calabozo"
  has	male,
- with	found_in GrutaPasadizo,
+ with	found_in Sotano,
 		name_f 'antesala',
 		name_m 'hall' 'recibidor' 'vestibulo',
 		gender G_MASCULINO,
 		adjectives 'fresca' 'fresco' 'pequena' 'pequeno' 'rectangular',
 		!!------------------
-		adjacent_room GrutaVestibulo,
+		adjacent_room Sotano,
 		before [;
 			Enter:
 				self.AdjacentRoom::before();
@@ -1451,13 +1451,13 @@ Atrezzo	-> SotanoReja "reja"
 !! @DirCalabozo
 AdjacentRoom	DirCalabozo "calabozo"
  has	male,
- with	found_in GrutaPasadizo,
+ with	found_in Sotano,
 		name_f 'antesala',
 		name_m 'hall' 'recibidor' 'vestibulo',
 		gender G_MASCULINO,
 		adjectives 'fresca' 'fresco' 'pequena' 'pequeno' 'rectangular',
 		!!------------------
-		adjacent_room GrutaVestibulo,
+		adjacent_room Sotano,
 		before [;
 			Enter:
 				self.AdjacentRoom::before();
