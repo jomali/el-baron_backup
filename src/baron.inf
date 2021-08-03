@@ -978,7 +978,8 @@ Include "vorple-screen-effects.h";
 	lookmode = 2;
 
 	!! Menú principal:
-	location = Menu;
+	! location = Menu;
+	location = Abismo;
 	print "^^";
 
 	!! Se evita la impresión inicial del banner

@@ -68,18 +68,26 @@ Indoors Abismo
 		!!
 		description [;
 			Tutorial.hint_highlight_key_a();
-			print "Todo es **oscuridad** a tu alrededor. El universo entero reducido a un vacío negro.";
+			if (AbismoOscuridad has described) {
+				print "Distingues un débil [AbismoResplandor](fulgor) entre las sombras.";
+			} else {
+				print "Todo es [AbismoOscuridad] a tu alrededor. El universo entero reducido a un vacío negro.";
+			}
 			new_line;
 			return true;
 		],
 		exits [;
-			print "No sabrías hacia dónde dirigirte en la **oscuridad**.";
+			if (AbismoOscuridad has described) {
+				print "Todo cuanto puedes distinguir en [la AbismoOscuridad] es ese [AbismoResplandor] indefinido que llega desde algún lugar más [f_obj].";
+			} else {
+				print "No sabrías hacia dónde dirigirte en [la AbismoOscuridad].";
+			}
 			new_line;
 			return true;
 		],
-		! f_to [;
-		! 	<<Enter DirAbismoAdelante>>;
-		! ],
+		f_to [;
+			<<Enter DirAbismoAdelante>>;
+		],
 		! initial [;
 		! 	if (self hasnt visited) {
 		! 		move Armadura to Baron;
@@ -90,8 +98,150 @@ Indoors Abismo
 		! 		return true;
 		! 	}
 		! ],
-		! n_to [;
-		! 	if (Utils.is_compass_enabled()) <<Enter DirAbismoAdelante>>;
-		! 	else return self.cant_go();
-		! ],
+		n_to [;
+			if (Utils.is_compass_enabled()) <<Enter DirAbismoAdelante>>;
+			else return self.cant_go();
+		],
+;
+
+!! @DirAbismoAdelante
+AdjacentRoom -> DirAbismoAdelante
+	has
+		male,
+	with
+		adjacent_room GrutaVestibulo,
+		before [
+			previous_style;
+			Enter:
+				self.AdjacentRoom::onChangeLocation();
+				if (AbismoOscuridad hasnt described) {
+					print "Alcanzas a distinguir un resplandor entre las sombras. ";
+				} else {
+					print "Ha llegado el momento. Después de todo tú eres la única persona que puede acabar con esto.
+					^^";
+				}
+				print "Tan pronto das un paso en la dirección de la que proviene la luz, las dos grandes puertas de bronce se cierran a tu espalda con un golpe atronador seguido por el chirrido de cerrojos deslizándose en su interior. Ya no hay marcha atrás. Aferras el hacha con firmeza y das otro paso adelante, hacia el calor…";
+				new_line;
+
+				self.AdjacentRoom::before();
+				return true;
+		],
+		description [;
+			<<Examine AbismoResplandor>>;
+		],
+;
+
+!! @AbismoOscuridad
+Background -> AbismoOscuridad "oscuridad"
+	has
+		female on,
+	with
+		name_f 'negrura' 'oscuridad' 'sombra' 'tiniebla',
+		name_fp 'sombras' 'tinieblas',
+		name_m 'vacio',
+		gender G_FEMENINO,
+		adjectives 'negro',
+		!!
+		description [;
+			if (self has described) {
+				<<Look>>;
+			} else {
+				Tutorial.hint_highlight_key_b();
+				print "Te dejas perder en el abrazo de las [self](sombras). Solo e inmóvil en mitad de la nada, lejos de obligaciones, de rutinas diarias y de reglas sociales inconcebiblemente complejas y agotadoras, casi desearías poder quedarte aquí para siempre. Descansar. Pero no es más que una idea infantil, por supuesto.
+				^^
+				Alcanzas a percibir [un AbismoResplandor] que rompe apenas la oscuridad.";
+			}
+			new_line;
+			return true;
+		],
+		react_before [;
+			if (self hasnt on) return false;
+			Consult,
+			Examine,
+			Look,
+			LookUnder,
+			Read,
+			Search:
+				if (noun == nothing) return false;
+				if (noun == self) return false;
+				if (noun == parent(self)) return false;
+				if (noun == AbismoResplandor) return false;
+				return self.cant_see();
+			DefaultAction:
+				return false;
+			Drop:
+				if (noun == nothing) return false;
+				if (~~IndirectlyContains(player, noun)) return false;
+				print "Si dejas [el noun] aquí es posible que luego no puedas encontrarl[o noun] de nuevo en [la self].";
+				new_line;
+				return true;
+			Inv,
+			InvTall,
+			InvWide:
+				return self.cant_see();
+			Rub:
+				if (noun == nothing) return false;
+				if (noun == self) return false;
+				if (noun == parent(self)) return false;
+				if (noun ofclass Background) return false;
+				print "Es difícil limpiar [el noun] —o cualquier otra cosa— en completa oscuridad.";
+				new_line;
+				return true;
+		],
+	private
+		cant_see [;
+			if (self has described) {
+				print "No puedes ver nada en [la self], aparte de [un AbismoResplandor] muy débil que llega desde algún lugar más [f_obj].";
+			} else {
+				print "No puedes ver nada en [la self].";
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! @AbismoResplandor
+Background -> AbismoResplandor "resplandor"
+	has
+		male,
+	with
+		name_f 'luminosidad' 'luz',
+		name_m 'fulgor' 'resplandor',
+		gender G_MASCULINO,
+		adjectives
+			'anaranjada' 'anaranjado' 'imprecisa' 'impreciso' 'tenue',
+		!!
+		description [;
+			print "Se trata de una luz parpadeante muy tenue. Llega desde algún lugar más [f_obj].";
+			new_line;
+			return true;
+		],
+;
+
+
+!!==============================================================================
+!!
+!!	2)	Vestíbulo de la gruta
+!!
+!!------------------------------------------------------------------------------
+
+!! @GrutaVestibulo
+Indoors GrutaVestibulo
+	has
+		male,
+	with
+		short_name [;
+			print "[](Vestíbulo) de la gruta";
+			return true;
+		],
+		name_f 'antesala' 'caverna' 'cueva' 'estancia' 'gruta' 'sala',
+		name_m 'hall' 'recibidor' 'vestibulo',
+		gender G_MASCULINO,
+		adjectives 'fresca' 'fresco' 'pequena' 'pequeno' 'rectangular',
+		!!
+		description [;
+			print "Esta pequeña sala rectangular ha sido excavada en la roca y sus paredes y su techo han sido recubiertos después con planchas de mármol negro. Dos puertas de bronce sellan la única salida. Frente a ellas, en la pared opuesta del vestíbulo, un estrecho corredor se interna aún más en las ardientes profundidades de la montaña.";
+			new_line;
+			return true;
+		],
 ;
