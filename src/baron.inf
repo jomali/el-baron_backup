@@ -980,6 +980,7 @@ Include "vorple-screen-effects.h";
 	!! Menú principal:
 	! location = Menu;
 	location = Abismo;
+	Storyteller.start_scene(1);
 	print "^^";
 
 	!! Se evita la impresión inicial del banner

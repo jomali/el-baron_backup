@@ -49,13 +49,15 @@
 !!------------------------------------------------------------------------------
 
 !! @Limbo
-Room	Limbo "En algún lugar…"
- has	male,
- with	name_f	'babia' 'parte',
-		name_m	'limbo' 'lugar' 'sueno' 'vacio',
-		gender	G_MASCULINO,
+Room Limbo "En algún lugar…"
+	has
+		male,
+	with
+		name_f 'babia' 'parte',
+		name_m 'limbo' 'lugar' 'sueno' 'vacio',
+		gender G_MASCULINO,
 		adjectives 'algun' 'alguna',
-		!!------------------
+		!!
 		description [;
 			print "Más allá de la barrera casi insuperable que separa la realidad de todo lo demás. Un lugar etéreo, donde la vida, la materia y la vitalidad no son necesariamente constantes; un lugar donde el tiempo y el espacio no existen tal y como los capta nuestro ser despierto…";
 			if (self hasnt visited) {
@@ -66,8 +68,30 @@ Room	Limbo "En algún lugar…"
 		],
 ;
 
+!! @Storyteller
+Object Storyteller "(Narrador)"
+	with
+		end_scene [ scene;
+			switch (scene) {
+				1:
+					move Armadura to Limbo;
+					move Yelmo to Limbo;
+					move Percunos to Limbo;
+			}
+		],
+		start_scene [ scene;
+			switch (scene) {
+				1:
+					move Armadura to Baron;
+					move Percunos to Baron;
+					give Armadura worn;
+					return true;
+			}
+		],
+;
+
 !! @Baron
-Character	Baron "protagonista" Limbo
+Character Baron "protagonista" Limbo
 	has
 		male proper,
 	with
@@ -199,12 +223,12 @@ Character	Baron "protagonista" Limbo
 			new_line;
 			return true;
 		],
-		!!------------------
+		!!
 		burning false,
 		running_away false,
 		tried_to_smell false,
 		wolf false,
- private
+	private
 		burning_counter 0,
 ;
 

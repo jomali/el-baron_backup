@@ -48,6 +48,172 @@
 !!
 !!------------------------------------------------------------------------------
 
+!! @Armadura
+Item Armadura Limbo
+	class
+		Clothes,
+	has
+		male,
+	with
+		short_name [;
+			print "conjunto completo de [](armadura:REMARKABLE_OBJECT)";
+			return true;
+		],
+		name_f 'armadura' 'cota' 'malla',
+		name_fp 'cintas' 'mallas' 'placas',
+		name_m 'guantelete',
+		name_mp 'guanteletes',
+		gender G_MASCULINO,
+		adjectives 'acero' 'completo' 'conjunto' 'cuero',
+		!!
+		before [;
+			Disrobe:
+				if (Baron.is_burning()) {
+					print "El metal fundido de la [self](armadura:OTHER_OBJECT) te perfora el cuerpo. Querrías quitártela. Arrancarte la piel. Pero no tienes cómo.";
+				} else {
+					print "No puedes quitarte la [self](armadura:OTHER_OBJECT) sin ayuda; está asegurada con apretadas cintas de cuero a la espalda.";
+				}
+				new_line;
+				return true;
+		],
+		description [;
+			if (Baron.is_burning()) {
+				print "Incluso el acero de la [self](armadura:OTHER_OBJECT) se está fundiendo con el calor del fuego. Sientas las gotas de metal líquido abriéndose paso a través de tu piel como cuchillos.";
+			} else {
+				if (real_location == GrutaPasadizo or GrutaSalon) {
+					print "Por su culpa estás sudando copiosamente, pero jamás";
+				} else {
+					print "Jamás";
+				}
+				print " te enfrentarías a la bestia sin un conjunto completo de [self](armadura:OTHER_OBJECT). Gruesas placas de acero sobre cota de mallas —todo ello engrasado concienzudamente—, con lo que te aseguras la mayor protección posible ante cualquier tipo de ataque físico. El conjunto está ajustado por unas cintas de cuero a la espalda.";
+			}
+			new_line;
+			return true;
+		],
+;
+
+!! @Yelmo
+Item Yelmo "yelmo" Limbo
+	class
+		Clothes,
+	has
+		male transparent,
+	with
+		name_m 'casco' 'morrion' 'yelmo',
+		gender G_MASCULINO,
+		adjectives 'antiguo' 'ennegrecido' 'funcional' 'negro',
+		!!
+		after [;
+			Disrobe:
+				move self to parent(player);
+				print "Te l[o self] quitas y l[o self] posas en el suelo.";
+				new_line;
+				return true;
+			Take:
+				give self worn;
+				if (~~self.tried_to_wear) {
+					self.tried_to_wear = true;
+					print "Recoges [el self] y l[o self] sacudes enérgicamente antes de ponértel[o self], vaciando una cascada de ceniza sobre el suelo. Los sonidos de la cueva parecen intensificarse en su interior.";
+				} else {
+					print "Recoges [el self] del suelo y te l[o self] pones.";
+				}
+				new_line;
+				return true;
+		],
+		before [;
+			Close:
+				<<Close YelmoVisera>>;
+			Drop:
+				if (self in player && self has worn) {
+					<<Disrobe self>>;
+				}
+			Open:
+				<<Open YelmoVisera>>;
+			Wear:
+				if (TestScope(self, player) && self notin player) {
+					<<Take self>>;
+				}
+		],
+		description [;
+			if (Baron.is_burning()) {
+				print "De algún modo antinatural, el metal [del self] permanece frío en mitad del infierno.";
+			} else {
+				if (self in player && self has worn) {
+					if (YelmoVisera has open) {
+						print "[La YelmoVisera] está abiert[a YelmoVisera], dejando libre tu campo visual pero exponiendo tu rostro ante un eventual ataque.";
+					} else {
+						print "[La YelmoVisera] está cerrad[a YelmoVisera], ofreciendo la máxima protección.";
+					}
+				} else {
+					print "[Un self] ennegrecido, sin adornos de ningún tipo.";
+					if (YelmoVisera has open) {
+						print " Tiene [la YelmoVisera] abiert[a YelmoVisera].";
+					} else {
+						print " Tiene [la YelmoVisera] cerrad[a YelmoVisera].";
+					}
+
+				}
+			}
+			new_line;
+			return true;
+		],
+	private
+		tried_to_wear false,
+;
+
+!! @YelmoVisera
+Item -> -> YelmoVisera "visera"
+	has
+		female open openable,
+	with
+		name_f 'visera',
+		name_m 'visor',
+		gender G_FEMENINO,
+		adjectives 'casco',
+		!!
+		after [;
+			Close:
+				print "Cierras la [self](visera) [del Yelmo].";
+				new_line;
+				return true;
+			Open:
+				print "Abres la [self](visera) [del Yelmo].";
+				new_line;
+				return true;
+		],
+		before [;
+			DefaultAction:
+				if (self has open) {
+					<<Close self>>;
+				} else {
+					<<Open self>>;
+				}
+			Examine:
+				<<Examine Yelmo>>;
+		],
+;
+
+!! @Percunos
+Item Percunos Limbo
+	has
+		male remarkable,
+	with
+		short_name [;
+			print "[](hacha:REMARKABLE_OBJECT) de guerra";
+			return true;
+		],
+		name_m 'arma' 'hacha' 'percunos' 'perkwunos',
+		gender G_MASCULINO,
+		adjectives 'batalla' 'guerra',
+		article "tu",
+		!!
+		description [;
+			print "Para esta gesta te has traído el más pesado de tus hachas de guerra; *Percunos*. Pocos pueden levantar su peso, y menos aún manejarlo con la misma velocidad y precisión mortíferas con las que tú lo haces.";
+			new_line;
+			return true;
+		],
+;
+
 
 !!==============================================================================
 !!
@@ -88,20 +254,6 @@ Indoors Abismo
 		f_to [;
 			<<Enter DirAbismoAdelante>>;
 		],
-		! initial [;
-		! 	if (self hasnt visited) {
-		! 		move Armadura to Baron;
-		! 		move Casco to Baron;
-		! 		move Percunos to Baron;
-		! 		give Armadura worn;
-		! 		give Casco worn;
-		! 		return true;
-		! 	}
-		! ],
-		n_to [;
-			if (Utils.is_compass_enabled()) <<Enter DirAbismoAdelante>>;
-			else return self.cant_go();
-		],
 ;
 
 !! @DirAbismoAdelante
@@ -120,7 +272,7 @@ AdjacentRoom -> DirAbismoAdelante
 					print "Ha llegado el momento. Después de todo tú eres la única persona que puede acabar con esto.
 					^^";
 				}
-				print "Tan pronto das un paso en la dirección de la que proviene la luz, las dos grandes puertas de bronce se cierran a tu espalda con un golpe atronador seguido por el chirrido de cerrojos deslizándose en su interior. Ya no hay marcha atrás. Aferras el hacha con firmeza y das otro paso adelante, hacia el calor…";
+				print "Tan pronto das un paso en la dirección de la que proviene la luz, las dos grandes puertas de bronce se cierran a tu espalda con un golpe atronador seguido por el chirrido de cerrojos. Ya no hay marcha atrás. Aferras el [Percunos](hacha:REMARKABLE_OBJECT) con firmeza y das otro paso adelante, hacia el calor…";
 				new_line;
 
 				self.AdjacentRoom::before();
@@ -136,7 +288,7 @@ Background -> AbismoOscuridad "oscuridad"
 	has
 		female on,
 	with
-		name_f 'negrura' 'oscuridad' 'sombra' 'tiniebla',
+		name_f 'abismo' 'negrura' 'oscuridad' 'sombra' 'tiniebla',
 		name_fp 'sombras' 'tinieblas',
 		name_m 'vacio',
 		gender G_FEMENINO,
@@ -244,4 +396,90 @@ Indoors GrutaVestibulo
 			new_line;
 			return true;
 		],
+		! each_turn [;
+		! 	print "[Los GrutaHuesos] del suelo arrojan sombras grotescas en la luz titilante.";
+		! 	new_line;
+		! 	return true;
+		! ],
+;
+
+!! @GrutaHuesos
+Atrezzo -> GrutaHuesos "huesos"
+	has
+		~concealed male pluralname ~scenery static,
+	with
+		name_f 'calavera',
+		name_fp 'calaveras',
+		name_m 'craneo' 'esqueleto' 'hueso' 'osario',
+		name_mp 'craneos' 'esqueletos' 'huesos',
+		gender G_MASCULINO + G_PLURAL,
+		adjectives
+			'despedazado' 'despedazados' 'ennegrecida' 'ennegrecidas'
+			'ennegrecido' 'ennegrecidos' 'humana' 'humanas' 'humano' 'humanos'
+			'negra' 'negras' 'negro' 'negros',
+		!!
+		before [;
+			Take:
+				print "Son los restos de aquellos que vinieron aquí antes que tú, y no tienes ninguna intención de cargar con recuerdos de su fracaso.";
+				new_line;
+				return true;
+		],
+		describe [;
+			new_line;
+			print "Una auténtica alfombra de [self](huesos) y [self](cráneos) ennegrecidos oculta el suelo.";
+			new_line;
+			return true;
+		],
+		description [;
+			print "El suelo está cubierto de esqueletos despedazados. Negros por el fuego que en algún momento consumió la carne de sus cuerpos.";
+			new_line;
+			return true;
+		],
+;
+
+
+!!==============================================================================
+!!
+!!	3)	Un pequeño pasadizo
+!!
+!!------------------------------------------------------------------------------
+
+!! @GrutaPasadizo
+Indoors GrutaPasadizo
+	has
+		male,
+	with
+		short_name [;
+			print "Un pequeño [](pasadizo)";
+			return true;
+		],
+		name_f 'caverna' 'cueva' 'gruta',
+		name_m 'corredor' 'pasadizo' 'pasillo',
+		gender G_MASCULINO,
+		adjectives 'bajo' 'estrecho' 'pequeno',
+		!!
+;
+
+
+!!==============================================================================
+!!
+!!	4)	Enorme salón subterráneo
+!!
+!!------------------------------------------------------------------------------
+
+!! @GrutaSalon
+Indoors GrutaSalon
+	has
+		male,
+	with
+		short_name [;
+			print "Enorme [](salón) subterráneo";
+			return true;
+		],
+		name_f
+			'caverna' 'cueva' 'estancia' 'gruta' 'guarida' 'madriguera' 'sala',
+		name_m 'cubil' 'nido' 'salon',
+		gender G_MASCULINO,
+		adjectives 'dragon' 'enorme' 'gran' 'grande' 'subterraneo',
+		!!
 ;
